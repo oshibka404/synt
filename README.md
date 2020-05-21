@@ -1,16 +1,35 @@
-# synth
+# Perfect First Synth
+Perfect First synth is a project with ambitions to become a perfect first synthesizer.
 
-A new Flutter project.
+## What does it mean — perfect first synthesizer?
+- Easy to use for people without musical background
+- Powerful enough to stay interesting for a while
+- Having all the necessary things to go through essentials of sound design from scratch
+- Producing pleasant sounds out-of-the-box
 
-## Getting Started
+Mobile first (Currently supports only iOS).
 
-This project is a starting point for a Flutter application.
+## Technical stuff
+DSP written in Faust an compiled to native iOS ~~Android and MacOS~~ API with faust2api.
+UI is made using Flutter.
 
-A few resources to get you started if this is your first Flutter project:
+## Plans
+### MVP essentials
+- Multi-touch surface
+- Several oscillators: differents waveforms, noise
+- Filtering
+- Param modulation by gyroscope and accelerometer
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Strong plans
+- Whatever the users ask for
+- Android support
+- LFO
+- Effects: echo, reverb
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Dreams
+- Stand-alone Mac aupport
+- Stand-alone Linux support
+- Web support
+- VST, AU
+- Granular synthesis
+- FM synthesis
