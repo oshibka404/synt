@@ -28,9 +28,17 @@
             float paramInit = [weakSelf getParamInit:idArg.intValue];
             result(@(paramInit));
         } else if ([@"getParamValue" isEqualToString:call.method]) {
-            NSNumber* idParam = call.arguments[@"id"];
-            float paramValue =  [weakSelf getParamValue:idParam.intValue];
+            NSNumber* idArg = call.arguments[@"id"];
+            float paramValue =  [weakSelf getParamValue:idArg.intValue];
             result(@(paramValue));
+        } else if ([@"getParamMin" isEqualToString:call.method]) {
+            NSNumber* idArg = call.arguments[@"id"];
+            float paramMin =  [weakSelf getParamMin:idArg.intValue];
+            result(@(paramMin));
+        } else if ([@"getParamMax" isEqualToString:call.method]) {
+            NSNumber* idArg = call.arguments[@"id"];
+            float paramMax =  [weakSelf getParamMax:idArg.intValue];
+            result(@(paramMax));
         } else if ([@"setParamValue" isEqualToString:call.method]) {
             NSNumber* idParam = call.arguments[@"id"];
             NSNumber* valueParam = call.arguments[@"value"];
@@ -55,6 +63,14 @@
 
 - (float)getParamValue:(int)id {
     return dspFaust->getParamValue(id);
+}
+
+- (float)getParamMin:(int)id {
+    return dspFaust->getParamMin(id);
+}
+
+- (float)getParamMax:(int)id {
+    return dspFaust->getParamMax(id);
 }
 
 - (void)setParam:(int)id Value:(float)value {

@@ -17,6 +17,26 @@ class DspAPI {
     }
   }
 
+  static Future<double> getParamMin(int id) {
+    try {
+      return platform.invokeMethod('getParamMin', <String, int>{
+        'id': id
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get min value of param #$id: ${e.message}';
+    }
+  }
+
+  static Future<double> getParamMax(int id) {
+    try {
+      return platform.invokeMethod('getParamMax', <String, int>{
+        'id': id
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get max value of param #$id: ${e.message}';
+    }
+  }
+
   static Future<double> getParamValue(int id) {
     try {
       return platform.invokeMethod('getParamValue', <String, int>{
@@ -37,4 +57,5 @@ class DspAPI {
       throw 'Unable to get initial value of param #$id: ${e.message}';
     }
   }
+  
 }
