@@ -1,7 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import './dsp_api.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,7 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const platform = const MethodChannel('synth.ae/control');
   double gate = 0;
   double gain = 0.5;
   int paramsCount;
@@ -42,45 +39,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  Future<int> getParamsCount() async {
-    return await platform.invokeMethod('getParamsCount');
-  }
-
-  Future<double> getParamInit(int id) {
-    try {
-      return platform.invokeMethod('getParamInit', <String, int>{
-        'id': id
-      });
-    } on PlatformException catch (e) {
-      throw 'Unable to get initial value of param #$id: ${e.message}';
-    }
-  }
-
-  Future<double> getParamValue(int id) {
-    try {
-      return platform.invokeMethod('getParamValue', <String, int>{
-        'id': id
-      });
-    } on PlatformException catch (e) {
-      throw 'Unable to get current value of param #$id: ${e.message}';
-    }
-  }
-
-  Future<void> setParamValue(int id, double value) {
-    try {
-      return platform.invokeMethod('setParamValue', <String, dynamic>{
-        'id': id,
-        'value': value
-      });
-    } on PlatformException catch (e) {
-      throw 'Unable to get initial value of param #$id: ${e.message}';
-    }
-  }
-
   getInitialState() async {
-    int newParamsCount = await getParamsCount();
-    double newGain = await getParamValue(0);
-    double newGate = await getParamValue(1);
+    int newParamsCount = await DspAPI.getParamsCount();
+    double newGain = await DspAPI.getParamInit(0);
+    double newGate = await DspAPI.getParamInit(1);
 
     setState(() {
       paramsCount = newParamsCount;
@@ -99,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               onPressed: () async {
                 double newGate = 1 - gate;
-                setParamValue(1, newGate);
+                DspAPI.setParamValue(1, newGate);
                 setState(() {
                   gate = newGate;
                 });
@@ -108,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Slider(
               onChanged: (newValue) {
-                setParamValue(0, newValue);
+                DspAPI.setParamValue(0, newValue);
                 setState(() {
                   gain = newValue;
                 });
