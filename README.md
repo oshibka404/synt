@@ -13,6 +13,10 @@ Mobile first (Currently supports only iOS).
 DSP written in Faust an compiled to native iOS ~~Android and MacOS~~ API with faust2api.
 UI is made using Flutter.
 
+### Build process
+1. run `./build.sh` from the root of the repository
+2. `flutter run`
+
 ## Plans
 ### MVP essentials
 - Multi-touch surface
