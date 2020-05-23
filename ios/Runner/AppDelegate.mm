@@ -44,6 +44,18 @@
             NSNumber* valueParam = call.arguments[@"value"];
             [weakSelf setParam:idParam.intValue Value:valueParam.floatValue];
             result(nil);
+        } else if ([@"keyOn" isEqualToString:call.method]) {
+            NSNumber* pitchParam = call.arguments[@"pitch"];
+            NSNumber* velocityParam = call.arguments[@"velocity"];
+            int voiceId = [weakSelf keyOn:pitchParam.intValue WithVelocity:velocityParam.intValue];
+            result(@(voiceId));
+        } else if ([@"keyOff" isEqualToString:call.method]) {
+            NSNumber* pitchParam = call.arguments[@"pitch"];
+            int keyOffResult = [weakSelf keyOff:pitchParam.intValue];
+            result(@(keyOffResult));
+        } else if ([@"allNotesOff" isEqualToString:call.method]) {
+            [weakSelf allNotesOff];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -75,6 +87,18 @@
 
 - (void)setParam:(int)id Value:(float)value {
     dspFaust->setParamValue(id, value);
+}
+
+- (int)keyOn:(int)pitch WithVelocity:(int)velocity {
+    return dspFaust->keyOn(pitch, velocity);
+}
+
+- (int)keyOff:(int)pitch {
+    return dspFaust->keyOff(pitch);
+}
+
+- (void)allNotesOff {
+    dspFaust->allNotesOff();
 }
 
 @end
