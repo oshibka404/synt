@@ -90,4 +90,22 @@ class DspAPI {
       throw 'Unable to stop all voices: ${e.message}';
     }
   }
+
+  static Future<int> newVoice() {
+    try {
+      return platform.invokeMethod('newVoice');
+    } on PlatformException catch (e) {
+      throw 'Unable to instantiate new voice: ${e.message}';
+    }
+  }
+
+  static Future<int> deleteVoice(int voice) {
+    try {
+      return platform.invokeMethod('deleteVoice', <String, int>{
+        'voice': voice
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to delete voice #$voice: ${e.message}';
+    }
+  }
 }

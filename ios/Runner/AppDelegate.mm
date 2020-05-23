@@ -56,6 +56,13 @@
         } else if ([@"allNotesOff" isEqualToString:call.method]) {
             [weakSelf allNotesOff];
             result(nil);
+        } else if ([@"newVoice" isEqualToString:call.method]) {
+            int voiceId = [weakSelf newVoice];
+            result(@(voiceId));
+        } else if ([@"deleteVoice" isEqualToString:call.method]) {
+            NSNumber* voiceParam = call.arguments[@"voice"];
+            int deleteVoiceResult = [weakSelf deleteVoice:voiceParam.intValue];
+            result(@(deleteVoiceResult));
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -99,6 +106,14 @@
 
 - (void)allNotesOff {
     dspFaust->allNotesOff();
+}
+
+- (int)newVoice {
+    return dspFaust->newVoice();
+}
+
+- (int)deleteVoice:(int)voice {
+    return dspFaust->deleteVoice(voice);
 }
 
 @end
