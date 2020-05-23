@@ -9,8 +9,7 @@
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    dspFaust = new DspFaust(44100, 256);
-    dspFaust->start();
+    dspFaust = new DspFaust(44100, 256); // TODO: get rid of hardcoded SR & buff size
     FlutterViewController* controller = (FlutterViewController*)self.window.rootViewController;
     
     FlutterMethodChannel* synthControlChannel = [FlutterMethodChannel
@@ -20,7 +19,16 @@
     __weak typeof(self) weakSelf = self;
     [synthControlChannel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
         // Note: this method is invoked on the UI thread.
-        if ([@"getParamsCount" isEqualToString:call.method]) {
+        if ([@"start" isEqualToString:call.method]) {
+            bool success = [weakSelf start];
+            result(@(success));
+        } else if ([@"stop" isEqualToString:call.method]) {
+            [weakSelf stop];
+            result(nil);
+        } else if ([@"isRunning" isEqualToString:call.method]) {
+            bool isRunningResult = [weakSelf isRunning];
+            result(@(isRunningResult));
+        } else if ([@"getParamsCount" isEqualToString:call.method]) {
             int paramsCount = [weakSelf getParamsCount];
             result(@(paramsCount));
         } else if ([@"getParamInit" isEqualToString:call.method]) {
@@ -47,7 +55,7 @@
         } else if ([@"keyOn" isEqualToString:call.method]) {
             NSNumber* pitchParam = call.arguments[@"pitch"];
             NSNumber* velocityParam = call.arguments[@"velocity"];
-            int voiceId = [weakSelf keyOn:pitchParam.intValue WithVelocity:velocityParam.intValue];
+            long voiceId = [weakSelf keyOn:pitchParam.intValue WithVelocity:velocityParam.intValue];
             result(@(voiceId));
         } else if ([@"keyOff" isEqualToString:call.method]) {
             NSNumber* pitchParam = call.arguments[@"pitch"];
@@ -57,7 +65,7 @@
             [weakSelf allNotesOff];
             result(nil);
         } else if ([@"newVoice" isEqualToString:call.method]) {
-            int voiceId = [weakSelf newVoice];
+            long voiceId = [weakSelf newVoice];
             result(@(voiceId));
         } else if ([@"deleteVoice" isEqualToString:call.method]) {
             NSNumber* voiceParam = call.arguments[@"voice"];
@@ -70,6 +78,18 @@
     
     [GeneratedPluginRegistrant registerWithRegistry:self];
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (bool)start {
+    return dspFaust->start();
+}
+
+- (void)stop {
+    dspFaust->stop();
+}
+
+- (bool)isRunning {
+    return dspFaust->isRunning();
 }
 
 - (int)getParamsCount {
@@ -96,7 +116,7 @@
     dspFaust->setParamValue(id, value);
 }
 
-- (int)keyOn:(int)pitch WithVelocity:(int)velocity {
+- (uintptr_t)keyOn:(int)pitch WithVelocity:(int)velocity {
     return dspFaust->keyOn(pitch, velocity);
 }
 
@@ -108,7 +128,7 @@
     dspFaust->allNotesOff();
 }
 
-- (int)newVoice {
+- (uintptr_t)newVoice {
     return dspFaust->newVoice();
 }
 

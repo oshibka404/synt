@@ -3,6 +3,30 @@ import 'package:flutter/services.dart';
 class DspAPI {
   static const platform = const MethodChannel('synth.ae/control');
 
+  static Future<bool> start() {
+    try {
+      return platform.invokeMethod('start');
+    } on PlatformException catch (e) {
+      throw 'Could not start audio processing: ${e.message}';
+    }
+  }
+
+  static Future<bool> isRunning() {
+    try {
+      return platform.invokeMethod('isRunning');
+    } on PlatformException catch (e) {
+      throw 'Could not get audio processing running state: ${e.message}';
+    }
+  }
+
+  static Future<void> stop() {
+    try {
+      return platform.invokeMethod('stop');
+    } on PlatformException catch (e) {
+      throw 'Could not stop audio processing: ${e.message}';
+    }
+  }
+
   static Future<int> getParamsCount() {
     try {
       return platform.invokeMethod('getParamsCount');

@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getInitialState() async {
+    await DspAPI.start();
     double initGain = await DspAPI.getParamInit(0);
     double initGate = await DspAPI.getParamInit(1);
     double initMinGain = await DspAPI.getParamMin(0);
