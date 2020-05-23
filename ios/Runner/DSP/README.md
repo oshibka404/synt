@@ -52,8 +52,8 @@ In case you would like to use the the built-in accelerometer or gyroscope of you
 
 ### Main Parameters
 
-* **0**: `/untitled/gain`
-* **1**: `/untitled/gate`
+* **0**: `/Sample_synth/gain`
+* **1**: `/Sample_synth/gate`
 
 
 ## API Reference

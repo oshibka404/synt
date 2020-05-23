@@ -1,6 +1,10 @@
 #define IOS_DRIVER 1
 /* ------------------------------------------------------------
-name: "untitled"
+author: "Andrey Ozornin"
+copyright: "Aesthetics Engineering"
+license: "BSD"
+name: "Sample synth"
+version: "0.01"
 Code generated with Faust 2.23.10 (https://faust.grame.fr)
 Compilation options: -lang cpp -scal -ftz 0
 ------------------------------------------------------------ */
@@ -4385,65 +4389,6 @@ class SoundUI : public GenericUI
 #include <cmath>
 #include <math.h>
 
-class mydspSIG0 {
-	
-  private:
-	
-	int iRec2[2];
-	
-  public:
-	
-	int getNumInputsmydspSIG0() {
-		return 0;
-	}
-	int getNumOutputsmydspSIG0() {
-		return 1;
-	}
-	int getInputRatemydspSIG0(int channel) {
-		int rate;
-		switch ((channel)) {
-			default: {
-				rate = -1;
-				break;
-			}
-		}
-		return rate;
-	}
-	int getOutputRatemydspSIG0(int channel) {
-		int rate;
-		switch ((channel)) {
-			case 0: {
-				rate = 0;
-				break;
-			}
-			default: {
-				rate = -1;
-				break;
-			}
-		}
-		return rate;
-	}
-	
-	void instanceInitmydspSIG0(int sample_rate) {
-		for (int l2 = 0; (l2 < 2); l2 = (l2 + 1)) {
-			iRec2[l2] = 0;
-		}
-	}
-	
-	void fillmydspSIG0(int count, float* table) {
-		for (int i = 0; (i < count); i = (i + 1)) {
-			iRec2[0] = (iRec2[1] + 1);
-			table[i] = std::sin((9.58738019e-05f * float((iRec2[0] + -1))));
-			iRec2[1] = iRec2[0];
-		}
-	}
-
-};
-
-static mydspSIG0* newmydspSIG0() { return (mydspSIG0*)new mydspSIG0(); }
-static void deletemydspSIG0(mydspSIG0* dsp) { delete dsp; }
-
-static float ftbl0mydspSIG0[65536];
 
 #ifndef FAUSTCLASS 
 #define FAUSTCLASS mydsp
@@ -4459,38 +4404,38 @@ class mydsp : public dsp {
  private:
 	
 	FAUSTFLOAT fButton0;
-	float fRec0[2];
-	FAUSTFLOAT fHslider0;
-	float fRec1[2];
+	FAUSTFLOAT fEntry0;
 	int fSampleRate;
 	float fConst0;
-	float fRec3[2];
+	float fConst1;
+	float fRec0[2];
+	float fConst2;
 	
  public:
 	
 	void metadata(Meta* m) { 
-		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.1");
-		m->declare("filename", "untitled.dsp");
+		m->declare("author", "Andrey Ozornin");
+		m->declare("copyright", "Aesthetics Engineering");
+		m->declare("filename", "main.dsp");
+		m->declare("license", "BSD");
 		m->declare("maths.lib/author", "GRAME");
 		m->declare("maths.lib/copyright", "GRAME");
 		m->declare("maths.lib/license", "LGPL with exception");
 		m->declare("maths.lib/name", "Faust Math Library");
 		m->declare("maths.lib/version", "2.3");
-		m->declare("name", "untitled");
+		m->declare("name", "Sample synth");
 		m->declare("oscillators.lib/name", "Faust Oscillator Library");
 		m->declare("oscillators.lib/version", "0.1");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "0.1");
-		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.0");
+		m->declare("version", "0.01");
 	}
 
 	virtual int getNumInputs() {
 		return 0;
 	}
 	virtual int getNumOutputs() {
-		return 1;
+		return 2;
 	}
 	virtual int getInputRate(int channel) {
 		int rate;
@@ -4509,6 +4454,10 @@ class mydsp : public dsp {
 				rate = 1;
 				break;
 			}
+			case 1: {
+				rate = 1;
+				break;
+			}
 			default: {
 				rate = -1;
 				break;
@@ -4518,31 +4467,23 @@ class mydsp : public dsp {
 	}
 	
 	static void classInit(int sample_rate) {
-		mydspSIG0* sig0 = newmydspSIG0();
-		sig0->instanceInitmydspSIG0(sample_rate);
-		sig0->fillmydspSIG0(65536, ftbl0mydspSIG0);
-		deletemydspSIG0(sig0);
 	}
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = (440.0f / std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate))));
+		fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
+		fConst1 = (440.0f / fConst0);
+		fConst2 = (1.0f - (0.0022727272f * fConst0));
 	}
 	
 	virtual void instanceResetUserInterface() {
 		fButton0 = FAUSTFLOAT(0.0f);
-		fHslider0 = FAUSTFLOAT(0.41999999999999998f);
+		fEntry0 = FAUSTFLOAT(0.5f);
 	}
 	
 	virtual void instanceClear() {
 		for (int l0 = 0; (l0 < 2); l0 = (l0 + 1)) {
 			fRec0[l0] = 0.0f;
-		}
-		for (int l1 = 0; (l1 < 2); l1 = (l1 + 1)) {
-			fRec1[l1] = 0.0f;
-		}
-		for (int l3 = 0; (l3 < 2); l3 = (l3 + 1)) {
-			fRec3[l3] = 0.0f;
 		}
 	}
 	
@@ -4565,24 +4506,26 @@ class mydsp : public dsp {
 	}
 	
 	virtual void buildUserInterface(UI* ui_interface) {
-		ui_interface->openVerticalBox("untitled");
-		ui_interface->addHorizontalSlider("gain", &fHslider0, 0.419999987f, 0.0f, 1.0f, 0.00999999978f);
+		ui_interface->openVerticalBox("Sample synth");
+		ui_interface->addNumEntry("gain", &fEntry0, 0.5f, 0.0f, 1.0f, 0.00999999978f);
 		ui_interface->addButton("gate", &fButton0);
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs) {
 		FAUSTFLOAT* output0 = outputs[0];
-		float fSlow0 = (0.00100000005f * float(fButton0));
-		float fSlow1 = (0.00100000005f * float(fHslider0));
+		FAUSTFLOAT* output1 = outputs[1];
+		float fSlow0 = (float(fButton0) * float(fEntry0));
 		for (int i = 0; (i < count); i = (i + 1)) {
-			fRec0[0] = (fSlow0 + (0.999000013f * fRec0[1]));
-			fRec1[0] = (fSlow1 + (0.999000013f * fRec1[1]));
-			fRec3[0] = (fConst0 + (fRec3[1] - std::floor((fConst0 + fRec3[1]))));
-			output0[i] = FAUSTFLOAT(((fRec0[0] * fRec1[0]) * ftbl0mydspSIG0[int((65536.0f * fRec3[0]))]));
+			float fTemp0 = (fConst1 + (fRec0[1] + -1.0f));
+			int iTemp1 = (fTemp0 < 0.0f);
+			float fTemp2 = (fConst1 + fRec0[1]);
+			fRec0[0] = (iTemp1 ? fTemp2 : fTemp0);
+			float fRec1 = (iTemp1 ? fTemp2 : (fConst1 + (fRec0[1] + (fConst2 * fTemp0))));
+			float fTemp3 = (fSlow0 * ((2.0f * fRec1) + -1.0f));
+			output0[i] = FAUSTFLOAT(fTemp3);
+			output1[i] = FAUSTFLOAT(fTemp3);
 			fRec0[1] = fRec0[0];
-			fRec1[1] = fRec1[0];
-			fRec3[1] = fRec3[0];
 		}
 	}
 
@@ -23533,7 +23476,7 @@ llvm_dsp_factory* readDSPFactoryFromMachineFile(const std::string& machine_code_
 bool writeDSPFactoryToMachineFile(llvm_dsp_factory* factory, const std::string& machine_code_path, const std::string& target);
 
 /**
- * Write a Faust DSP factory into a object code file.
+ * Write a Faust DSP factory into an object code file.
  *
  * @param factory - the DSP factory
  * @param target - the LLVM machine target: like 'i386-apple-macosx10.6.0:opteron',
