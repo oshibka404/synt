@@ -33,24 +33,45 @@
             result(@(paramsCount));
         } else if ([@"getParamInit" isEqualToString:call.method]) {
             NSNumber* idArg = (call.arguments[@"id"]);
-            float paramInit = [weakSelf getParamInit:idArg.intValue];
+            float paramInit = [weakSelf getParamInitById:idArg.intValue];
+            result(@(paramInit));
+        } else if ([@"getParamInitByPath" isEqualToString:call.method]) {
+            NSString* pathArg = (call.arguments[@"path"]);
+            float paramInit = [weakSelf getParamInitByPath:[pathArg UTF8String]];
             result(@(paramInit));
         } else if ([@"getParamValue" isEqualToString:call.method]) {
             NSNumber* idArg = call.arguments[@"id"];
-            float paramValue =  [weakSelf getParamValue:idArg.intValue];
+            float paramValue = [weakSelf getParamValueById:idArg.intValue];
+            result(@(paramValue));
+        } else if ([@"getParamValueByPath" isEqualToString:call.method]) {
+            NSString* pathArg = call.arguments[@"path"];
+            float paramValue = [weakSelf getParamValueByPath:[pathArg UTF8String]];
             result(@(paramValue));
         } else if ([@"getParamMin" isEqualToString:call.method]) {
             NSNumber* idArg = call.arguments[@"id"];
-            float paramMin =  [weakSelf getParamMin:idArg.intValue];
+            float paramMin = [weakSelf getParamMinById:idArg.intValue];
+            result(@(paramMin));
+        } else if ([@"getParamMinByPath" isEqualToString:call.method]) {
+            NSString* pathArg = call.arguments[@"path"];
+            float paramMin = [weakSelf getParamMinByPath:[pathArg UTF8String]];
             result(@(paramMin));
         } else if ([@"getParamMax" isEqualToString:call.method]) {
             NSNumber* idArg = call.arguments[@"id"];
-            float paramMax =  [weakSelf getParamMax:idArg.intValue];
+            float paramMax = [weakSelf getParamMaxById:idArg.intValue];
+            result(@(paramMax));
+        } else if ([@"getParamMaxByPath" isEqualToString:call.method]) {
+            NSString* pathArg = call.arguments[@"path"];
+            float paramMax = [weakSelf getParamMaxByPath:[pathArg UTF8String]];
             result(@(paramMax));
         } else if ([@"setParamValue" isEqualToString:call.method]) {
-            NSNumber* idParam = call.arguments[@"id"];
-            NSNumber* valueParam = call.arguments[@"value"];
-            [weakSelf setParam:idParam.intValue Value:valueParam.floatValue];
+            NSNumber* idArg = call.arguments[@"id"];
+            NSNumber* valueArg = call.arguments[@"value"];
+            [weakSelf setParamById:idArg.intValue Value:valueArg.floatValue];
+            result(nil);
+        } else if ([@"setParamValueByPath" isEqualToString:call.method]) {
+            NSString* pathArg = call.arguments[@"path"];
+            NSNumber* valueArg = call.arguments[@"value"];
+            [weakSelf setParamByPath:[pathArg UTF8String] Value:valueArg.floatValue];
             result(nil);
         } else if ([@"keyOn" isEqualToString:call.method]) {
             NSNumber* pitchParam = call.arguments[@"pitch"];
@@ -96,27 +117,47 @@
     return dspFaust->getParamsCount();
 }
 
-- (float)getParamInit:(int)id {
-    return dspFaust->getParamInit(id);
+- (float)getParamInitById:(int)paramId {
+    return dspFaust->getParamInit(paramId);
 }
 
-- (float)getParamValue:(int)id {
-    return dspFaust->getParamValue(id);
+- (float)getParamInitByPath:(const char *)path {
+    return dspFaust->getParamInit(path);
 }
 
-- (float)getParamMin:(int)id {
-    return dspFaust->getParamMin(id);
+- (float)getParamValueById:(int)paramId {
+    return dspFaust->getParamValue(paramId);
 }
 
-- (float)getParamMax:(int)id {
-    return dspFaust->getParamMax(id);
+- (float)getParamValueByPath:(const char *)path {
+    return dspFaust->getParamMin(path);
 }
 
-- (void)setParam:(int)id Value:(float)value {
-    dspFaust->setParamValue(id, value);
+- (float)getParamMinById:(int)paramId {
+    return dspFaust->getParamMin(paramId);
 }
 
-- (uintptr_t)keyOn:(int)pitch WithVelocity:(int)velocity {
+- (float)getParamMinByPath:(const char *)path {
+    return dspFaust->getParamMin(path);
+}
+
+- (float)getParamMaxById:(int)paramId {
+    return dspFaust->getParamMax(paramId);
+}
+
+- (float)getParamMaxByPath:(const char *)path {
+    return dspFaust->getParamMax(path);
+}
+
+- (void)setParamById:(int)paramId Value:(float)value {
+    dspFaust->setParamValue(paramId, value);
+}
+
+- (void)setParamByPath:(const char *)path Value:(float)value {
+    dspFaust->setParamValue(path, value);
+}
+
+- (long)keyOn:(int)pitch WithVelocity:(int)velocity {
     return dspFaust->keyOn(pitch, velocity);
 }
 
@@ -128,7 +169,7 @@
     dspFaust->allNotesOff();
 }
 
-- (uintptr_t)newVoice {
+- (long)newVoice {
     return dspFaust->newVoice();
 }
 

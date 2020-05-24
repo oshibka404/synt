@@ -45,6 +45,16 @@ class DspAPI {
     }
   }
 
+  static Future<double> getParamInitByPath(String path) {
+    try {
+      return platform.invokeMethod('getParamInitByPath', <String, String>{
+        'path': path
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get initial value of param "$path": ${e.message}';
+    }
+  }
+
   static Future<double> getParamMin(int id) {
     try {
       return platform.invokeMethod('getParamMin', <String, int>{
@@ -52,6 +62,16 @@ class DspAPI {
       });
     } on PlatformException catch (e) {
       throw 'Unable to get min value of param #$id: ${e.message}';
+    }
+  }
+
+  static Future<double> getParamMinByPath(String path) {
+    try {
+      return platform.invokeMethod('getParamMinByPath', <String, String>{
+        'path': path
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get min value of param "$path": ${e.message}';
     }
   }
 
@@ -65,6 +85,16 @@ class DspAPI {
     }
   }
 
+  static Future<double> getParamMaxByPath(String path) {
+    try {
+      return platform.invokeMethod('getParamMaxByPath', <String, String>{
+        'path': path
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get max value of param "$path": ${e.message}';
+    }
+  }
+
   static Future<double> getParamValue(int id) {
     try {
       return platform.invokeMethod('getParamValue', <String, int>{
@@ -75,6 +105,16 @@ class DspAPI {
     }
   }
 
+  static Future<double> getParamValueByPath(String path) {
+    try {
+      return platform.invokeMethod('getParamValueByPath', <String, String>{
+        'path': path
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get current value of param "$path": ${e.message}';
+    }
+  }
+
   static Future<void> setParamValue(int id, double value) {
     try {
       return platform.invokeMethod('setParamValue', <String, dynamic>{
@@ -82,7 +122,18 @@ class DspAPI {
         'value': value
       });
     } on PlatformException catch (e) {
-      throw 'Unable to get initial value of param #$id: ${e.message}';
+      throw 'Unable to set value for param #$id: ${e.message}';
+    }
+  }
+
+  static Future<void> setParamValueByPath(String path, double value) {
+    try {
+      return platform.invokeMethod('setParamValueByPath', <String, dynamic>{
+        'path': path,
+        'value': value
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to set value for param "$path": ${e.message}';
     }
   }
 
