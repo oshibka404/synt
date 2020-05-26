@@ -46,11 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getInitialState() async {
-    await DspAPI.start();
-    double initGain = await DspAPI.getParamInit(0); // TODO(@oshibka404): use paths instead of IDs.
-    double initGate = await DspAPI.getParamInitByPath('/Sample_synth/gate');
-    double initMinGain = await DspAPI.getParamMin(0);
-    double initMaxGain = await DspAPI.getParamMax(0);
+    await DspApi.start();
+    double initGain = await DspApi.getParamInit(0); // TODO(@oshibka404): use paths instead of IDs.
+    double initGate = await DspApi.getParamInitByPath('/Sample_synth/gate');
+    double initMinGain = await DspApi.getParamMin(0);
+    double initMaxGain = await DspApi.getParamMax(0);
 
     setState(() {
       gain = initGain;
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               onPressed: () {
                 double newGate = 1 - gate;
-                DspAPI.setParamValue(1, newGate);
+                DspApi.setParamValue(1, newGate);
                 setState(() {
                   gate = newGate;
                 });
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Slider(
               onChanged: (newValue) {
-                DspAPI.setParamValueByPath('/Sample_synth/gain', newValue);
+                DspApi.setParamValueByPath('/Sample_synth/gain', newValue);
                 setState(() {
                   gain = newValue;
                 });

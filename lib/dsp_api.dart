@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-class DspAPI {
+class DspApi {
   static const platform = const MethodChannel('synth.ae/control');
 
   static Future<bool> start() {
