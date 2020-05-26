@@ -16,5 +16,7 @@ jobs:
           channel: 'dev'
     - name: Install dependencies
       run: flutter pub get
+    - name: Static analysis
+      run: flutter analyze
     - name: Run tests
       run: flutter test
