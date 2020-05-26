@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
               min: minGain,
             ),
             Text(
-              'Gate: $gate, Gain: $gain',
+              'Gate: ${gate.toStringAsFixed(0)}, Volume: ${(gain * 100).round()}',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
