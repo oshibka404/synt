@@ -14,12 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Perfect First Synth',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Perfect First Synthesizer'),
     );
   }
 }
@@ -47,10 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   getInitialState() async {
     await DspApi.start();
-    double initGain = await DspApi.getParamInit(0); // TODO(@oshibka404): use paths instead of IDs.
-    double initGate = await DspApi.getParamInitByPath('/Sample_synth/gate');
-    double initMinGain = await DspApi.getParamMin(0);
-    double initMaxGain = await DspApi.getParamMax(0);
+    double initGate = await DspApi.getParamInitByPath('/Perfect_First_Synth/gate');
+    double initGain = await DspApi.getParamInitByPath('/Perfect_First_Synth/gain');
+    double initMinGain = await DspApi.getParamMinByPath('/Perfect_First_Synth/gain');
+    double initMaxGain = await DspApi.getParamMaxByPath('/Perfect_First_Synth/gain');
 
     setState(() {
       gain = initGain;
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               onPressed: () {
                 double newGate = 1 - gate;
-                DspApi.setParamValue(1, newGate);
+                DspApi.setParamValueByPath('/Perfect_First_Synth/gate', newGate);
                 setState(() {
                   gate = newGate;
                 });
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Slider(
               onChanged: (newValue) {
-                DspApi.setParamValueByPath('/Sample_synth/gain', newValue);
+                DspApi.setParamValueByPath('/Perfect_First_Synth/gain', newValue);
                 setState(() {
                   gain = newValue;
                 });

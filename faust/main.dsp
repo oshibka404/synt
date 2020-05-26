@@ -6,7 +6,6 @@ declare author "Andrey Ozornin";
 declare copyright "Aesthetics Engineering";
 declare version "0.01";
 declare license "BSD";
-declare options "[midi:on][nvoices:12]";
 
 import("stdfaust.lib");
 
@@ -14,7 +13,7 @@ import("stdfaust.lib");
 gate = button("gate");
 gain = hslider("gain", 0.42, 0, 1, 0.01);
 baseFreq = hslider("freq", 440, 20, 20000, 1);
-bend = hslider("bend[midi:pitchwheel]", 1, 0, 10, 0.01);
+bend = hslider("bend", 1, 0, 10, 0.01);
 freq = baseFreq * bend : si.polySmooth(gate,0.9,1);
 
 // Oscillators
@@ -22,9 +21,9 @@ saw = os.sawtooth(freq) * vslider("osc/saw/level", 0.6, 0, 1, 0.01);
 square = os.square(freq) * vslider("osc/square/level", 0.4, 0, 1, 0.01);
 noise = no.noise * vslider("osc/noise/level", 0.2, 0, 1, 0.01);
 
-envelope = en.adsr(0.01,0.01,0.8,0.1,gate);
+envelope = en.adsr(0.01,0.01,0.8,0.1,gate) * gain;
 
-oscillators = (saw + square + noise) * envelope;
+oscillators = (saw + square + noise) / 3 * envelope;
 
 // Filters
 hpf = fi.resonhp(
