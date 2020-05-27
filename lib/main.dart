@@ -38,14 +38,42 @@ class _MyHomePageState extends State<MyHomePage> {
   double gain = 0;
   double minGain = 0;
   double maxGain = 0;
+  double freq = 440;
 
   @override
   void initState() {
-    getInitialState();
+    _getInitialState();
     super.initState();
   }
 
-  getInitialState() async {
+  void _updateNote(PointerEvent details) {
+    DspApi.setParamValueByPath('/Perfect_First_Synth/gain', 1/details.position.dy * 10);
+    DspApi.setParamValueByPath('/Perfect_First_Synth/freq', details.position.dx);
+    setState(() {
+      freq = details.position.dx;
+      gain = 1/details.position.dy * 10;
+    });
+  }
+
+  void _playNote(PointerEvent details) {
+    DspApi.setParamValueByPath('/Perfect_First_Synth/gain', 1/details.position.dy * 10);
+    DspApi.setParamValueByPath('/Perfect_First_Synth/freq', details.position.dx);
+    DspApi.setParamValueByPath('/Perfect_First_Synth/gate', 1);
+    setState(() {
+      gate = 1;
+      freq = details.position.dx;
+      gain = 1/details.position.dy * 10;
+    });
+  }
+
+  void _stopNote(PointerEvent details) {
+    DspApi.setParamValueByPath('/Perfect_First_Synth/gate', 0);
+    setState(() {
+      gate = 0;
+    });
+  }
+
+  _getInitialState() async {
     await DspApi.start();
     double initGate = await DspApi.getParamInitByPath('/Perfect_First_Synth/gate');
     double initGain = await DspApi.getParamInitByPath('/Perfect_First_Synth/gain');
@@ -60,39 +88,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  _getText() {
+    if (gate > 0) {
+      return 'Playing ${freq.round()} Hz with gain ${(gain * 100).round()}';
+    } else {
+      return 'Not playing';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            RaisedButton(
-              onPressed: () {
-                double newGate = 1 - gate;
-                DspApi.setParamValueByPath('/Perfect_First_Synth/gate', newGate);
-                setState(() {
-                  gate = newGate;
-                });
-              },
-              child: Text((gate == 0) ? 'Play!' : 'Stop!', style: TextStyle(fontSize: 20)),
-            ),
-            Slider(
-              onChanged: (newValue) {
-                DspApi.setParamValueByPath('/Perfect_First_Synth/gain', newValue);
-                setState(() {
-                  gain = newValue;
-                });
-              },
-              value: gain,
-              max: maxGain,
-              min: minGain,
-            ),
-            Text(
-              'Gate: ${gate.toStringAsFixed(0)}, Volume: ${(gain * 100).round()}',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return ConstrainedBox(
+      constraints: BoxConstraints.tight(Size(300.0, 200.0)),
+      child: Listener(
+        onPointerDown: _playNote,
+        onPointerMove: _updateNote,
+        onPointerUp: _stopNote,
+        child: Container(
+          color: Colors.lightBlueAccent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                _getText(),
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ],
+          ),
         ),
       ),
     );
