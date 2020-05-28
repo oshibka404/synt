@@ -74,13 +74,13 @@
             [weakSelf setParamByPath:[pathArg UTF8String] Value:valueArg.floatValue];
             result(nil);
         } else if ([@"keyOn" isEqualToString:call.method]) {
-            NSNumber* pitchParam = call.arguments[@"pitch"];
-            NSNumber* velocityParam = call.arguments[@"velocity"];
-            long voiceId = [weakSelf keyOn:pitchParam.intValue WithVelocity:velocityParam.intValue];
+            NSNumber* pitchArg = call.arguments[@"pitch"];
+            NSNumber* velocityArg = call.arguments[@"velocity"];
+            long voiceId = [weakSelf keyOn:pitchArg.intValue WithVelocity:velocityArg.intValue];
             result(@(voiceId));
         } else if ([@"keyOff" isEqualToString:call.method]) {
-            NSNumber* pitchParam = call.arguments[@"pitch"];
-            int keyOffResult = [weakSelf keyOff:pitchParam.intValue];
+            NSNumber* pitchArg = call.arguments[@"pitch"];
+            int keyOffResult = [weakSelf keyOff:pitchArg.intValue];
             result(@(keyOffResult));
         } else if ([@"allNotesOff" isEqualToString:call.method]) {
             [weakSelf allNotesOff];
@@ -89,9 +89,23 @@
             long voiceId = [weakSelf newVoice];
             result(@(voiceId));
         } else if ([@"deleteVoice" isEqualToString:call.method]) {
-            NSNumber* voiceParam = call.arguments[@"voice"];
-            int deleteVoiceResult = [weakSelf deleteVoice:voiceParam.intValue];
+            NSNumber* voiceArg = call.arguments[@"voice"];
+            int deleteVoiceResult = [weakSelf deleteVoice:voiceArg.intValue];
             result(@(deleteVoiceResult));
+        } else if ([@"setVoiceParamValueByPath" isEqualToString:call.method]) {
+            NSNumber* voiceArg = call.arguments[@"voice"];
+            NSString* pathArg = call.arguments[@"path"];
+            NSNumber* valueArg = call.arguments[@"value"];
+            [weakSelf setParamByPath:[pathArg UTF8String] OfVoice:voiceArg.longValue Value:valueArg.floatValue];
+            result(nil);
+        } else if ([@"getVoiceParamValueByPath" isEqualToString:call.method]) {
+            NSNumber* voiceArg = call.arguments[@"voice"];
+            NSString* pathArg = call.arguments[@"path"];
+            float voiceParamValue = [weakSelf getParamByPath:[pathArg UTF8String] OfVoice:voiceArg.longValue];
+            result(@(voiceParamValue));
+        } else if ([@"getCPULoad" isEqualToString:call.method]) {
+            float cpuLoad = [weakSelf getCpuLoad];
+            result(@(cpuLoad));
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -175,6 +189,18 @@
 
 - (int)deleteVoice:(int)voice {
     return dspFaust->deleteVoice(voice);
+}
+
+- (void)setParamByPath:(const char *)param OfVoice:(long)voiceId Value:(float)value {
+    dspFaust->setVoiceParamValue(param, voiceId, value);
+}
+
+- (float)getParamByPath:(const char *)param OfVoice:(long)voice {
+    return dspFaust->getVoiceParamValue(param, voice);
+}
+
+- (float)getCpuLoad {
+    return dspFaust->getCPULoad();
 }
 
 @end

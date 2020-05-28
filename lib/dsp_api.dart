@@ -49,7 +49,7 @@ class DspApi {
   static Future<double> getParamInit(int id) {
     try {
       return _platform.invokeMethod('getParamInit', <String, int>{
-        'id': id
+        'id': id,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get initial value of param #$id: ${e.message}';
@@ -69,7 +69,7 @@ class DspApi {
   static Future<double> getParamMin(int id) {
     try {
       return _platform.invokeMethod('getParamMin', <String, int>{
-        'id': id
+        'id': id,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get min value of param #$id: ${e.message}';
@@ -89,7 +89,7 @@ class DspApi {
   static Future<double> getParamMax(int id) {
     try {
       return _platform.invokeMethod('getParamMax', <String, int>{
-        'id': id
+        'id': id,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get max value of param #$id: ${e.message}';
@@ -109,7 +109,7 @@ class DspApi {
   static Future<double> getParamValue(int id) {
     try {
       return _platform.invokeMethod('getParamValue', <String, int>{
-        'id': id
+        'id': id,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get current value of param #$id: ${e.message}';
@@ -130,7 +130,7 @@ class DspApi {
     try {
       return _platform.invokeMethod('setParamValue', <String, dynamic>{
         'id': id,
-        'value': value
+        'value': value,
       });
     } on PlatformException catch (e) {
       throw 'Unable to set value for param #$id: ${e.message}';
@@ -141,7 +141,7 @@ class DspApi {
     try {
       return _platform.invokeMethod('setParamValueByPath', <String, dynamic>{
         'path': getFullPath(path),
-        'value': value
+        'value': value,
       });
     } on PlatformException catch (e) {
       throw 'Unable to set value for param "$path": ${e.message}';
@@ -152,7 +152,7 @@ class DspApi {
     try {
       return _platform.invokeMethod('keyOn', <String, int>{
         'pitch': pitch,
-        'value': velocity
+        'value': velocity,
       });
     } on PlatformException catch (e) {
       throw 'Unable to instantiate voice for key $pitch with velocity $velocity: ${e.message}';
@@ -162,7 +162,7 @@ class DspApi {
   static Future<int> keyOff(int pitch) {
     try {
       return _platform.invokeMethod('keyOff', <String, int>{
-        'pitch': pitch
+        'pitch': pitch,
       });
     } on PlatformException catch (e) {
       throw 'Unable to stop the voice of key $pitch: ${e.message}';
@@ -188,10 +188,34 @@ class DspApi {
   static Future<int> deleteVoice(int voice) {
     try {
       return _platform.invokeMethod('deleteVoice', <String, int>{
-        'voice': voice
+        'voice': voice,
       });
     } on PlatformException catch (e) {
       throw 'Unable to delete voice #$voice: ${e.message}';
     }
   }
+
+  static Future<void> setVoiceParamByPath(int voice, String path, double value) {
+    try {
+      return _platform.invokeMethod('setVoiceParamValueByPath', <String, dynamic>{
+        'voice': voice,
+        'path': path,
+        'value': value,
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to set param $path=$value for voice #$voice: ${e.message}';
+    }
+  }
+
+  static Future<void> getVoiceParamByPath(int voice, String path) {
+    try {
+      return _platform.invokeMethod('getVoiceParamValueByPath', <String, dynamic>{
+        'voice': voice,
+        'path': path,
+      });
+    } on PlatformException catch (e) {
+      throw 'Unable to get param $path of voice #$voice: ${e.message}';
+    }
+  }
+
 }
