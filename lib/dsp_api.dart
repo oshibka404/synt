@@ -1,11 +1,22 @@
 import 'package:flutter/services.dart';
 
 class DspApi {
-  static const platform = const MethodChannel('synth.ae/control');
+  static String _commonPathPrefix = '';
+  
+  // TODO: Mock platform calls and make it private
+  static String getFullPath(String path) {
+    return _commonPathPrefix + path;
+  }
+  
+  static set commonPathPrefix(String prefix) {
+    _commonPathPrefix = prefix;
+  }
+
+  static const _platform = const MethodChannel('synth.ae/control');
 
   static Future<bool> start() {
     try {
-      return platform.invokeMethod('start');
+      return _platform.invokeMethod('start');
     } on PlatformException catch (e) {
       throw 'Could not start audio processing: ${e.message}';
     }
@@ -13,7 +24,7 @@ class DspApi {
 
   static Future<bool> isRunning() {
     try {
-      return platform.invokeMethod('isRunning');
+      return _platform.invokeMethod('isRunning');
     } on PlatformException catch (e) {
       throw 'Could not get audio processing running state: ${e.message}';
     }
@@ -21,7 +32,7 @@ class DspApi {
 
   static Future<void> stop() {
     try {
-      return platform.invokeMethod('stop');
+      return _platform.invokeMethod('stop');
     } on PlatformException catch (e) {
       throw 'Could not stop audio processing: ${e.message}';
     }
@@ -29,7 +40,7 @@ class DspApi {
 
   static Future<int> getParamsCount() {
     try {
-      return platform.invokeMethod('getParamsCount');
+      return _platform.invokeMethod('getParamsCount');
     } on PlatformException catch (e) {
       throw 'Unable to get params count: ${e.message}';
     }
@@ -37,7 +48,7 @@ class DspApi {
 
   static Future<double> getParamInit(int id) {
     try {
-      return platform.invokeMethod('getParamInit', <String, int>{
+      return _platform.invokeMethod('getParamInit', <String, int>{
         'id': id
       });
     } on PlatformException catch (e) {
@@ -47,8 +58,8 @@ class DspApi {
 
   static Future<double> getParamInitByPath(String path) {
     try {
-      return platform.invokeMethod('getParamInitByPath', <String, String>{
-        'path': path
+      return _platform.invokeMethod('getParamInitByPath', <String, String>{
+        'path': getFullPath(path),
       });
     } on PlatformException catch (e) {
       throw 'Unable to get initial value of param "$path": ${e.message}';
@@ -57,7 +68,7 @@ class DspApi {
 
   static Future<double> getParamMin(int id) {
     try {
-      return platform.invokeMethod('getParamMin', <String, int>{
+      return _platform.invokeMethod('getParamMin', <String, int>{
         'id': id
       });
     } on PlatformException catch (e) {
@@ -67,8 +78,8 @@ class DspApi {
 
   static Future<double> getParamMinByPath(String path) {
     try {
-      return platform.invokeMethod('getParamMinByPath', <String, String>{
-        'path': path
+      return _platform.invokeMethod('getParamMinByPath', <String, String>{
+        'path': getFullPath(path),
       });
     } on PlatformException catch (e) {
       throw 'Unable to get min value of param "$path": ${e.message}';
@@ -77,7 +88,7 @@ class DspApi {
 
   static Future<double> getParamMax(int id) {
     try {
-      return platform.invokeMethod('getParamMax', <String, int>{
+      return _platform.invokeMethod('getParamMax', <String, int>{
         'id': id
       });
     } on PlatformException catch (e) {
@@ -87,8 +98,8 @@ class DspApi {
 
   static Future<double> getParamMaxByPath(String path) {
     try {
-      return platform.invokeMethod('getParamMaxByPath', <String, String>{
-        'path': path
+      return _platform.invokeMethod('getParamMaxByPath', <String, String>{
+        'path': getFullPath(path),
       });
     } on PlatformException catch (e) {
       throw 'Unable to get max value of param "$path": ${e.message}';
@@ -97,7 +108,7 @@ class DspApi {
 
   static Future<double> getParamValue(int id) {
     try {
-      return platform.invokeMethod('getParamValue', <String, int>{
+      return _platform.invokeMethod('getParamValue', <String, int>{
         'id': id
       });
     } on PlatformException catch (e) {
@@ -107,8 +118,8 @@ class DspApi {
 
   static Future<double> getParamValueByPath(String path) {
     try {
-      return platform.invokeMethod('getParamValueByPath', <String, String>{
-        'path': path
+      return _platform.invokeMethod('getParamValueByPath', <String, String>{
+        'path': getFullPath(path),
       });
     } on PlatformException catch (e) {
       throw 'Unable to get current value of param "$path": ${e.message}';
@@ -117,7 +128,7 @@ class DspApi {
 
   static Future<void> setParamValue(int id, double value) {
     try {
-      return platform.invokeMethod('setParamValue', <String, dynamic>{
+      return _platform.invokeMethod('setParamValue', <String, dynamic>{
         'id': id,
         'value': value
       });
@@ -128,8 +139,8 @@ class DspApi {
 
   static Future<void> setParamValueByPath(String path, double value) {
     try {
-      return platform.invokeMethod('setParamValueByPath', <String, dynamic>{
-        'path': path,
+      return _platform.invokeMethod('setParamValueByPath', <String, dynamic>{
+        'path': getFullPath(path),
         'value': value
       });
     } on PlatformException catch (e) {
@@ -139,7 +150,7 @@ class DspApi {
 
   static Future<int> keyOn(int pitch, int velocity) {
     try {
-      return platform.invokeMethod('keyOn', <String, int>{
+      return _platform.invokeMethod('keyOn', <String, int>{
         'pitch': pitch,
         'value': velocity
       });
@@ -150,7 +161,7 @@ class DspApi {
 
   static Future<int> keyOff(int pitch) {
     try {
-      return platform.invokeMethod('keyOff', <String, int>{
+      return _platform.invokeMethod('keyOff', <String, int>{
         'pitch': pitch
       });
     } on PlatformException catch (e) {
@@ -160,7 +171,7 @@ class DspApi {
 
   static Future<void> allNotesOff() {
     try {
-      return platform.invokeMethod('allNotesOff');
+      return _platform.invokeMethod('allNotesOff');
     } on PlatformException catch (e) {
       throw 'Unable to stop all voices: ${e.message}';
     }
@@ -168,7 +179,7 @@ class DspApi {
 
   static Future<int> newVoice() {
     try {
-      return platform.invokeMethod('newVoice');
+      return _platform.invokeMethod('newVoice');
     } on PlatformException catch (e) {
       throw 'Unable to instantiate new voice: ${e.message}';
     }
@@ -176,7 +187,7 @@ class DspApi {
 
   static Future<int> deleteVoice(int voice) {
     try {
-      return platform.invokeMethod('deleteVoice', <String, int>{
+      return _platform.invokeMethod('deleteVoice', <String, int>{
         'voice': voice
       });
     } on PlatformException catch (e) {

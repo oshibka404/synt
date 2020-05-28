@@ -43,12 +43,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _getInitialState();
+    DspApi.commonPathPrefix = '/Perfect_First_Synth/';
     super.initState();
   }
 
   void _updateNote(PointerEvent details) {
-    DspApi.setParamValueByPath('/Perfect_First_Synth/gain', 1/details.position.dy * 10);
-    DspApi.setParamValueByPath('/Perfect_First_Synth/freq', details.position.dx);
+    DspApi.setParamValueByPath('gain', 1 / details.position.dy * 10);
+    DspApi.setParamValueByPath('freq', details.position.dx);
     setState(() {
       freq = details.position.dx;
       gain = 1/details.position.dy * 10;
@@ -56,9 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _playNote(PointerEvent details) {
-    DspApi.setParamValueByPath('/Perfect_First_Synth/gain', 1/details.position.dy * 10);
-    DspApi.setParamValueByPath('/Perfect_First_Synth/freq', details.position.dx);
-    DspApi.setParamValueByPath('/Perfect_First_Synth/gate', 1);
+    DspApi.setParamValueByPath('gain', 1 / details.position.dy * 10);
+    DspApi.setParamValueByPath('freq', details.position.dx);
+    DspApi.setParamValueByPath('gate', 1);
     setState(() {
       gate = 1;
       freq = details.position.dx;
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _stopNote(PointerEvent details) {
-    DspApi.setParamValueByPath('/Perfect_First_Synth/gate', 0);
+    DspApi.setParamValueByPath('gate', 0);
     setState(() {
       gate = 0;
     });
@@ -75,10 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _getInitialState() async {
     await DspApi.start();
-    double initGate = await DspApi.getParamInitByPath('/Perfect_First_Synth/gate');
-    double initGain = await DspApi.getParamInitByPath('/Perfect_First_Synth/gain');
-    double initMinGain = await DspApi.getParamMinByPath('/Perfect_First_Synth/gain');
-    double initMaxGain = await DspApi.getParamMaxByPath('/Perfect_First_Synth/gain');
+    double initGate = await DspApi.getParamInitByPath('gate');
+    double initGain = await DspApi.getParamInitByPath('gain');
+    double initMinGain = await DspApi.getParamMinByPath('gain');
+    double initMaxGain = await DspApi.getParamMaxByPath('gain');
 
     setState(() {
       gain = initGain;
