@@ -22,23 +22,23 @@ saw = os.sawtooth(freq) * vslider("osc/saw/level", 0.6, 0, 1, 0.01);
 square = os.square(freq) * vslider("osc/square/level", 0.4, 0, 1, 0.01);
 noise = no.noise * vslider("osc/noise/level", 0.2, 0, 1, 0.01);
 
-envelope = en.adsr(0.01,0.01,0.8,0.1,gate) * gain;
+envelope = en.adsr(0.1, 0.3, 0.4, 0.3, gate) * gain;
 
 oscillators = (saw + square + noise) / 3 * envelope;
 
 // Filters
 hpf = fi.resonhp(
-    vslider("filters/hp/freq",100,20,20000,1),
-    vslider("filters/hp/q",.5,0,1,.01),
-    vslider("filters/hp/gain",.5,0,1,.01)
+    vslider("filters/hp/freq", 100, 20, 20000, 1),
+    vslider("filters/hp/q", .5, 0, 1, .01),
+    vslider("filters/hp/gain", .5, 0, 1, .01)
 );
 
 lpf = fi.resonlp(
-    vslider("filters/lp/freq",1000,20,20000,1),
-    vslider("filters/lp/q",.5,0,1,.01),
-    vslider("filters/lp/gain",.5,0,1,.01)
+    vslider("filters/lp/freq", 1000, 20, 20000, 1),
+    vslider("filters/lp/q", .5, 0, 1, .01),
+    vslider("filters/lp/gain", .5, 0, 1, .01)
 );
 
 filters = hpf : lpf;
 
-process = oscillators : filters <: _,_;
+process = oscillators : filters <: dm.zita_light;
