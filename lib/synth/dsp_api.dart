@@ -199,7 +199,7 @@ class DspApi {
     try {
       return _platform.invokeMethod('setVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
-        'path': path,
+        'path': getFullPath(path),
         'value': value,
       });
     } on PlatformException catch (e) {
@@ -211,7 +211,7 @@ class DspApi {
     try {
       return _platform.invokeMethod('getVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
-        'path': path,
+        'path': getFullPath(path),
       });
     } on PlatformException catch (e) {
       throw 'Unable to get param $path of voice #$voice: ${e.message}';

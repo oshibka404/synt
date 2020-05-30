@@ -1,9 +1,9 @@
 import 'package:perfect_first_synth/synth/dsp_api.dart';
 
 class Voice {
-  int _id;
+  int _id = 0;
 
-  Map<String, double> _params;
+  Map<String, double> _params = {};
 
   Map<String, double> get params => _params;
   
@@ -11,17 +11,23 @@ class Voice {
     _initVoice(params);
   }
 
-  void _initVoice(Map<String, double> params) async {
+  Future<void> _initVoice(Map<String, double> params) async {
+    if (!await DspApi.isRunning()) {
+      DspApi.start();
+    }
     _id = await DspApi.newVoice();
-    params.forEach((param, value) {
-      DspApi.setVoiceParamByPath(_id, param, value);
+    params.forEach((param, value) async {
+      _params[param] = value;
+      await DspApi.setVoiceParamByPath(_id, param, value);
     });
   }
 
-  void _modify(Map<String, double> newParams) {
-    newParams.forEach((param, value) {
-      DspApi.setVoiceParamByPath(_id, param, value);
+  Future<void> _modify(Map<String, double> newParams) {
+    newParams.forEach((param, value) async {
+      _params[param] = value;
+      await DspApi.setVoiceParamByPath(_id, param, value);
     });
+    return null;
   }
 
   void stop() {
@@ -32,27 +38,25 @@ class Voice {
 class Synthesizer {
   Map<int, Voice> voices = {};
 
-  Future<Voice> newVoice(int id, {double freq, double gain}) async {
+  Voice newVoice(int id, {double freq, double gain}) {
     voices[id] = new Voice({
       'freq': freq,
       'gain': gain,
-      'gate': 1
+      'gate': 1,
     });
     return voices[id];
   }
 
   Future<Voice> modifyVoice(int id, {double freq, double gain}) async {
-    DspApi.setParamValueByPath('gain', gain);
-    DspApi.setParamValueByPath('freq', freq);
-    voices[id]._modify({
+    await voices[id]._modify({
       'freq': freq,
       'gain': gain,
-      'gate': 1
+      'gate': 1,
     });
     return voices[id];
   }
 
-  void stopVoice(int id) async {
+  Future<void> stopVoice(int id) async {
     return voices[id].stop();
   }
 }

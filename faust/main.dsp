@@ -6,6 +6,7 @@ declare author "Andrey Ozornin";
 declare copyright "Aesthetics Engineering";
 declare version "0.01";
 declare license "BSD";
+declare options "[midi:on][style:poly][nvoices:12]";
 
 import("stdfaust.lib");
 
@@ -13,7 +14,7 @@ import("stdfaust.lib");
 gate = button("gate");
 gain = hslider("gain", 0.42, 0, 1, 0.01);
 baseFreq = hslider("freq", 440, 20, 20000, 1);
-bend = hslider("bend", 1, 0, 10, 0.01);
+bend = hslider("bend[midi:pitchwheel]", 1, 0, 10, 0.01);
 freq = baseFreq * bend : si.polySmooth(gate,0.9,1);
 
 // Oscillators

@@ -2,5 +2,5 @@
 
 (
     cd faust;
-    faust2api -ios -nozip -target ../ios/Runner/DSP main.dsp
+    faust2api -ios -nvoices 12 -nozip -target ../ios/Runner/DSP main.dsp
 )

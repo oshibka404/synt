@@ -11,51 +11,48 @@ class Surface extends StatefulWidget {
 class _SurfaceState extends State<Surface> {
   Synthesizer _synth = new Synthesizer();
 
-  Map<int, Offset> pointers = {};
-
   Map<int, Voice> _voices = {};
 
   void _playNote(PointerEvent details) async {
+    Voice newVoice = _synth.newVoice(
+      details.pointer,
+      freq: details.position.dx,
+      gain: 5 - details.position.dy / 100,
+    );
     setState(() {
-      pointers[details.pointer] = details.position;
+      _voices[details.pointer] = newVoice;
     });
-    // _voices[details.pointer] = await _synth.newVoice(
-    //   details.pointer,
-    //   freq: details.position.dx,
-    //   gain: details.pressure
-    // );
   }
 
   void _updateNote(PointerEvent details) {
+    _synth.modifyVoice(
+      details.pointer, 
+      freq: details.position.dx,
+      gain: 5 - details.position.dy / 100,
+    );
     setState(() {
-      pointers[details.pointer] = details.position;
+      _voices[details.pointer] = _voices[details.pointer];
     });
-    // _synth.modifyVoice(
-    //   details.pointer, 
-    //   freq: details.position.dx,
-    //   gain: details.pressure
-    // );
   }
 
   void _stopNote(PointerEvent details) {
+    _synth.stopVoice(details.pointer);
     setState(() {
-      pointers.remove(details.pointer);
+      _voices.remove(details.pointer);
     });
-    // _synth.stopVoice(details.pointer);
-    // _voices.remove(details.pointer);
   }
 
   List<Widget> _getPointersText() {
-    if (pointers.length == 0) {
+    if (_voices.length == 0) {
       return [Text(
         'Not playing',
         style: Theme.of(context).textTheme.headline4,
       )];
     }
     List<Widget> pointerTexts = new List<Widget>();
-    pointers.forEach((pointer, voice) {
+    _voices.forEach((pointer, voice) {
       pointerTexts.add(Text(
-        'Pointer $pointer. Playing ${voice.dx.round()} Hz with gain ${voice.dy.round()}',
+        'Playing ${voice.params['freq']} Hz with gain ${voice.params['gain']}',
         style: Theme.of(context).textTheme.headline4,
       ));
     });

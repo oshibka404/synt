@@ -90,7 +90,7 @@
             result(@(voiceId));
         } else if ([@"deleteVoice" isEqualToString:call.method]) {
             NSNumber* voiceArg = call.arguments[@"voice"];
-            int deleteVoiceResult = [weakSelf deleteVoice:voiceArg.intValue];
+            int deleteVoiceResult = [weakSelf deleteVoice:voiceArg.longValue];
             result(@(deleteVoiceResult));
         } else if ([@"setVoiceParamValueByPath" isEqualToString:call.method]) {
             NSNumber* voiceArg = call.arguments[@"voice"];
@@ -187,7 +187,7 @@
     return dspFaust->newVoice();
 }
 
-- (int)deleteVoice:(int)voice {
+- (int)deleteVoice:(long)voice {
     return dspFaust->deleteVoice(voice);
 }
 
