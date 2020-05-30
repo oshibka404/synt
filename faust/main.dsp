@@ -1,5 +1,4 @@
 // TODO: separate into modules
-// TODO: create effects.dsp
 
 declare name "Perfect First Synth";
 declare author "Andrey Ozornin";
@@ -41,4 +40,4 @@ lpf = fi.resonlp(
 
 filters = hpf : lpf;
 
-process = oscillators : filters <: dm.zita_light;
+process = oscillators : filters;
