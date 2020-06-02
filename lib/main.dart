@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:perfect_first_synth/pads.dart';
 import 'package:perfect_first_synth/surface.dart';
 
 void main() {
@@ -19,7 +20,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Surface(),
+      home: Row(
+        children: [
+          Expanded(
+            child: Surface(),
+          ),
+          PadsPanel()
+        ],
+      ),
     );
   }
 }
