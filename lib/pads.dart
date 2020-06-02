@@ -11,9 +11,9 @@ class PadsPanel extends StatefulWidget {
 class _PadsPanelState extends State<PadsPanel> {
 
   List<PadConfig> padConfigs = [
-    PadConfig(440, Color(0xFFFF0000)),
-    PadConfig(440, Color(0xFF00FF00)),
-    PadConfig(440, Color(0xFF0000FF)),
+    PadConfig(440, Color.fromRGBO(255, 99, 119, 1)),
+    PadConfig(440, Color.fromRGBO(200, 188, 245, 1)),
+    PadConfig(440, Color.fromRGBO(101, 214, 209, 1)),
   ];
 
   PadConfig currentPad;

@@ -66,7 +66,7 @@ class _SurfaceState extends State<Surface> {
       onPointerMove: _updateNote,
       onPointerUp: _stopNote,
       child: Container(
-        color: Colors.lightBlueAccent,
+        color: Color.fromARGB(255, 234, 242, 227),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: _getPointersText(),
