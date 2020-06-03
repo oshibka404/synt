@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/synth/synthesizer.dart';
 
@@ -13,11 +15,29 @@ class _SurfaceState extends State<Surface> {
 
   Map<int, Voice> _voices = {};
 
+  final double pixelsPerSemitone = 40;
+
+  double width;
+
+  final int baseFreq = 440;
+
+  double convertSemitonesToFreq(double semitones) {
+    return baseFreq * pow(2, semitones / 12);
+  }
+
+  double _getFreqFromPointerPosition(Offset position) {
+    return convertSemitonesToFreq(position.dx / pixelsPerSemitone);
+  }
+
+  double _getGainFromPointerPosition(Offset position) {
+    return 5 - position.dy / 100;
+  }
+
   void _playNote(PointerEvent details) async {
     Voice newVoice = _synth.newVoice(
       details.pointer,
-      freq: details.position.dx,
-      gain: 5 - details.position.dy / 100,
+      freq: _getFreqFromPointerPosition(details.position),
+      gain: _getGainFromPointerPosition(details.position),
     );
     setState(() {
       _voices[details.pointer] = newVoice;
@@ -27,8 +47,8 @@ class _SurfaceState extends State<Surface> {
   void _updateNote(PointerEvent details) {
     _synth.modifyVoice(
       details.pointer, 
-      freq: details.position.dx,
-      gain: 5 - details.position.dy / 100,
+      freq: _getFreqFromPointerPosition(details.position),
+      gain: _getGainFromPointerPosition(details.position),
     );
     setState(() {
       _voices[details.pointer] = _voices[details.pointer];
@@ -49,10 +69,10 @@ class _SurfaceState extends State<Surface> {
         style: Theme.of(context).textTheme.headline4,
       )];
     }
-    List<Widget> pointerTexts = new List<Widget>();
+    final List<Widget> pointerTexts = new List<Widget>();
     _voices.forEach((pointer, voice) {
       pointerTexts.add(Text(
-        'Playing ${voice.params['freq']} Hz with gain ${voice.params['gain']}',
+        '${voice.params['freq'].toStringAsFixed(2)} Hz, ${voice.params['gain'].toStringAsFixed(2)}',
         style: Theme.of(context).textTheme.headline4,
       ));
     });
@@ -61,6 +81,9 @@ class _SurfaceState extends State<Surface> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      width = MediaQuery.of(context).size.width;
+    });
     return Listener(
       onPointerDown: _playNote,
       onPointerMove: _updateNote,
