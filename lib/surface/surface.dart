@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/synth/synthesizer.dart';
 
+import 'keyboard_painter.dart';
+
 class Surface extends StatefulWidget {
   Surface({Key key}) : super(key: key);
 
@@ -15,14 +17,14 @@ class _SurfaceState extends State<Surface> {
 
   Map<int, Voice> _voices = {};
 
-  final double pixelsPerSemitone = 40;
+  final double pixelsPerSemitone = 30;
 
   double width;
 
   final int baseFreq = 440;
 
   double convertSemitonesToFreq(double semitones) {
-    return baseFreq * pow(2, semitones / 12);
+    return baseFreq * pow(2, semitones.round() / 12);
   }
 
   double _getFreqFromPointerPosition(Offset position) {
@@ -63,18 +65,14 @@ class _SurfaceState extends State<Surface> {
   }
 
   List<Widget> _getPointersText() {
-    if (_voices.length == 0) {
-      return [Text(
-        'Not playing',
-        style: Theme.of(context).textTheme.headline4,
-      )];
-    }
-    final List<Widget> pointerTexts = new List<Widget>();
+    final List<Widget> pointerTexts = [];
     _voices.forEach((pointer, voice) {
-      pointerTexts.add(Text(
-        '${voice.params['freq'].toStringAsFixed(2)} Hz, ${voice.params['gain'].toStringAsFixed(2)}',
-        style: Theme.of(context).textTheme.headline4,
-      ));
+      if (voice.params['freq'] != null && voice.params['gain'] != null) {
+        pointerTexts.add(Text(
+          '${voice.params['freq'].toStringAsFixed(2)} Hz, ${voice.params['gain'].toStringAsFixed(2)}',
+          style: Theme.of(context).textTheme.bodyText2,
+        ));
+      }
     });
     return pointerTexts;
   }
@@ -90,10 +88,19 @@ class _SurfaceState extends State<Surface> {
       onPointerUp: _stopNote,
       child: Container(
         color: Color.fromARGB(255, 234, 242, 227),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _getPointersText(),
-        ),
+        child: ClipRect(
+          child: CustomPaint(
+            painter: KeyboardPainter(
+              pixelsPerSemitone: pixelsPerSemitone
+            ),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Column(
+                children: _getPointersText(),
+              ),
+            ),
+          ),
+        )
       ),
     );
   }

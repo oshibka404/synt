@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:perfect_first_synth/pads.dart';
-import 'package:perfect_first_synth/surface.dart';
+import 'package:perfect_first_synth/surface/surface.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
