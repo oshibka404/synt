@@ -12,37 +12,58 @@ class Surface extends StatefulWidget {
   _SurfaceState createState() => _SurfaceState();
 }
 
+class PointerData {
+  PointerData({this.position, this.voice});
+  Offset position;
+  Voice voice;
+}
+
 class _SurfaceState extends State<Surface> {
   Synthesizer _synth = new Synthesizer();
 
-  Map<int, Voice> _voices = {};
+  Map<int, PointerData> pointers = {};
 
-  final double pixelsPerSemitone = 30;
+  final int stepsCount = 10;
 
-  double width;
+  Size size = new Size.square(0);
 
   final int baseFreq = 440;
+  final int baseKey = 49;
 
-  double convertSemitonesToFreq(double semitones) {
-    return baseFreq * pow(2, semitones.round() / 12);
+  /// Intervals of Am scale in semitones
+  List<int> intervals = [0, 2, 3, 5, 7, 8, 10];
+
+  double get pixelsPerStep => size.width / stepsCount;
+
+  double _convertKeyNumberToFreq(double keyNumber) {
+    return baseFreq * pow(2, (keyNumber - baseKey) / 12);
+  }
+
+  double _getKeyNumberFromPointerPosition(Offset position) {
+    int stepNumber = position.dx ~/ pixelsPerStep;
+    return (baseKey + intervals[stepNumber % 7]).roundToDouble();
   }
 
   double _getFreqFromPointerPosition(Offset position) {
-    return convertSemitonesToFreq(position.dx / pixelsPerSemitone);
+    return _convertKeyNumberToFreq(_getKeyNumberFromPointerPosition(position));
   }
 
-  double _getGainFromPointerPosition(Offset position) {
-    return 5 - position.dy / 100;
+  double _getModulationFromPointerPosition(Offset position) {
+    return 1 - position.dy / size.height;
   }
 
   void _playNote(PointerEvent details) async {
     Voice newVoice = _synth.newVoice(
       details.pointer,
       freq: _getFreqFromPointerPosition(details.position),
-      gain: _getGainFromPointerPosition(details.position),
+      gain: _getModulationFromPointerPosition(details.position),
     );
     setState(() {
-      _voices[details.pointer] = newVoice;
+      pointers[details.pointer] = PointerData(
+        position: details.position,
+        voice: newVoice
+      );
+      pointers[details.pointer].voice = newVoice;
     });
   }
 
@@ -50,26 +71,26 @@ class _SurfaceState extends State<Surface> {
     _synth.modifyVoice(
       details.pointer, 
       freq: _getFreqFromPointerPosition(details.position),
-      gain: _getGainFromPointerPosition(details.position),
+      gain: _getModulationFromPointerPosition(details.position),
     );
     setState(() {
-      _voices[details.pointer] = _voices[details.pointer];
+      pointers[details.pointer].voice = pointers[details.pointer].voice;
     });
   }
 
   void _stopNote(PointerEvent details) {
     _synth.stopVoice(details.pointer);
     setState(() {
-      _voices.remove(details.pointer);
+      pointers.remove(details.pointer);
     });
   }
 
   List<Widget> _getPointersText() {
     final List<Widget> pointerTexts = [];
-    _voices.forEach((pointer, voice) {
-      if (voice.params['freq'] != null && voice.params['gain'] != null) {
+    pointers.forEach((pointerId, pointerData) {
+      if (pointerData.voice.params['freq'] != null && pointerData.voice.params['gain'] != null) {
         pointerTexts.add(Text(
-          '${voice.params['freq'].toStringAsFixed(2)} Hz, ${voice.params['gain'].toStringAsFixed(2)}',
+          '${pointerData.voice.params['freq'].toStringAsFixed(2)} Hz, ${pointerData.voice.params['gain'].toStringAsFixed(2)}',
           style: Theme.of(context).textTheme.bodyText2,
         ));
       }
@@ -80,7 +101,7 @@ class _SurfaceState extends State<Surface> {
   @override
   Widget build(BuildContext context) {
     setState(() {
-      width = MediaQuery.of(context).size.width;
+      size = MediaQuery.of(context).size;
     });
     return Listener(
       onPointerDown: _playNote,
@@ -91,7 +112,7 @@ class _SurfaceState extends State<Surface> {
         child: ClipRect(
           child: CustomPaint(
             painter: KeyboardPainter(
-              pixelsPerSemitone: pixelsPerSemitone
+              pixelsPerStep: pixelsPerStep
             ),
             child: Align(
               alignment: Alignment.bottomRight,
