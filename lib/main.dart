@@ -17,13 +17,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Perfect First Synth',
       theme: ThemeData.dark(),
-      home: Row(
-        children: [
-          Expanded(
-            child: Surface(),
-          ),
-          RecordControlPanel(),
-        ],
+      home: LayoutBuilder(
+        builder: (context, constraints) {
+          final double controlPanelWidth = constraints.maxHeight / 3;
+          print("CP width: $controlPanelWidth, height: ${constraints.maxHeight}");
+          print("Surface width: ${constraints.maxWidth - controlPanelWidth}, height: ${constraints.maxHeight}");
+          return Row(
+            children: [
+              RecordControlPanel(
+                size: Size(controlPanelWidth, constraints.maxHeight),
+              ),
+              Surface(
+                size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
+                offset: Offset(controlPanelWidth, 0),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

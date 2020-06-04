@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/trigger.dart';
 
 class RecordControlPanel extends StatefulWidget {
-  RecordControlPanel({Key key}) : super(key: key);
-
+  RecordControlPanel({this.size});
+  final Size size;
   @override
   _RecordControlPanelState createState() => _RecordControlPanelState();
 }
@@ -25,14 +25,14 @@ class _RecordControlPanelState extends State<RecordControlPanel> {
     });
   }
 
-  List<Trigger> _buildPadTriggers(double height) {
+  List<Trigger> _buildPadTriggers() {
     List<Trigger> pads = new List<Trigger>();
     padConfigs.forEach((PadConfig element) {
       pads.add(
         new Trigger(
           onTap: () => _triggerPad(element),
           active: currentPad == element,
-          size: Size.square(height / padConfigs.length),
+          size: Size(widget.size.height / 3, widget.size.width),
           color: element.color,
         )
       );
@@ -42,7 +42,7 @@ class _RecordControlPanelState extends State<RecordControlPanel> {
 
   Widget build(BuildContext context) {
     return Column(
-      children: _buildPadTriggers(MediaQuery.of(context).size.height),
+      children: _buildPadTriggers(),
     );
   }
 }

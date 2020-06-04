@@ -1,21 +1,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:perfect_first_synth/synth/synthesizer.dart';
 
 import 'keyboard_painter.dart';
 
 class Surface extends StatefulWidget {
-  Surface({Key key}) : super(key: key);
+  Surface({this.size, this.offset});
+  final Size size;
+  final Offset offset;
 
   @override
   _SurfaceState createState() => _SurfaceState();
-}
-
-class PointerData {
-  PointerData({this.position, this.voice});
-  Offset position;
-  Voice voice;
 }
 
 class _SurfaceState extends State<Surface> {
@@ -25,15 +22,13 @@ class _SurfaceState extends State<Surface> {
 
   final int stepsCount = 10;
 
-  Size size = new Size.square(0);
-
   final int baseFreq = 440;
   final int baseKey = 49;
 
   /// Intervals of Am scale in semitones
   List<int> intervals = [0, 2, 3, 5, 7, 8, 10];
 
-  double get pixelsPerStep => size.width / stepsCount;
+  double get pixelsPerStep => widget.size.width / stepsCount;
 
   double _convertKeyNumberToFreq(double keyNumber) {
     return baseFreq * pow(2, (keyNumber - baseKey) / 12);
@@ -49,7 +44,7 @@ class _SurfaceState extends State<Surface> {
   }
 
   double _getModulationFromPointerPosition(Offset position) {
-    return 1 - position.dy / size.height;
+    return 1 - position.dy / widget.size.height;
   }
 
   void _playNote(PointerEvent details) async {
@@ -100,14 +95,12 @@ class _SurfaceState extends State<Surface> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      size = MediaQuery.of(context).size;
-    });
     return Listener(
       onPointerDown: _playNote,
       onPointerMove: _updateNote,
       onPointerUp: _stopNote,
       child: Container(
+        constraints: BoxConstraints.tight(widget.size),
         color: Theme.of(context).backgroundColor,
         child: ClipRect(
           child: CustomPaint(
@@ -125,4 +118,10 @@ class _SurfaceState extends State<Surface> {
       ),
     );
   }
+}
+
+class PointerData {
+  PointerData({this.position, this.voice});
+  Offset position;
+  Voice voice;
 }
