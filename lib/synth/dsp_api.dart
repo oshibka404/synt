@@ -218,4 +218,12 @@ class DspApi {
     }
   }
 
+  static Future<double> getCpuLoad() {
+    try {
+      return _platform.invokeMethod('getCPULoad');
+    } on PlatformException catch (e) {
+      throw 'Could not get CPU load: ${e.message}';
+    }
+  }
+
 }

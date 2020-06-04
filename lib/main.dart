@@ -20,8 +20,6 @@ class MyApp extends StatelessWidget {
       home: LayoutBuilder(
         builder: (context, constraints) {
           final double controlPanelWidth = constraints.maxHeight / 3;
-          print("CP width: $controlPanelWidth, height: ${constraints.maxHeight}");
-          print("Surface width: ${constraints.maxWidth - controlPanelWidth}, height: ${constraints.maxHeight}");
           return Row(
             children: [
               RecordControlPanel(

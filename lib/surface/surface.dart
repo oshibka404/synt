@@ -47,15 +47,24 @@ class _SurfaceState extends State<Surface> {
     return 1 - position.dy / widget.size.height;
   }
 
+  double cpuLoad;
+
   void _playNote(PointerEvent details) async {
+    Offset relativePosition = details.position - widget.offset;
+    double pressure = details.pressureMax > 0 ? details.pressure : 1;
     Voice newVoice = _synth.newVoice(
       details.pointer,
-      freq: _getFreqFromPointerPosition(details.position),
-      gain: _getModulationFromPointerPosition(details.position),
+      VoiceParams(
+        freq: _getFreqFromPointerPosition(relativePosition),
+        gain: pressure,
+        noiseLevel: _getModulationFromPointerPosition(relativePosition),
+        sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
+      ),
     );
+    _updateCpuLoad();
     setState(() {
       pointers[details.pointer] = PointerData(
-        position: details.position,
+        position: relativePosition,
         voice: newVoice
       );
       pointers[details.pointer].voice = newVoice;
@@ -63,13 +72,21 @@ class _SurfaceState extends State<Surface> {
   }
 
   void _updateNote(PointerEvent details) {
+    Offset relativePosition = details.position - widget.offset;
+    double pressure = details.pressureMax > 0 ? details.pressure : 1;
     _synth.modifyVoice(
       details.pointer, 
-      freq: _getFreqFromPointerPosition(details.position),
-      gain: _getModulationFromPointerPosition(details.position),
+      VoiceParams(
+        freq: _getFreqFromPointerPosition(relativePosition),
+        gain: pressure,
+        noiseLevel: _getModulationFromPointerPosition(relativePosition),
+        sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
+      ),
     );
+    _updateCpuLoad();
     setState(() {
       pointers[details.pointer].voice = pointers[details.pointer].voice;
+      pointers[details.pointer].position = relativePosition;
     });
   }
 
@@ -80,8 +97,18 @@ class _SurfaceState extends State<Surface> {
     });
   }
 
+  void _updateCpuLoad() async {
+    cpuLoad = await _synth.getCpuLoad();
+    setState(() {
+      cpuLoad = cpuLoad;
+    });
+  }
+
   List<Widget> _getPointersText() {
     final List<Widget> pointerTexts = [];
+    if (cpuLoad != null) {
+      pointerTexts.add(Text('CPU load: ${cpuLoad * 100}%', style: Theme.of(context).textTheme.bodyText2,));
+    }
     pointers.forEach((pointerId, pointerData) {
       if (pointerData.voice.params['freq'] != null && pointerData.voice.params['gain'] != null) {
         pointerTexts.add(Text(
