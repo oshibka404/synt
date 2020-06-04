@@ -13,9 +13,9 @@ class KeyboardPainter extends CustomPainter {
 
   Color getKeyColor(int keyNumber) {
     if (isTonic(keyNumber)) {
-      return Colors.red;
+      return Colors.yellowAccent;
     }
-    return Colors.black;
+    return Colors.white;
   }
 
   @override

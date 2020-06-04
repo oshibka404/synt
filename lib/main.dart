@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:perfect_first_synth/pads.dart';
+import 'package:perfect_first_synth/record_control.dart';
 import 'package:perfect_first_synth/surface/surface.dart';
 
 void main() {
@@ -16,16 +16,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Perfect First Synth',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: ThemeData.dark(),
       home: Row(
         children: [
           Expanded(
             child: Surface(),
           ),
-          PadsPanel()
+          RecordControlPanel(),
         ],
       ),
     );
