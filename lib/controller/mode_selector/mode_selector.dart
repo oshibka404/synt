@@ -1,71 +1,44 @@
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/keyboard_mode.dart';
 import 'package:perfect_first_synth/controller/mode_selector/mode_button.dart';
 
-class TabsPanel extends StatefulWidget {
-  TabsPanel({this.size});
+class ModeSelector extends StatelessWidget {
+  ModeSelector({
+    @required this.size,
+    @required this.currentMode,
+    @required this.startRec,
+    @required this.stopRec,
+    @required this.setMode,
+    @required this.modes,
+  });
   final Size size;
-  @override
-  _TabsPanelState createState() => _TabsPanelState();
-}
+  final KeyboardMode currentMode;
+  final Function startRec;
+  final Function stopRec;
+  final Function setMode;
+  final List<KeyboardMode> modes;
 
-class _TabsPanelState extends State<TabsPanel> {
-
-  List<KeyboardMode> keyboardModes = [
-    KeyboardMode(
-      baseFreq: 440,
-      baseKey: 49,
-      color: Color.fromRGBO(255, 99, 119, 1),
-    ),
-    KeyboardMode(
-      baseFreq: 220,
-      baseKey: 37,
-      color: Color.fromRGBO(200, 188, 245, 1),
-    ),
-    KeyboardMode(
-      baseFreq: 110,
-      baseKey: 25,
-      color: Color.fromRGBO(101, 214, 209, 1),
-    ),
-  ];
-
-  KeyboardMode currentPad;
-
-  void _triggerPad(KeyboardMode element) {
-    setState(() {
-      currentPad = (currentPad == element) ? null : element;
-    });
-  }
-
-  List<ModeButton> _buildPadModeButtons() {
-    List<ModeButton> pads = new List<ModeButton>();
-    keyboardModes.forEach((KeyboardMode element) {
-      pads.add(
+  List<ModeButton> _buildModeButtons() {
+    List<ModeButton> modeButtons = new List<ModeButton>();
+    modes.forEach((KeyboardMode mode) {
+      modeButtons.add(
         new ModeButton(
-          onTap: () => _triggerPad(element),
-          active: currentPad == element,
-          size: Size(widget.size.height / 3, widget.size.width),
-          color: element.color,
+          onTap: () => setMode(mode),
+          onTapDown: startRec,
+          onTapUp: stopRec,
+          active: currentMode == mode,
+          size: Size(size.height / 3, size.width),
+          color: mode.color,
         )
       );
     });
-    return pads;
+    return modeButtons;
   }
 
   Widget build(BuildContext context) {
     return Column(
-      children: _buildPadModeButtons(),
+      children: _buildModeButtons(),
     );
   }
-}
-
-class KeyboardMode {
-  KeyboardMode({
-    this.color = Colors.pink,
-    this.baseFreq = 440,
-    this.baseKey = 49,
-  });
-  final Color color;
-  final double baseFreq;
-  final int baseKey;
 }

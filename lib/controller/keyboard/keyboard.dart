@@ -2,14 +2,23 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:perfect_first_synth/controller/keyboard_mode.dart';
 import 'package:perfect_first_synth/synth/synthesizer.dart';
 
 import 'keyboard_painter.dart';
 
 class Keyboard extends StatefulWidget {
-  Keyboard({this.size, this.offset});
+  Keyboard({
+    this.size,
+    this.offset,
+    this.mode,
+    this.isRecording,
+  });
+  
   final Size size;
   final Offset offset;
+  final KeyboardMode mode;
+  final bool isRecording;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -47,8 +56,6 @@ class _KeyboardState extends State<Keyboard> {
     return 1 - position.dy / widget.size.height;
   }
 
-  double cpuLoad;
-
   void _playNote(PointerEvent details) async {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
@@ -61,7 +68,6 @@ class _KeyboardState extends State<Keyboard> {
         sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
       ),
     );
-    _updateCpuLoad();
     setState(() {
       pointers[details.pointer] = PointerData(
         position: relativePosition,
@@ -83,7 +89,6 @@ class _KeyboardState extends State<Keyboard> {
         sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
       ),
     );
-    _updateCpuLoad();
     setState(() {
       pointers[details.pointer].voice = pointers[details.pointer].voice;
       pointers[details.pointer].position = relativePosition;
@@ -97,18 +102,8 @@ class _KeyboardState extends State<Keyboard> {
     });
   }
 
-  void _updateCpuLoad() async {
-    cpuLoad = await _synth.getCpuLoad();
-    setState(() {
-      cpuLoad = cpuLoad;
-    });
-  }
-
   List<Widget> _getPointersText() {
     final List<Widget> pointerTexts = [];
-    if (cpuLoad != null) {
-      pointerTexts.add(Text('CPU load: ${cpuLoad * 100}%', style: Theme.of(context).textTheme.bodyText2,));
-    }
     pointers.forEach((pointerId, pointerData) {
       if (pointerData.voice.params['freq'] != null && pointerData.voice.params['gain'] != null) {
         pointerTexts.add(Text(
@@ -132,13 +127,31 @@ class _KeyboardState extends State<Keyboard> {
         child: ClipRect(
           child: CustomPaint(
             painter: KeyboardPainter(
-              pixelsPerStep: pixelsPerStep
+              pixelsPerStep: pixelsPerStep,
+              backgroundColor: widget.mode.color,
             ),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Column(
-                children: _getPointersText(),
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.isRecording ? 'Rec' : '',
+                          style: Theme.of(context).textTheme.headline4,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _getPointersText(),
+                ),
+              ],
             ),
           ),
         )

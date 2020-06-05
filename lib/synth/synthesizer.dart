@@ -33,6 +33,7 @@ class Voice {
   }
 
   void stop() {
+    // TODO: check if voice's been instantiated before deletion
     DspApi.deleteVoice(_id);
   }
 }

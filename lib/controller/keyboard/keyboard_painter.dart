@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 class KeyboardPainter extends CustomPainter {
   KeyboardPainter({
-    this.pixelsPerStep
+    @required this.pixelsPerStep,
+    this.backgroundColor = Colors.black,
   });
+
+  final Color backgroundColor;
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;
@@ -23,11 +26,21 @@ class KeyboardPainter extends CustomPainter {
     double keyPosition = pixelsPerStep / 2;
     int keyNumber = 0;
 
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = backgroundColor
+    );
+
     while (keyPosition < size.width) {
       final Color keyColor = getKeyColor(keyNumber);
-      canvas.drawLine(
-        Offset(keyPosition, 30),
-        Offset(keyPosition, size.height - 30),
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromPoints(
+            Offset(keyPosition - 2, 30),
+            Offset(keyPosition + 2, size.height - 30)
+          ),
+          Radius.circular(2)
+        ),
         Paint()..color = keyColor
       );
       keyPosition += pixelsPerStep;
