@@ -6,16 +6,16 @@ import 'package:perfect_first_synth/synth/synthesizer.dart';
 
 import 'keyboard_painter.dart';
 
-class Surface extends StatefulWidget {
-  Surface({this.size, this.offset});
+class Keyboard extends StatefulWidget {
+  Keyboard({this.size, this.offset});
   final Size size;
   final Offset offset;
 
   @override
-  _SurfaceState createState() => _SurfaceState();
+  _KeyboardState createState() => _KeyboardState();
 }
 
-class _SurfaceState extends State<Surface> {
+class _KeyboardState extends State<Keyboard> {
   Synthesizer _synth = new Synthesizer();
 
   Map<int, PointerData> pointers = {};

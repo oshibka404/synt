@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Button triggering actions [onTap], [onTapDown], [onTapUp].
-/// Can potentially have [active] state
-class Trigger extends StatefulWidget {
-  Trigger({
+/// Button switching keyboard modes.
+/// Can handle [onTap], [onTapDown], [onTapUp]. Can be [active]
+class ModeButton extends StatefulWidget {
+  ModeButton({
     this.onTapDown,
     this.onTapUp,
     this.onTap,
-    this.active,
+    this.active = false,
     this.size = const Size.square(100),
     this.color = Colors.amber,
     this.activeColor = Colors.amberAccent,
@@ -22,17 +22,17 @@ class Trigger extends StatefulWidget {
   final Color activeColor;
 
   @override
-  State<StatefulWidget> createState() => _TriggerState();
+  State<StatefulWidget> createState() => _ModeButtonState();
 }
 
-class _TriggerState extends State<Trigger> {
-  bool isTapped = false;
+class _ModeButtonState extends State<ModeButton> {
+  bool isPressed = false;
   
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
         setState(() {
-          isTapped = true;
+          isPressed = true;
         });
         if (widget.onTapDown != null) {
           widget.onTapDown();
@@ -40,7 +40,7 @@ class _TriggerState extends State<Trigger> {
       },
       onTapUp: (TapUpDetails details) {
         setState(() {
-          isTapped = false;
+          isPressed = false;
         });
         if (widget.onTapUp != null) {
           widget.onTapUp();
@@ -51,7 +51,7 @@ class _TriggerState extends State<Trigger> {
         constraints: BoxConstraints.tight(widget.size),
         child: DecoratedBox(
           decoration: new BoxDecoration(
-            color: isTapped ? widget.activeColor : widget.color,
+            color: isPressed ? widget.activeColor : widget.color,
             border: widget.active ? Border.all(
               color: widget.activeColor,
               width: 8

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:perfect_first_synth/record_control.dart';
-import 'package:perfect_first_synth/surface/surface.dart';
+import 'package:perfect_first_synth/controller/controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,22 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Perfect First Synth',
       theme: ThemeData.dark(),
-      home: LayoutBuilder(
-        builder: (context, constraints) {
-          final double controlPanelWidth = constraints.maxHeight / 3;
-          return Row(
-            children: [
-              RecordControlPanel(
-                size: Size(controlPanelWidth, constraints.maxHeight),
-              ),
-              Surface(
-                size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
-                offset: Offset(controlPanelWidth, 0),
-              ),
-            ],
-          );
-        },
-      ),
+      home: Controller(),
     );
   }
 }
