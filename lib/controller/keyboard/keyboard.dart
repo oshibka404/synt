@@ -12,18 +12,16 @@ import 'keyboard_painter.dart';
 
 class Keyboard extends StatefulWidget {
   Keyboard({
-    this.size,
-    this.offset,
-    this.mode,
-    this.isRecording,
+    @required this.size,
+    @required this.offset,
+    @required this.mode,
+    this.isRecording = false,
   });
   
   final Size size;
   final Offset offset;
   final KeyboardMode mode;
   final bool isRecording;
-  final int baseFreq = 440; // TODO: calculate [baseFreq] from [baseKey]
-  final int baseKey = 49;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -36,18 +34,18 @@ class _KeyboardState extends State<Keyboard> {
 
   final int stepsCount = 8;
 
-  /// Intervals of Am scale in semitones
+  /// Intervals of a minor scale in semitones
   List<int> minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
 
   double get pixelsPerStep => widget.size.width / stepsCount;
 
   double _convertKeyNumberToFreq(double keyNumber) {
-    return widget.baseFreq * pow(2, (keyNumber - widget.baseKey) / 12);
+    return widget.mode.baseFreq * pow(2, (keyNumber - widget.mode.baseKey) / 12);
   }
 
   double _getKeyNumberFromPointerPosition(Offset position) {
     int stepNumber = position.dx ~/ pixelsPerStep;
-    return (widget.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
+    return (widget.mode.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
   }
 
   double _getFreqFromPointerPosition(Offset position) {
@@ -58,7 +56,7 @@ class _KeyboardState extends State<Keyboard> {
     return 1 - position.dy / widget.size.height;
   }
 
-  void _playNote(PointerEvent details) async {
+  void _playNote(PointerEvent details) {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
     Voice newVoice = _synth.newVoice(
@@ -94,6 +92,7 @@ class _KeyboardState extends State<Keyboard> {
     setState(() {
       pointers[details.pointer].voice = pointers[details.pointer].voice;
       pointers[details.pointer].position = relativePosition;
+      pointers[details.pointer] = pointers[details.pointer];
     });
   }
 
@@ -107,9 +106,13 @@ class _KeyboardState extends State<Keyboard> {
   List<Widget> _getPointersText() {
     final List<Widget> pointerTexts = [];
     pointers.forEach((pointerId, pointerData) {
-      if (pointerData.voice.params['freq'] != null && pointerData.voice.params['gain'] != null) {
+      Map<String, double> voiceParams = pointerData.voice.params;
+      if (voiceParams['freq'] != null && voiceParams['gain'] != null) {
+        String freqText = '${voiceParams['freq'].toStringAsFixed(2)} Hz';
+        String noiseText = 'Noize: ${voiceParams['osc/noise/level']}';
+        String gainText = 'Gain: ${voiceParams['gain'].toStringAsFixed(2)}';
         pointerTexts.add(Text(
-          '${pointerData.voice.params['freq'].toStringAsFixed(2)} Hz, ${pointerData.voice.params['gain'].toStringAsFixed(2)}',
+          '$freqText, $gainText, $noiseText',
           style: Theme.of(context).textTheme.bodyText2,
         ));
       }

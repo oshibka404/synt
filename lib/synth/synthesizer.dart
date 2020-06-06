@@ -25,16 +25,20 @@ class Voice {
 
   Future<void> _modify(Map<String, double> newParams) {
     newParams.forEach((param, value) async {
-      if (value == null) return;
+      if (value == null || _id == 0) return;
       _params[param] = value;
       await DspApi.setVoiceParamByPath(_id, param, value);
     });
     return null;
   }
 
-  void stop() {
-    // TODO: check if voice's been instantiated before deletion
-    DspApi.deleteVoice(_id);
+  Future<void> stop() async {
+    if (_id == 0) {
+      await Future.delayed(const Duration(milliseconds: 10), () {
+        stop();
+      });
+    }
+    return DspApi.deleteVoice(_id);
   }
 }
 

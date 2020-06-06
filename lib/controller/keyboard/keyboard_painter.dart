@@ -51,8 +51,18 @@ class KeyboardPainter extends CustomPainter {
       keyPosition += pixelsPerStep;
       keyNumber++;
     }
+    
+    pointers.forEach((_, pointer) {
+      canvas.drawCircle(
+        pointer.position,
+        pointer.voice.params['gain'] * 50,
+        Paint()..color = mainColor.withOpacity(.5)
+      );
+    });
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(KeyboardPainter oldDelegate) {
+    return false;
+  }
 }
