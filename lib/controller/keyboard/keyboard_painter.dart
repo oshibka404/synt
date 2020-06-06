@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'pointer_data.dart';
+
 class KeyboardPainter extends CustomPainter {
   KeyboardPainter({
     @required this.pixelsPerStep,
     this.mainColor = Colors.black,
+    this.pointers,
   });
+
+  Map<int, PointerData> pointers;
 
   final Color mainColor;
 

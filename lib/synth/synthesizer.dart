@@ -1,4 +1,4 @@
-import 'package:perfect_first_synth/synth/dsp_api.dart';
+import 'dsp_api.dart';
 
 class Voice {
   int _id = 0;

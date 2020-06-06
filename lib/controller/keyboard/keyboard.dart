@@ -2,10 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:perfect_first_synth/controller/keyboard_mode.dart';
-import 'package:perfect_first_synth/synth/synthesizer.dart';
 
+import '../../synth/synthesizer.dart';
+import '../keyboard_mode.dart';
+
+import 'pointer_data.dart';
 import 'keyboard_painter.dart';
+
 
 class Keyboard extends StatefulWidget {
   Keyboard({
@@ -127,6 +130,7 @@ class _KeyboardState extends State<Keyboard> {
             painter: KeyboardPainter(
               pixelsPerStep: pixelsPerStep,
               mainColor: widget.mode.color,
+              pointers: pointers,
             ),
             child: Row(
               children: [
@@ -156,10 +160,4 @@ class _KeyboardState extends State<Keyboard> {
       ),
     );
   }
-}
-
-class PointerData {
-  PointerData({this.position, this.voice});
-  Offset position;
-  Voice voice;
 }

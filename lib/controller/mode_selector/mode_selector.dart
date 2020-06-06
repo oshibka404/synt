@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/keyboard_mode.dart';
-import 'package:perfect_first_synth/controller/mode_selector/mode_button.dart';
+import '../keyboard_mode.dart';
+import 'mode_button.dart';
 
 class ModeSelector extends StatelessWidget {
   ModeSelector({

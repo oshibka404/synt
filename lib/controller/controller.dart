@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/keyboard_mode.dart';
 
-import 'package:perfect_first_synth/controller/mode_selector/mode_selector.dart';
-import 'package:perfect_first_synth/controller/keyboard/keyboard.dart';
+import 'keyboard_mode.dart';
+import 'mode_selector/mode_selector.dart';
+import 'keyboard/keyboard.dart';
 
 class Controller extends StatefulWidget {
   @override

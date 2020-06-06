@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:perfect_first_synth/controller/controller.dart';
+
+import 'controller/controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
