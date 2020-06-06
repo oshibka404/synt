@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Perfect First Synth',
-      theme: ThemeData.dark(),
       home: Controller(),
     );
   }

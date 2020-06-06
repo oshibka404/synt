@@ -24,8 +24,10 @@ class ModeSelector extends StatelessWidget {
     modes.forEach((KeyboardMode mode) {
       modeButtons.add(
         new ModeButton(
-          onTap: () => setMode(mode),
-          onTapDown: startRec,
+          onTapDown: () {
+            setMode(mode);
+            startRec();
+          },
           onTapUp: stopRec,
           active: currentMode == mode,
           size: Size(size.height / 3, size.width),

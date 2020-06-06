@@ -19,6 +19,8 @@ class Keyboard extends StatefulWidget {
   final Offset offset;
   final KeyboardMode mode;
   final bool isRecording;
+  final int baseFreq = 440; // TODO: calculate [baseFreq] from [baseKey]
+  final int baseKey = 49;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -29,23 +31,20 @@ class _KeyboardState extends State<Keyboard> {
 
   Map<int, PointerData> pointers = {};
 
-  final int stepsCount = 10;
-
-  final int baseFreq = 440;
-  final int baseKey = 49;
+  final int stepsCount = 8;
 
   /// Intervals of Am scale in semitones
-  List<int> intervals = [0, 2, 3, 5, 7, 8, 10];
+  List<int> minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
 
   double get pixelsPerStep => widget.size.width / stepsCount;
 
   double _convertKeyNumberToFreq(double keyNumber) {
-    return baseFreq * pow(2, (keyNumber - baseKey) / 12);
+    return widget.baseFreq * pow(2, (keyNumber - widget.baseKey) / 12);
   }
 
   double _getKeyNumberFromPointerPosition(Offset position) {
     int stepNumber = position.dx ~/ pixelsPerStep;
-    return (baseKey + intervals[stepNumber % 7]).roundToDouble();
+    return (widget.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
   }
 
   double _getFreqFromPointerPosition(Offset position) {
@@ -123,12 +122,11 @@ class _KeyboardState extends State<Keyboard> {
       onPointerUp: _stopNote,
       child: Container(
         constraints: BoxConstraints.tight(widget.size),
-        color: Theme.of(context).backgroundColor,
         child: ClipRect(
           child: CustomPaint(
             painter: KeyboardPainter(
               pixelsPerStep: pixelsPerStep,
-              backgroundColor: widget.mode.color,
+              mainColor: widget.mode.color,
             ),
             child: Row(
               children: [

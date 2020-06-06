@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class KeyboardPainter extends CustomPainter {
   KeyboardPainter({
     @required this.pixelsPerStep,
-    this.backgroundColor = Colors.black,
+    this.mainColor = Colors.black,
   });
 
-  final Color backgroundColor;
+  final Color mainColor;
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;
@@ -16,9 +16,9 @@ class KeyboardPainter extends CustomPainter {
 
   Color getKeyColor(int keyNumber) {
     if (isTonic(keyNumber)) {
-      return Colors.yellowAccent;
+      return Colors.amber;
     }
-    return Colors.white;
+    return mainColor;
   }
 
   @override
@@ -28,7 +28,7 @@ class KeyboardPainter extends CustomPainter {
 
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()..color = backgroundColor
+      Paint()..color = Colors.white
     );
 
     while (keyPosition < size.width) {
