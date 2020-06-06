@@ -3,10 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../../recorder/recorder.dart';
+import '../../recorder/state.dart';
 import '../../synth/synthesizer.dart';
 import '../keyboard_preset.dart';
 
-import '../mode.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
 
@@ -16,13 +17,11 @@ class Keyboard extends StatefulWidget {
     @required this.size,
     @required this.offset,
     @required this.preset,
-    this.mode = Mode.playing,
   });
   
   final Size size;
   final Offset offset;
   final KeyboardPreset preset;
-  final Mode mode;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -122,12 +121,12 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   _getRecordingStatusText() {
-    switch (widget.mode) {
-      case Mode.recording:
+    switch (Recorder().state) {
+      case RecorderState.recording:
         return 'Recording';
-      case Mode.ready:
+      case RecorderState.ready:
         return 'Ready to record';
-      case Mode.playing:
+      case RecorderState.playing:
         return '';
       default:
         throw ArgumentError('Wrong app mode (neither recording nor playing nor ready to rec)');

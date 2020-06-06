@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+
+import '../../recorder/recorder.dart';
 import '../keyboard_preset.dart';
 import 'preset_button.dart';
 
@@ -7,15 +9,11 @@ class PresetSelector extends StatelessWidget {
   PresetSelector({
     @required this.size,
     @required this.currentPreset,
-    @required this.startRec,
-    @required this.stopRec,
     @required this.setPreset,
     @required this.keyboardPresets,
   });
   final Size size;
   final KeyboardPreset currentPreset;
-  final Function startRec;
-  final Function stopRec;
   final Function setPreset;
   final List<KeyboardPreset> keyboardPresets;
 
@@ -26,9 +24,9 @@ class PresetSelector extends StatelessWidget {
         new PresetButton(
           onTapDown: () {
             setPreset(preset);
-            startRec();
+            Recorder().startRec();
           },
-          onTapUp: stopRec,
+          onTapUp: Recorder().startRec,
           active: currentPreset == preset,
           size: Size(size.height / 3, size.width),
           color: preset.color,

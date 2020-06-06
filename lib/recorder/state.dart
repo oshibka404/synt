@@ -1,4 +1,4 @@
-enum Mode {
+enum RecorderState {
   playing,
   ready,
   recording
