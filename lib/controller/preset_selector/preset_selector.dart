@@ -1,27 +1,27 @@
 
 import 'package:flutter/material.dart';
-import '../keyboard_mode.dart';
-import 'mode_button.dart';
+import '../keyboard_preset.dart';
+import 'preset_button.dart';
 
-class ModeSelector extends StatelessWidget {
-  ModeSelector({
+class PresetSelector extends StatelessWidget {
+  PresetSelector({
     @required this.size,
     @required this.currentMode,
     @required this.startRec,
     @required this.stopRec,
     @required this.setMode,
-    @required this.modes,
+    @required this.keyboardPresets,
   });
   final Size size;
-  final KeyboardMode currentMode;
+  final KeyboardPreset currentMode;
   final Function startRec;
   final Function stopRec;
   final Function setMode;
-  final List<KeyboardMode> modes;
+  final List<KeyboardPreset> keyboardPresets;
 
   List<ModeButton> _buildModeButtons() {
     List<ModeButton> modeButtons = new List<ModeButton>();
-    modes.forEach((KeyboardMode mode) {
+    keyboardPresets.forEach((KeyboardPreset mode) {
       modeButtons.add(
         new ModeButton(
           onTapDown: () {

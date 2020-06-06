@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class KeyboardMode {
-  KeyboardMode({
+class KeyboardPreset {
+  KeyboardPreset({
     this.color = Colors.pink,
     this.baseFreq = 440,
     this.baseKey = 49,

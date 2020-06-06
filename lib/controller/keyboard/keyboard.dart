@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../synth/synthesizer.dart';
-import '../keyboard_mode.dart';
+import '../keyboard_preset.dart';
 
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
@@ -16,12 +16,14 @@ class Keyboard extends StatefulWidget {
     @required this.offset,
     @required this.mode,
     this.isRecording = false,
+    this.isReadyToRecord = false,
   });
   
   final Size size;
   final Offset offset;
-  final KeyboardMode mode;
+  final KeyboardPreset mode;
   final bool isRecording;
+  final bool isReadyToRecord;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -109,7 +111,7 @@ class _KeyboardState extends State<Keyboard> {
       Map<String, double> voiceParams = pointerData.voice.params;
       if (voiceParams['freq'] != null && voiceParams['gain'] != null) {
         String freqText = '${voiceParams['freq'].toStringAsFixed(2)} Hz';
-        String noiseText = 'Noize: ${voiceParams['osc/noise/level']}';
+        String noiseText = 'Noize: ${voiceParams['osc/noise/level'].toStringAsFixed(2)}';
         String gainText = 'Gain: ${voiceParams['gain'].toStringAsFixed(2)}';
         pointerTexts.add(Text(
           '$freqText, $gainText, $noiseText',
@@ -118,6 +120,16 @@ class _KeyboardState extends State<Keyboard> {
       }
     });
     return pointerTexts;
+  }
+
+  _getRecordingStatusText() {
+    if (widget.isRecording) {
+      return 'Recording';
+    }
+    if (widget.isReadyToRecord) {
+      return 'Ready to record';
+    }
+    return '';
   }
 
   @override
@@ -144,7 +156,7 @@ class _KeyboardState extends State<Keyboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.isRecording ? 'Rec' : '',
+                          _getRecordingStatusText(),
                           style: Theme.of(context).textTheme.headline4,
                         )
                       ],
