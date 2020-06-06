@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Button switching keyboard modes.
+/// Button switching keyboard presets.
 /// Can handle [onTap], [onTapDown], [onTapUp]. Can be [active]
-class ModeButton extends StatefulWidget {
-  ModeButton({
+class PresetButton extends StatefulWidget {
+  PresetButton({
     this.onTapDown,
     this.onTapUp,
     this.onTap,
@@ -22,10 +22,10 @@ class ModeButton extends StatefulWidget {
   final Color activeColor;
 
   @override
-  State<StatefulWidget> createState() => _ModeButtonState();
+  State<StatefulWidget> createState() => _PresetButtonState();
 }
 
-class _ModeButtonState extends State<ModeButton> {
+class _PresetButtonState extends State<PresetButton> {
   bool isPressed = false;
 
   void unpress() {

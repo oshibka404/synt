@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import '../../synth/synthesizer.dart';
 import '../keyboard_preset.dart';
 
+import '../mode.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
 
@@ -14,16 +15,14 @@ class Keyboard extends StatefulWidget {
   Keyboard({
     @required this.size,
     @required this.offset,
-    @required this.mode,
-    this.isRecording = false,
-    this.isReadyToRecord = false,
+    @required this.preset,
+    this.mode = Mode.playing,
   });
   
   final Size size;
   final Offset offset;
-  final KeyboardPreset mode;
-  final bool isRecording;
-  final bool isReadyToRecord;
+  final KeyboardPreset preset;
+  final Mode mode;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -42,12 +41,12 @@ class _KeyboardState extends State<Keyboard> {
   double get pixelsPerStep => widget.size.width / stepsCount;
 
   double _convertKeyNumberToFreq(double keyNumber) {
-    return widget.mode.baseFreq * pow(2, (keyNumber - widget.mode.baseKey) / 12);
+    return widget.preset.baseFreq * pow(2, (keyNumber - widget.preset.baseKey) / 12);
   }
 
   double _getKeyNumberFromPointerPosition(Offset position) {
     int stepNumber = position.dx ~/ pixelsPerStep;
-    return (widget.mode.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
+    return (widget.preset.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
   }
 
   double _getFreqFromPointerPosition(Offset position) {
@@ -123,13 +122,16 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   _getRecordingStatusText() {
-    if (widget.isRecording) {
-      return 'Recording';
+    switch (widget.mode) {
+      case Mode.recording:
+        return 'Recording';
+      case Mode.ready:
+        return 'Ready to record';
+      case Mode.playing:
+        return '';
+      default:
+        throw ArgumentError('Wrong app mode (neither recording nor playing nor ready to rec)');
     }
-    if (widget.isReadyToRecord) {
-      return 'Ready to record';
-    }
-    return '';
   }
 
   @override
@@ -144,7 +146,7 @@ class _KeyboardState extends State<Keyboard> {
           child: CustomPaint(
             painter: KeyboardPainter(
               pixelsPerStep: pixelsPerStep,
-              mainColor: widget.mode.color,
+              mainColor: widget.preset.color,
               pointers: pointers,
             ),
             child: Row(

@@ -6,41 +6,41 @@ import 'preset_button.dart';
 class PresetSelector extends StatelessWidget {
   PresetSelector({
     @required this.size,
-    @required this.currentMode,
+    @required this.currentPreset,
     @required this.startRec,
     @required this.stopRec,
-    @required this.setMode,
+    @required this.setPreset,
     @required this.keyboardPresets,
   });
   final Size size;
-  final KeyboardPreset currentMode;
+  final KeyboardPreset currentPreset;
   final Function startRec;
   final Function stopRec;
-  final Function setMode;
+  final Function setPreset;
   final List<KeyboardPreset> keyboardPresets;
 
-  List<ModeButton> _buildModeButtons() {
-    List<ModeButton> modeButtons = new List<ModeButton>();
-    keyboardPresets.forEach((KeyboardPreset mode) {
-      modeButtons.add(
-        new ModeButton(
+  List<PresetButton> _buildPresetButtons() {
+    List<PresetButton> presetButtons = new List<PresetButton>();
+    keyboardPresets.forEach((KeyboardPreset preset) {
+      presetButtons.add(
+        new PresetButton(
           onTapDown: () {
-            setMode(mode);
+            setPreset(preset);
             startRec();
           },
           onTapUp: stopRec,
-          active: currentMode == mode,
+          active: currentPreset == preset,
           size: Size(size.height / 3, size.width),
-          color: mode.color,
+          color: preset.color,
         )
       );
     });
-    return modeButtons;
+    return presetButtons;
   }
 
   Widget build(BuildContext context) {
     return Column(
-      children: _buildModeButtons(),
+      children: _buildPresetButtons(),
     );
   }
 }

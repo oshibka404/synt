@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'mode.dart';
 
 import 'keyboard_preset.dart';
 import 'preset_selector/preset_selector.dart';
@@ -10,7 +11,7 @@ class Controller extends StatefulWidget {
 }
 
 class _ControllerState extends State<Controller> {
-  static List<KeyboardPreset> keyboardModes = [
+  static List<KeyboardPreset> keyboardPresets = [
     KeyboardPreset(
       baseFreq: 440,
       baseKey: 49,
@@ -28,28 +29,26 @@ class _ControllerState extends State<Controller> {
     ),
   ];
 
-  KeyboardPreset currentMode = keyboardModes[0];
-  void setMode(KeyboardPreset mode) {
-    currentMode = mode;
+  KeyboardPreset currentPreset = keyboardPresets[0];
+  void setPreset(KeyboardPreset preset) {
+    currentPreset = preset;
   }
   
-  bool isRecording = false;
-  bool isReadyToRecord = false;
+  Mode mode;
 
   void startRec() {
     setState(() {
-      isRecording = true;
+      mode = Mode.recording;
     });
   }
   void setReadyToRecord() {
     setState(() {
-      isReadyToRecord = true;
+      mode = Mode.ready;
     });
   }
   void stopRec() {
     setState(() {
-      isRecording = false;
-      isReadyToRecord = false;
+      mode = Mode.playing;
     });
   }
   
@@ -62,18 +61,17 @@ class _ControllerState extends State<Controller> {
           children: [
             PresetSelector(
               size: Size(controlPanelWidth, constraints.maxHeight),
-              currentMode: currentMode,
+              currentPreset: currentPreset,
               startRec: setReadyToRecord,
               stopRec: stopRec,
-              setMode: setMode,
-              keyboardPresets: keyboardModes,
+              setPreset: setPreset,
+              keyboardPresets: keyboardPresets,
             ),
             Keyboard(
               size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
               offset: Offset(controlPanelWidth, 0),
-              mode: currentMode,
-              isRecording: isRecording,
-              isReadyToRecord: isReadyToRecord,
+              preset: currentPreset,
+              mode: mode,
             ),
           ],
         );
