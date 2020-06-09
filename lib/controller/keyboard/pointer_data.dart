@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../synth/synthesizer.dart';
 
 class PointerData {
-  PointerData({this.position, this.voice});
+  PointerData({this.position, this.pressure});
   Offset position;
-  Voice voice;
+  double pressure;
 }

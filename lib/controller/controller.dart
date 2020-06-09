@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../recorder/recorder.dart';
 import 'keyboard_preset.dart';
 import 'preset_selector/preset_selector.dart';
 import 'keyboard/keyboard.dart';
@@ -31,10 +30,10 @@ class _ControllerState extends State<Controller> {
 
   KeyboardPreset currentPreset = keyboardPresets[0];
   void setPreset(KeyboardPreset preset) {
-    currentPreset = preset;
+    setState(() {
+      currentPreset = preset;
+    });
   }
-  
-  Recorder recorder = Recorder();
   
   @override
   Widget build(BuildContext context) {
@@ -46,8 +45,6 @@ class _ControllerState extends State<Controller> {
             PresetSelector(
               size: Size(controlPanelWidth, constraints.maxHeight),
               currentPreset: currentPreset,
-              startRec: recorder.startRec,
-              stopRec: recorder.stopRec,
               setPreset: setPreset,
               keyboardPresets: keyboardPresets,
             ),

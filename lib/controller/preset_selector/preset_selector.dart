@@ -24,9 +24,9 @@ class PresetSelector extends StatelessWidget {
         new PresetButton(
           onTapDown: () {
             setPreset(preset);
-            Recorder().startRec();
+            Recorder().setReadyToRec();
           },
-          onTapUp: Recorder().startRec,
+          onTapUp: Recorder().stopRec,
           active: currentPreset == preset,
           size: Size(size.height / 3, size.width),
           color: preset.color,

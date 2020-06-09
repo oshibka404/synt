@@ -55,7 +55,7 @@ class KeyboardPainter extends CustomPainter {
     pointers.forEach((_, pointer) {
       canvas.drawCircle(
         pointer.position,
-        pointer.voice.params['gain'] * 50,
+        pointer.pressure * 50,
         Paint()..color = mainColor.withOpacity(.5)
       );
     });

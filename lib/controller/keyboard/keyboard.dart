@@ -1,17 +1,19 @@
-import 'dart:math';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:perfect_first_synth/synth/action_receiver.dart';
 
 import '../../recorder/recorder.dart';
 import '../../recorder/state.dart';
-import '../../synth/synthesizer.dart';
 import '../keyboard_preset.dart';
 
+import 'keyboard_action.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
 
-
+/// UI component emitting stream of [KeyboardAction] events.
+/// Doesn't care how its actions will be interpreted, leaving it to consumers.
 class Keyboard extends StatefulWidget {
   Keyboard({
     @required this.size,
@@ -28,76 +30,88 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  Synthesizer _synth = new Synthesizer();
-
-  Map<int, PointerData> pointers = {};
-
-  final int stepsCount = 8;
-
-  /// Intervals of a minor scale in semitones
-  List<int> minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
-
-  double get pixelsPerStep => widget.size.width / stepsCount;
-
-  double _convertKeyNumberToFreq(double keyNumber) {
-    return widget.preset.baseFreq * pow(2, (keyNumber - widget.preset.baseKey) / 12);
-  }
-
-  double _getKeyNumberFromPointerPosition(Offset position) {
-    int stepNumber = position.dx ~/ pixelsPerStep;
-    return (widget.preset.baseKey + minorScaleIntervals[stepNumber % 7]).roundToDouble();
-  }
-
-  double _getFreqFromPointerPosition(Offset position) {
-    return _convertKeyNumberToFreq(_getKeyNumberFromPointerPosition(position));
+  _KeyboardState() {
+    Recorder().stateStream.listen((newState) {
+      setState(() {
+        _recorderState = newState;
+      });
+    });
+    ActionReceiver(actionStream);
   }
 
   double _getModulationFromPointerPosition(Offset position) {
     return 1 - position.dy / widget.size.height;
   }
 
+  Map<int, PointerData> pointers = {};
+
+  final int stepsCount = 8;
+
+  RecorderState _recorderState = RecorderState.playing;
+
+  var _actionStreamController = StreamController<KeyboardAction>();
+  
+  Stream<KeyboardAction> get actionStream {
+    return _actionStreamController.stream;
+  }
+
+  double get pixelsPerStep => widget.size.width / stepsCount;
+
+  /// Returns distance in scale steps (screen keys) from base key to given [position].
+  double _getNormalizedPitchOffset(Offset position) {
+    return position.dx / pixelsPerStep;
+  }
+
   void _playNote(PointerEvent details) {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
-    Voice newVoice = _synth.newVoice(
-      details.pointer,
-      VoiceParams(
-        freq: _getFreqFromPointerPosition(relativePosition),
-        gain: pressure,
-        noiseLevel: _getModulationFromPointerPosition(relativePosition),
-        sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
-      ),
+    _actionStreamController.add(
+      KeyboardAction(
+        voiceId: details.pointer,
+        time: DateTime.now(),
+        type: KeyboardActionType.start,
+        stepOffset: _getNormalizedPitchOffset(relativePosition),
+        pressure: pressure,
+        modulation: _getModulationFromPointerPosition(relativePosition),
+        preset: widget.preset,
+      )
     );
     setState(() {
       pointers[details.pointer] = PointerData(
         position: relativePosition,
-        voice: newVoice
+        pressure: pressure,
       );
-      pointers[details.pointer].voice = newVoice;
     });
   }
 
   void _updateNote(PointerEvent details) {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
-    _synth.modifyVoice(
-      details.pointer, 
-      VoiceParams(
-        freq: _getFreqFromPointerPosition(relativePosition),
-        gain: pressure,
-        noiseLevel: _getModulationFromPointerPosition(relativePosition),
-        sawLevel: 1 - _getModulationFromPointerPosition(relativePosition),
-      ),
+    _actionStreamController.add(
+      KeyboardAction(
+        voiceId: details.pointer,
+        time: DateTime.now(),
+        type: KeyboardActionType.modify,
+        stepOffset: _getNormalizedPitchOffset(relativePosition),
+        pressure: pressure,
+        modulation: _getModulationFromPointerPosition(relativePosition),
+        preset: widget.preset,
+      )
     );
+    
     setState(() {
-      pointers[details.pointer].voice = pointers[details.pointer].voice;
       pointers[details.pointer].position = relativePosition;
-      pointers[details.pointer] = pointers[details.pointer];
     });
   }
 
   void _stopNote(PointerEvent details) {
-    _synth.stopVoice(details.pointer);
+    _actionStreamController.add(
+      KeyboardAction(
+        voiceId: details.pointer,
+        time: DateTime.now(),
+        type: KeyboardActionType.stop,
+      )
+    );
     setState(() {
       pointers.remove(details.pointer);
     });
@@ -106,11 +120,13 @@ class _KeyboardState extends State<Keyboard> {
   List<Widget> _getPointersText() {
     final List<Widget> pointerTexts = [];
     pointers.forEach((pointerId, pointerData) {
-      Map<String, double> voiceParams = pointerData.voice.params;
-      if (voiceParams['freq'] != null && voiceParams['gain'] != null) {
-        String freqText = '${voiceParams['freq'].toStringAsFixed(2)} Hz';
-        String noiseText = 'Noize: ${voiceParams['osc/noise/level'].toStringAsFixed(2)}';
-        String gainText = 'Gain: ${voiceParams['gain'].toStringAsFixed(2)}';
+      String step = _getNormalizedPitchOffset(pointerData.position).toStringAsFixed(2);
+      String modulation = _getModulationFromPointerPosition(pointerData.position).toStringAsFixed(2);
+      String pressure = pointerData.pressure.toStringAsFixed(2);
+      if (step != null && modulation != null) {
+        String freqText = 'Step #$step';
+        String noiseText = 'Noize: $modulation';
+        String gainText = 'Gain: $pressure';
         pointerTexts.add(Text(
           '$freqText, $gainText, $noiseText',
           style: Theme.of(context).textTheme.bodyText2,
@@ -120,8 +136,8 @@ class _KeyboardState extends State<Keyboard> {
     return pointerTexts;
   }
 
-  _getRecordingStatusText() {
-    switch (Recorder().state) {
+  String _getRecordingStatusText() {
+    switch (_recorderState) {
       case RecorderState.recording:
         return 'Recording';
       case RecorderState.ready:

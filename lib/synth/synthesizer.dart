@@ -46,7 +46,6 @@ class Synthesizer {
   Map<int, Voice> voices = {};
 
   Voice newVoice(int id, VoiceParams voiceParams) {
-
     voices[id] = new Voice({
       'freq': voiceParams.freq,
       'gain': voiceParams.gain,
