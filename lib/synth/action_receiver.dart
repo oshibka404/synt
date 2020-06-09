@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../controller/keyboard/keyboard_action.dart';
+import 'scales.dart';
 import 'synthesizer.dart';
 
 class ActionReceiver {
@@ -10,16 +11,13 @@ class ActionReceiver {
 
   Synthesizer _synth = new Synthesizer();
 
-  /// Intervals of a minor scale in semitones
-  List<int> minorScaleIntervals = [0, 2, 3, 5, 7, 8, 10];
-
   double _getFreqFromKeyNumber(double keyNumber) {
     return 440 * pow(2, (keyNumber - 49) / 12);
   }
 
   double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
     int stepNumber = stepOffset.floor();
-    int keyOffset = minorScaleIntervals[stepNumber % 7];
+    int keyOffset = Scales.minor[stepNumber % 7];
     return (baseKey + keyOffset).floorToDouble();
   }
 

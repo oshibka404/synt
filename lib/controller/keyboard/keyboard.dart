@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:perfect_first_synth/synth/action_receiver.dart';
 
 import '../../recorder/recorder.dart';
 import '../../recorder/state.dart';
+import '../../synth/action_receiver.dart';
 import '../keyboard_preset.dart';
 
 import 'keyboard_action.dart';
@@ -20,9 +20,13 @@ class Keyboard extends StatefulWidget {
     @required this.offset,
     @required this.preset,
   });
-  
   final Size size;
+
+  /// Screen position
+  /// it's used to compute relative pointer positions since the component uses
+  /// low-level [Listener] to handle touch events.
   final Offset offset;
+
   final KeyboardPreset preset;
 
   @override
