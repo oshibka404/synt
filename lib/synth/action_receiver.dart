@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:perfect_first_synth/controller/keyboard_preset.dart';
-
 import '../controller/keyboard/keyboard_action.dart';
 import 'synthesizer.dart';
 

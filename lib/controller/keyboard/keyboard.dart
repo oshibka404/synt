@@ -117,25 +117,6 @@ class _KeyboardState extends State<Keyboard> {
     });
   }
 
-  List<Widget> _getPointersText() {
-    final List<Widget> pointerTexts = [];
-    pointers.forEach((pointerId, pointerData) {
-      String step = _getNormalizedPitchOffset(pointerData.position).toStringAsFixed(2);
-      String modulation = _getModulationFromPointerPosition(pointerData.position).toStringAsFixed(2);
-      String pressure = pointerData.pressure.toStringAsFixed(2);
-      if (step != null && modulation != null) {
-        String freqText = 'Step #$step';
-        String noiseText = 'Noize: $modulation';
-        String gainText = 'Gain: $pressure';
-        pointerTexts.add(Text(
-          '$freqText, $gainText, $noiseText',
-          style: Theme.of(context).textTheme.bodyText2,
-        ));
-      }
-    });
-    return pointerTexts;
-  }
-
   String _getRecordingStatusText() {
     switch (_recorderState) {
       case RecorderState.recording:
@@ -179,11 +160,6 @@ class _KeyboardState extends State<Keyboard> {
                       ],
                     ),
                   ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _getPointersText(),
                 ),
               ],
             ),
