@@ -12,17 +12,14 @@ class Controller extends StatefulWidget {
 class _ControllerState extends State<Controller> {
   static List<KeyboardPreset> keyboardPresets = [
     KeyboardPreset(
-      baseFreq: 440,
       baseKey: 49,
       color: Colors.blue,
     ),
     KeyboardPreset(
-      baseFreq: 220,
       baseKey: 37,
       color: Colors.green,
     ),
     KeyboardPreset(
-      baseFreq: 110,
       baseKey: 25,
       color: Colors.red,
     ),
