@@ -2,22 +2,21 @@ import 'dart:async';
 
 import 'state.dart';
 
-/// Singleton class providing API to record sequences of actions
+/// Class providing API to record sequences of actions
 /// performed on controller.
 class Recorder {
-  static final Recorder _recorder = Recorder._internal();
-
-  factory Recorder() {
-    return _recorder;
+  Recorder({
+    this.initialState = RecorderState.playing,
+  }) {
+    _stateStreamController.add(initialState);
   }
+  final RecorderState initialState;
 
   var _stateStreamController = StreamController<RecorderState>();
   
   Stream<RecorderState> get stateStream {
     return _stateStreamController.stream;
   }
-
-  Recorder._internal();
 
   void startRec() {
     _stateStreamController.add(RecorderState.recording);

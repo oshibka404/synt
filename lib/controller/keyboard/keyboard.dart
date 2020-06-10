@@ -34,14 +34,21 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  _KeyboardState() {
-    Recorder().stateStream.listen((newState) {
+
+  @override
+  initState() {
+    _recorder = Recorder();
+    _recorderStreamSubscription = _recorder.stateStream.listen((newState) {
       setState(() {
         _recorderState = newState;
       });
     });
     ActionReceiver(actionStream);
+    super.initState();
   }
+
+  Recorder _recorder;
+  StreamSubscription _recorderStreamSubscription;
 
   double _getModulationFromPointerPosition(Offset position) {
     return 1 - position.dy / widget.size.height;
@@ -171,5 +178,10 @@ class _KeyboardState extends State<Keyboard> {
         )
       ),
     );
+  }
+  @override
+  void dispose() {
+    _recorderStreamSubscription.cancel();
+    super.dispose();
   }
 }
