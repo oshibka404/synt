@@ -63,6 +63,6 @@ class KeyboardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(KeyboardPainter oldDelegate) {
-    return true;
+    return true; // TODO: check pointers and mainColor (to do it make pointers immutable)
   }
 }
