@@ -19,8 +19,11 @@ class Keyboard extends StatefulWidget {
     @required this.size,
     @required this.offset,
     @required this.preset,
+    @required this.isInRecordMode,
   });
   final Size size;
+
+  final bool isInRecordMode;
 
   /// Screen position
   /// it's used to compute relative pointer positions since the component uses
@@ -37,13 +40,13 @@ class _KeyboardState extends State<Keyboard> {
 
   @override
   initState() {
-    _recorder = Recorder();
+    _recorder = Recorder(input: actionStream);
     _recorderStreamSubscription = _recorder.stateStream.listen((newState) {
       setState(() {
         _recorderState = newState;
       });
     });
-    ActionReceiver(actionStream);
+    ActionReceiver(_recorder.output);
     super.initState();
   }
 
@@ -129,15 +132,12 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   String _getRecordingStatusText() {
-    switch (_recorderState) {
-      case RecorderState.recording:
-        return 'Recording';
-      case RecorderState.ready:
-        return 'Ready to record';
-      case RecorderState.playing:
-        return '';
-      default:
-        throw ArgumentError('Wrong app mode (neither recording nor playing nor ready to rec)');
+    if (_recorderState == RecorderState.recording) {
+      return 'Recording';
+    } else if (_recorderState == RecorderState.playing && widget.isInRecordMode) {
+      return 'Ready to record';
+    } else {
+      return '';
     }
   }
 

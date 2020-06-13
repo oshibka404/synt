@@ -11,11 +11,15 @@ class PresetSelector extends StatelessWidget {
     @required this.currentPreset,
     @required this.setPreset,
     @required this.keyboardPresets,
+    this.onTapDown,
+    this.onTapUp,
   });
   final Size size;
   final KeyboardPreset currentPreset;
   final Function setPreset;
   final List<KeyboardPreset> keyboardPresets;
+  final Function onTapDown;
+  final Function onTapUp;
 
   List<PresetButton> _buildPresetButtons() {
     List<PresetButton> presetButtons = new List<PresetButton>();
@@ -24,9 +28,9 @@ class PresetSelector extends StatelessWidget {
         new PresetButton(
           onTapDown: () {
             setPreset(preset);
-            Recorder().setReadyToRec();
+            onTapDown();
           },
-          onTapUp: Recorder().stopRec,
+          onTapUp: onTapUp,
           active: currentPreset == preset,
           size: Size(size.height / 3, size.width),
           color: preset.color,

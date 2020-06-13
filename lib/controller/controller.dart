@@ -25,10 +25,24 @@ class _ControllerState extends State<Controller> {
     ),
   ];
 
+  bool isInRecordMode = false;
+
   KeyboardPreset currentPreset = keyboardPresets[0];
   void setPreset(KeyboardPreset preset) {
     setState(() {
       currentPreset = preset;
+    });
+  }
+
+  void enableRecordMode() {
+    setState(() {
+      isInRecordMode = true;
+    });
+  }
+
+  void disableRecordMode() {
+    setState(() {
+      isInRecordMode = false;
     });
   }
   
@@ -44,11 +58,14 @@ class _ControllerState extends State<Controller> {
               currentPreset: currentPreset,
               setPreset: setPreset,
               keyboardPresets: keyboardPresets,
+              onTapDown: enableRecordMode,
+              onTapUp: disableRecordMode,
             ),
             Keyboard(
               size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
               offset: Offset(controlPanelWidth, 0),
               preset: currentPreset,
+              isInRecordMode: isInRecordMode,
             ),
           ],
         );

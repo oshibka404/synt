@@ -50,10 +50,6 @@ class Recorder {
     _currentRecord = Record(startPoint: initialPosition, startTime: DateTime.now());
   }
 
-  void setReadyToRec() {
-    _stateStreamController.add(RecorderState.ready);
-  }
-
   void stopRec() {
     _stateStreamController.add(RecorderState.playing);
     records[_currentRecord.startTime] = _currentRecord;
