@@ -147,6 +147,7 @@ class _KeyboardState extends State<Keyboard> {
       onPointerDown: _playNote,
       onPointerMove: _updateNote,
       onPointerUp: _stopNote,
+      onPointerCancel: _stopNote,
       child: Container(
         constraints: BoxConstraints.tight(widget.size),
         child: ClipRect(
