@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'keyboard_preset.dart';
@@ -34,16 +36,17 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  var _recordModeSwitchStreamController = StreamController<bool>();
+  Stream<bool> get _recordModeSwitchStream {
+    return _recordModeSwitchStreamController.stream;
+  }
+
   void enableRecordMode() {
-    setState(() {
-      isInRecordMode = true;
-    });
+    _recordModeSwitchStreamController.add(true);
   }
 
   void disableRecordMode() {
-    setState(() {
-      isInRecordMode = false;
-    });
+    _recordModeSwitchStreamController.add(false);
   }
   
   @override
@@ -65,7 +68,7 @@ class _ControllerState extends State<Controller> {
               size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
               offset: Offset(controlPanelWidth, 0),
               preset: currentPreset,
-              isInRecordMode: isInRecordMode,
+              recordModeSwitchStream: _recordModeSwitchStream,
             ),
           ],
         );

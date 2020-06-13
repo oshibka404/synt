@@ -38,19 +38,39 @@ class Recorder {
     return _outputController.stream;
   }
 
+  void play(Record record) {
+    record.actions.forEach((action) {
+      var delayFromPlayStartTime = action.time.difference(record.startTime);
+      Future.delayed(delayFromPlayStartTime, () {
+        _outputController.add(action);
+      });
+    });
+    Future.delayed(record.duration, () {
+      play(record);
+    });
+  }
+
   var _stateStreamController = StreamController<RecorderState>();
   Stream<RecorderState> get stateStream {
     return _stateStreamController.stream;
   }
 
-  void startRec(Offset initialPosition) {
+  /// Creates [Record] and starts writing actions received from [input] to it.
+  /// Returns start time to be used as the record's id.
+  DateTime startRec(Offset initialPosition) {
+    var startTime = DateTime.now();
     _stateStreamController.add(RecorderState.recording);
-    _currentRecord = Record(startPoint: initialPosition, startTime: DateTime.now());
+    _currentRecord = Record(startPoint: initialPosition, startTime: startTime);
+    return startTime;
   }
 
+  /// Stops recording, decorates the finished record with [Record..duration] 
+  /// and adds it to [records].
   void stopRec() {
     _stateStreamController.add(RecorderState.playing);
+    _currentRecord.duration = DateTime.now().difference(_currentRecord.startTime);
     records[_currentRecord.startTime] = _currentRecord;
+    play(_currentRecord);
     _currentRecord = null;
   }
 }

@@ -19,11 +19,11 @@ class Keyboard extends StatefulWidget {
     @required this.size,
     @required this.offset,
     @required this.preset,
-    @required this.isInRecordMode,
+    @required this.recordModeSwitchStream,
   });
   final Size size;
 
-  final bool isInRecordMode;
+  final Stream<bool> recordModeSwitchStream;
 
   /// Screen position
   /// it's used to compute relative pointer positions since the component uses
@@ -37,7 +37,6 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-
   @override
   initState() {
     _recorder = Recorder(input: actionStream);
@@ -47,6 +46,14 @@ class _KeyboardState extends State<Keyboard> {
       });
     });
     ActionReceiver(_recorder.output);
+    this.widget.recordModeSwitchStream.listen((_isInRecordingMode) {
+      setState(() {
+        this._isInRecordingMode = _isInRecordingMode;
+        if (!_isInRecordingMode) {
+          _recorder.stopRec();
+        }
+      });
+    });
     super.initState();
   }
 
@@ -57,11 +64,13 @@ class _KeyboardState extends State<Keyboard> {
     return 1 - position.dy / widget.size.height;
   }
 
+  // TODO: make immutable
   Map<int, PointerData> pointers = {};
 
   final int stepsCount = 8;
 
   RecorderState _recorderState = RecorderState.playing;
+  bool _isInRecordingMode = false;
 
   var _actionStreamController = StreamController<KeyboardAction>();
   
@@ -90,6 +99,11 @@ class _KeyboardState extends State<Keyboard> {
         preset: widget.preset,
       )
     );
+
+    if (_isInRecordingMode && _recorderState != RecorderState.recording) {
+      _recorder.startRec(relativePosition);
+    }
+
     setState(() {
       pointers[details.pointer] = PointerData(
         position: relativePosition,
@@ -134,7 +148,7 @@ class _KeyboardState extends State<Keyboard> {
   String _getRecordingStatusText() {
     if (_recorderState == RecorderState.recording) {
       return 'Recording';
-    } else if (_recorderState == RecorderState.playing && widget.isInRecordMode) {
+    } else if (_recorderState == RecorderState.playing && _isInRecordingMode) {
       return 'Ready to record';
     } else {
       return '';
