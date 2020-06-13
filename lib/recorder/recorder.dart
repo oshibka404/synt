@@ -14,7 +14,7 @@ class Recorder {
     @required this.input,
   }) {
     _stateStreamController.add(initialState);
-    _inputSubscription = input.listen(inputListener);
+    input.listen(inputListener);
   }
 
   final RecorderState initialState;
@@ -31,8 +31,6 @@ class Recorder {
   }
 
   Record _currentRecord;
-
-  StreamSubscription _inputSubscription;
 
   var _outputController = StreamController<KeyboardAction>();
   

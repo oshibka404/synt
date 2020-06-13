@@ -63,6 +63,6 @@ class KeyboardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(KeyboardPainter oldDelegate) {
-    return false;
+    return true;
   }
 }
