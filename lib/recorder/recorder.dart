@@ -12,18 +12,21 @@ class Recorder {
   Recorder({
     this.initialState = RecorderState.playing,
     @required this.input,
+    this.measureDuration,
   }) {
     _stateStreamController.add(initialState);
-    input.listen(inputListener);
+    input.listen(_inputListener);
   }
 
   final RecorderState initialState;
+
+  Duration measureDuration;
 
   final Stream<KeyboardAction> input;
 
   final records = Map<DateTime, Record>();
 
-  void inputListener(KeyboardAction action) {
+  void _inputListener(KeyboardAction action) {
     if (_currentRecord != null) {
       _currentRecord.actions.add(action);
     }
@@ -68,7 +71,21 @@ class Recorder {
   /// and adds it to [records].
   void stopRec() {
     _stateStreamController.add(RecorderState.playing);
-    _currentRecord.duration = DateTime.now().difference(_currentRecord.startTime);
+    
+    var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
+    if (measureDuration == null) {
+      measureDuration = recordedDuration;
+    }
+
+    if (_currentRecord.actions.last.type != KeyboardActionType.stop) {
+      _currentRecord.actions.add(
+        KeyboardAction(
+          time: DateTime.now(),
+          voiceId: _currentRecord.actions.last.voiceId,
+          type: KeyboardActionType.stop,
+        ),
+      );
+    }
     records[_currentRecord.startTime] = _currentRecord;
     play(_currentRecord);
     _currentRecord = null;
