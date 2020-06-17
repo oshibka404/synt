@@ -31,59 +31,16 @@ class KeyboardPainter extends CustomPainter {
 
   // TODO: refactor this nightmare!
   Path getWavePath(double x, int waves) {
-    var phaseShift = (DateTime.now().millisecondsSinceEpoch % 1000) / 1000; // from 0 to 1
     var path = Path();
     double amplitude = pixelsPerStep / 4;
     var availableHeight = size.height - (2 * padding);
     var waveLength = availableHeight / waves;
 
-    var valueAt0 = sin((1 - phaseShift) * 2*pi);
-
     // full cycle is 1, peaks on .25 and .75
-    path.moveTo(x + valueAt0 * amplitude, padding);
+    path.moveTo(x, padding);
 
-    if (phaseShift > .75) {
-      var extremum1 = phaseShift - .75;
-      var extremum2 = phaseShift - .25;
-      var zero = phaseShift - .5;
-
-      path.quadraticBezierTo(
-        (x + amplitude), padding + extremum1 * waveLength,
-        x, padding + waveLength * zero
-      );
-      path.quadraticBezierTo(
-        (x - amplitude), padding + extremum2 * waveLength,
-        x, padding + phaseShift * waveLength
-      );
-    } else if (phaseShift > .5) {
-      var zero = phaseShift - .5;
-      var point1 = zero / 2;
-      var extremum2 = phaseShift - .25;
-      
-      path.quadraticBezierTo(
-        (x + sin(zero/2 * 2*pi) * amplitude), padding + point1 * waveLength,
-        x, padding + waveLength * zero
-      );
-      path.quadraticBezierTo(
-        (x - amplitude), padding + extremum2 * waveLength,
-        x, padding + phaseShift * waveLength
-      );
-    } else if (phaseShift > .25) {
-      var extremum = phaseShift - .25;
-      
-      path.quadraticBezierTo(
-        (x - amplitude), padding + extremum * waveLength,
-        x, padding + phaseShift * waveLength
-      );
-    } else {
-      path.quadraticBezierTo(
-        (x + sin((phaseShift - 1) / 2 * 2*pi) * amplitude), padding + phaseShift / 2 * waveLength,
-        x, padding + phaseShift * waveLength
-      );
-    }
-
-    for (int i = 0; i < waves - 1; i++) {
-      double waveStartY = padding + waveLength * (i + phaseShift);
+    for (int i = 0; i < waves; i++) {
+      double waveStartY = padding + waveLength * i;
       path.quadraticBezierTo(
         (x + amplitude), waveStartY + waveLength / 4,
         x, waveStartY + waveLength / 2
@@ -93,52 +50,6 @@ class KeyboardPainter extends CustomPainter {
         x, waveStartY + waveLength
       );
     }
-
-    var tail = size.height - padding;
-
-    path.moveTo(x + valueAt0 * amplitude, tail);
-    
-    var phaseUnShift = 1 - phaseShift;
-    if (phaseUnShift > .75) {
-      var extremum1 = phaseUnShift - .75;
-      var extremum2 = phaseUnShift - .25;
-      var zero = phaseUnShift - .5;
-
-      path.quadraticBezierTo(
-        (x - amplitude), tail - extremum1 * waveLength,
-        x, tail - waveLength * zero
-      );
-      path.quadraticBezierTo(
-        (x + amplitude), tail - extremum2 * waveLength,
-        x, tail - phaseUnShift * waveLength
-      );
-    } else if (phaseUnShift > .5) {
-      var zero = phaseUnShift - .5;
-      var point1 = zero / 2;
-      var extremum2 = phaseUnShift - .25;
-      
-      path.quadraticBezierTo(
-        (x - sin(zero/2 * 2*pi) * amplitude), tail - point1 * waveLength,
-        x, tail - waveLength * zero
-      );
-      path.quadraticBezierTo(
-        (x + amplitude), tail - extremum2 * waveLength,
-        x, tail - phaseUnShift * waveLength
-      );
-    } else if (phaseUnShift > .25) {
-      var extremum = phaseUnShift - .25;
-      
-      path.quadraticBezierTo(
-        (x + amplitude), tail - extremum * waveLength,
-        x, tail - phaseUnShift * waveLength
-      );
-    } else {
-      path.quadraticBezierTo(
-        (x - sin((phaseUnShift - 1) / 2 * 2*pi) * amplitude), tail - phaseUnShift / 2 * waveLength,
-        x, tail - phaseUnShift * waveLength
-      );
-    }
-
     return path;
   }
 
