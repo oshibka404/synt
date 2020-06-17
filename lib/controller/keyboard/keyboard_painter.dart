@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'pointer_data.dart';
@@ -29,7 +27,6 @@ class KeyboardPainter extends CustomPainter {
 
   getXPositionOfKey(int keyNumber) => keyNumber * pixelsPerStep + pixelsPerStep / 2;
 
-  // TODO: refactor this nightmare!
   Path getWavePath(double x, int waves) {
     var path = Path();
     double amplitude = pixelsPerStep / 4;
