@@ -20,14 +20,5 @@ jobs:
       run: flutter analyze
     - name: Run tests
       run: flutter test
-  build:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: subosito/flutter-action@v1
-      with:
-          channel: 'dev'
-    - name: Install dependencies on macOS
-      run: flutter pub get
-    - name: Build iOS app 
-      run: flutter build ios --release --no-codesign
+  # TODO: build faust's cpp files prior to ios app build.
+  
