@@ -72,7 +72,7 @@ class Recorder {
   void stopRec() {
     _stateStreamController.add(RecorderState.playing);
 
-    if (_currentRecord == null) return;
+    if (_currentRecord == null || _currentRecord.actions.length == 0) return;
     
     var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
     if (measureDuration == null) {

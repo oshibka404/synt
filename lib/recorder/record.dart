@@ -9,6 +9,6 @@ class Record {
   });
   final Offset startPoint;
   final DateTime startTime;
-  var actions = List<KeyboardAction>();
+  List<KeyboardAction> actions = [];
   Duration duration;
 }
