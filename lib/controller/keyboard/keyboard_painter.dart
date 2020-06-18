@@ -27,30 +27,36 @@ class KeyboardPainter extends CustomPainter {
 
   getXPositionOfKey(int keyNumber) => keyNumber * pixelsPerStep + pixelsPerStep / 2;
 
-  Path getWavePath(double x, int waves) {
+  // TODO: Isolate drawing primitives
+  /// returns [Path] of the wave for pressed key
+  ///
+  /// From smooth sine-ish (when) [sharpness] = 0
+  /// to saw (when 1)
+  Path getWavePath(double x, int waves, double sharpness) {
     var path = Path();
     double amplitude = pixelsPerStep / 4;
     var availableHeight = size.height - (2 * padding);
     var waveLength = availableHeight / waves;
 
     // full cycle is 1, peaks on .25 and .75
-    path.moveTo(x, padding);
+    path.moveTo(x + (amplitude * sharpness), padding);
 
     for (int i = 0; i < waves; i++) {
       double waveStartY = padding + waveLength * i;
       path.quadraticBezierTo(
-        (x + amplitude), waveStartY + waveLength / 4,
-        x, waveStartY + waveLength / 2
+        (x + (amplitude * (1 - sharpness))), waveStartY + (waveLength / 4 * (1 - sharpness)),
+        x - amplitude * sharpness, waveStartY + (waveLength / 2 * (1 - sharpness))
       );
       path.quadraticBezierTo(
-        (x - amplitude), waveStartY + waveLength * 3 / 4,
-        x, waveStartY + waveLength
+        (x - (amplitude * (1 - sharpness))), waveStartY + (waveLength / 2 + (waveLength / 4 * (1 - sharpness))),
+        x + amplitude * sharpness, waveStartY + waveLength
       );
     }
     return path;
   }
 
   void drawPressedKey(double x, PointerData pressingPointer) {
+    var normalizedModulation = pressingPointer.position.dy / size.height;
     var keyColor = Color.lerp(
       mainColor,
       invert(mainColor),
@@ -61,7 +67,7 @@ class KeyboardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
     
-    var path = getWavePath(x, 3);
+    var path = getWavePath(x, 3, 1 - normalizedModulation);
     canvas.drawPath(path, paint);
   }
 
