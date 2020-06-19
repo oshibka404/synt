@@ -9,8 +9,8 @@ class PresetButton extends StatefulWidget {
     this.onTap,
     this.active = false,
     this.size = const Size.square(100),
-    this.color = Colors.amber,
-    this.activeColor = Colors.amberAccent,
+    this.color = Colors.orange,
+    this.activeColor = Colors.amber,
   });
 
   final Function onTapDown;
@@ -18,8 +18,8 @@ class PresetButton extends StatefulWidget {
   final Function onTap;
   final bool active;
   final Size size;
-  final Color color;
-  final Color activeColor;
+  final MaterialColor color;
+  final MaterialColor activeColor;
 
   @override
   State<StatefulWidget> createState() => _PresetButtonState();

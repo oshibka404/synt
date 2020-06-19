@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'pointer_data.dart';
@@ -5,13 +7,13 @@ import 'pointer_data.dart';
 class KeyboardPainter extends CustomPainter {
   KeyboardPainter({
     @required this.pixelsPerStep,
-    this.mainColor = Colors.black,
+    this.mainColor = Colors.grey,
     this.pointers,
   });
 
   Map<int, PointerData> pointers;
 
-  final Color mainColor;
+  final MaterialColor mainColor;
 
   final double padding = 30;
 
@@ -19,7 +21,9 @@ class KeyboardPainter extends CustomPainter {
 
   Canvas canvas;
 
-  Color backgroundColor = Colors.grey[850];
+  Color backgroundColor = Colors.white;
+  Color get lightMainColor => mainColor[200];
+  Color get darkMainColor => mainColor[900];
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;
@@ -58,8 +62,8 @@ class KeyboardPainter extends CustomPainter {
   void drawPressedKey(double x, PointerData pressingPointer) {
     var normalizedModulation = pressingPointer.position.dy / size.height;
     var keyColor = Color.lerp(
-      mainColor,
-      invert(mainColor),
+      darkMainColor,
+      lightMainColor,
       pressingPointer.position.dy / size.height
     );
     var paint = Paint()
@@ -91,22 +95,32 @@ class KeyboardPainter extends CustomPainter {
           ),
           Radius.circular(2)
         ),
-        Paint()..color = getKeyColor(keyNumber, pointers)
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: getKeyColors(keyNumber)
+          ).createShader(Rect.fromLTRB(0, 0, size.width, size.height))
       );
     }
   }
   
   final double pixelsPerStep;
 
-  Color getKeyColor(int keyNumber, Map<int, PointerData> pointers) {
+  /// Returns colors of a gradient to paint a key of a given [keyNumber]
+  /// 
+  /// (From top to bottom)
+  List<Color> getKeyColors(int keyNumber) {
     if (isTonic(keyNumber)) {
-      return Colors.amber;
+      return [
+        Colors.amber[900],
+        Colors.amber[200],
+      ];
     }
-    return Color.lerp(mainColor, backgroundColor, .5);
-  }
-
-  Color invert(Color color) {
-    return Color(0xFFFFFFFF - (color.value % 0xFF000000));
+    return [
+      darkMainColor,
+      lightMainColor,
+    ];
   }
 
   int getClosestStepNumber(Offset position) {
