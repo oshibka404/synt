@@ -9,6 +9,8 @@ class ActionReceiver {
     input.listen(actionHandler);
   }
 
+  List<int> scale = Scales.dorian;
+
   Synthesizer _synth = new Synthesizer();
 
   double _getFreqFromKeyNumber(double keyNumber) {
@@ -17,8 +19,10 @@ class ActionReceiver {
 
   double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
     int stepNumber = stepOffset.floor();
-    int keyOffset = Scales.minor[stepNumber % 7];
-    return (baseKey + keyOffset).floorToDouble();
+    int octaveOffset = (stepNumber ~/ scale.length);
+    int chromaticStepsOffset = scale[stepNumber % scale.length];
+    int semitonesOffset = octaveOffset + chromaticStepsOffset;
+    return (baseKey + semitonesOffset).floorToDouble();
   }
 
   double _getFreqFromStepOffset(double step, int baseKey) {
