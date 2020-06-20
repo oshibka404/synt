@@ -11,6 +11,7 @@ import '../keyboard_preset.dart';
 import 'keyboard_action.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
+import 'recorder_state_indicator.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 /// Doesn't care how its actions will be interpreted, leaving it to consumers.
@@ -145,16 +146,6 @@ class _KeyboardState extends State<Keyboard> {
     });
   }
 
-  String _getRecordingStatusText() {
-    if (_recorderState == RecorderState.recording) {
-      return 'Recording';
-    } else if (_recorderState == RecorderState.playing && _isInRecordingMode) {
-      return 'Ready to record';
-    } else {
-      return '';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Listener(
@@ -171,23 +162,9 @@ class _KeyboardState extends State<Keyboard> {
               mainColor: widget.preset.color,
               pointers: pointers,
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getRecordingStatusText(),
-                          style: Theme.of(context).textTheme.headline4,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            child: RecorderStateIndicator(
+              state: _recorderState,
+              isInRecordingMode: _isInRecordingMode,
             ),
           ),
         )
