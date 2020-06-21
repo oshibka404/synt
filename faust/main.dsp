@@ -11,7 +11,9 @@ import("stdfaust.lib");
 
 cc = library("midi_controls.dsp");
 
-envelope = en.adsr(0.01, 0.3, 0.5, 0.1, cc.gate) * cc.gain;
+attack = (1 - cc.modulation) / 4 + 0.01; // .26s for pure sine and 0.01 for pure saw
+
+envelope = en.adsr(attack, 0.3, 0.5, 0.1, cc.gate) * cc.gain;
 
 oscillators = component("oscillators.dsp") * envelope;
 

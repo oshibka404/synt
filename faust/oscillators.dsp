@@ -2,8 +2,11 @@ import("stdfaust.lib");
 
 cc = library("midi_controls.dsp");
 
-saw = os.sawtooth(cc.freq) * vslider("osc/saw/level", 0.6, 0, 1, 0.01);
-sine = os.osc(cc.freq) * vslider("osc/sin/level", 0.4, 0, 1, 0.01);
-noise = no.noise * vslider("osc/noise/level", 0.2, 0, 1, 0.01);
+saw = os.sawtooth(cc.freq) * cc.modulation;
+sine = os.osc(cc.freq) * (1 - cc.modulation);
 
-process = (saw + sine + noise) / 3;
+noiseEnvelope = en.adsr(0.01, 0.2, 0, 0, cc.gate);
+
+noise = no.noise * cc.modulation * noiseEnvelope;
+
+process = saw + sine + noise;

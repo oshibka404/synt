@@ -50,8 +50,7 @@ class Synthesizer {
       'freq': voiceParams.freq,
       'gain': voiceParams.gain,
       'gate': 1,
-      'osc/noise/level': voiceParams.noiseLevel,
-      'osc/saw/level': voiceParams.sawLevel,
+      'modulation': voiceParams.modulation,
     });
     return voices[id];
   }
@@ -61,8 +60,7 @@ class Synthesizer {
       'freq': voiceParams.freq,
       'gain': voiceParams.gain,
       'gate': voiceParams.gate,
-      'osc/noise/level': voiceParams.noiseLevel,
-      'osc/saw/level': voiceParams.sawLevel,
+      'modulation': voiceParams.modulation,
     });
     return voices[id];
   }
@@ -79,12 +77,10 @@ class VoiceParams {
     this.gain,
     this.gate,
     this.freq,
-    this.sawLevel,
-    this.noiseLevel,
+    this.modulation,
   });
   final double gain;
   final double gate;
   final double freq;
-  final double sawLevel;
-  final double noiseLevel;
+  final double modulation;
 }

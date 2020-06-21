@@ -33,8 +33,7 @@ class ActionReceiver {
     VoiceParams(
       freq: _getFreqFromStepOffset(action.stepOffset, action.preset.baseKey),
       gain: action.pressure,
-      noiseLevel: 1 - action.modulation,
-      sawLevel: action.modulation,
+      modulation: action.modulation,
     );
 
   void actionHandler(KeyboardAction action) {
@@ -42,12 +41,7 @@ class ActionReceiver {
       case KeyboardActionType.start:
         _synth.newVoice(
           action.voiceId,
-          VoiceParams(
-            freq: _getFreqFromStepOffset(action.stepOffset, action.preset.baseKey),
-            gain: action.pressure,
-            noiseLevel: 1 - action.modulation,
-            sawLevel: action.modulation,
-          )
+          _getVoiceParams(action)
         );
         break;
       case KeyboardActionType.modify:
