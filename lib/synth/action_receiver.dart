@@ -21,7 +21,7 @@ class ActionReceiver {
     int stepNumber = stepOffset.floor();
     int octaveOffset = (stepNumber ~/ scale.length);
     int chromaticStepsOffset = scale[stepNumber % scale.length];
-    int semitonesOffset = octaveOffset + chromaticStepsOffset;
+    int semitonesOffset = (octaveOffset * 12) + chromaticStepsOffset;
     return (baseKey + semitonesOffset).floorToDouble();
   }
 
