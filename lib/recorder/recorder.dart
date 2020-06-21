@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/controller/keyboard/keyboard_action.dart';
@@ -15,6 +16,7 @@ class Recorder {
     this.measureDuration,
   }) {
     _stateStreamController.add(initialState);
+    _state = initialState;
     input.listen(_inputListener);
   }
 
@@ -41,6 +43,15 @@ class Recorder {
     return _outputController.stream;
   }
 
+  RecorderState _state;
+
+  get state => _state;
+
+  set state(value) {
+    _state = value;
+    _stateStreamController.add(value);
+  }
+
   void play(Record record) {
     print('play record ${record.startTime}, duration ${record.duration}');
     record.actions.forEach((action) {
@@ -59,28 +70,49 @@ class Recorder {
     return _stateStreamController.stream;
   }
 
+  Duration _computeIntendedDuration(Duration recordedDuration) {
+    if (recordedDuration == measureDuration) {
+      return recordedDuration;
+    }
+    
+    Duration intendedDuration;
+    double measuresInRecord = recordedDuration.inMicroseconds / measureDuration.inMicroseconds;
+
+    // TODO: compute fractions (ln 2 not initialized)
+    int bars = measuresInRecord > 1 ? pow(2, (log(measuresInRecord) / ln2).round()) : 1;
+    
+    intendedDuration = Duration(
+      microseconds: measureDuration.inMicroseconds * bars
+    );
+    print("Intended duration: $intendedDuration");
+    return intendedDuration;
+  }
+
   /// Creates [Record] and starts writing actions received from [input] to it.
   /// Returns start time to be used as the record's id.
   DateTime startRec(Offset initialPosition) {
     var startTime = DateTime.now();
-    _stateStreamController.add(RecorderState.recording);
+    state = RecorderState.recording;
     _currentRecord = Record(startPoint: initialPosition, startTime: startTime);
     return startTime;
   }
 
+  // TODO: simplify, split, shorten
   /// Stops recording, decorates the finished record with [Record..duration] 
   /// and adds it to [records].
   void stopRec() {
-    _stateStreamController.add(RecorderState.playing);
+    state = RecorderState.playing;
 
     if (_currentRecord == null || _currentRecord.actions.length == 0) return;
     
     var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
+
     if (measureDuration == null) {
+      print("Measure duration: $recordedDuration");
       measureDuration = recordedDuration;
     }
 
-    _currentRecord.duration = measureDuration;
+    _currentRecord.duration = _computeIntendedDuration(recordedDuration);
 
     if (_currentRecord.actions.last.type != KeyboardActionType.stop) {
       _currentRecord.actions.add(
@@ -92,7 +124,14 @@ class Recorder {
       );
     }
     records[_currentRecord.startTime] = _currentRecord;
-    play(_currentRecord);
+
+    Duration delayBeforePlay = _currentRecord.duration >= recordedDuration ?
+      _currentRecord.duration - recordedDuration :
+      _currentRecord.duration * 2 - recordedDuration;
+
+    var startTime = _currentRecord.startTime;
+
+    Future.delayed(delayBeforePlay, () => play(records[startTime]));
     _currentRecord = null;
   }
 }
