@@ -42,6 +42,7 @@ class Recorder {
   }
 
   void play(Record record) {
+    print('play record ${record.startTime}, duration ${record.duration}');
     record.actions.forEach((action) {
       var delayFromPlayStartTime = action.time.difference(record.startTime);
       Future.delayed(delayFromPlayStartTime, () {
@@ -78,6 +79,8 @@ class Recorder {
     if (measureDuration == null) {
       measureDuration = recordedDuration;
     }
+
+    _currentRecord.duration = measureDuration;
 
     if (_currentRecord.actions.last.type != KeyboardActionType.stop) {
       _currentRecord.actions.add(
