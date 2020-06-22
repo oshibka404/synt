@@ -21,20 +21,23 @@ class Record {
   /// When no params given or [at] is in past, starts immediately.
   Stream<KeyboardAction> play({DateTime at, Duration after}) async* {
     if (after != null) {
-      Future.delayed(after, play);
+      await Future.delayed(after);
+      yield* play();
     } else if (at != null && at.isAfter(DateTime.now())) {
-      play(after: at.difference(DateTime.now()));
+      yield* play(after: at.difference(DateTime.now()));
     } else {
       var iterator = _actions.iterator;
-      var previousActionTime = startTime;
+      var playbackStartTime = DateTime.now();
       while (iterator.moveNext()) {
-        // TODO: use absolute time offset instead of relative
-        await Future.delayed(iterator.current.time.difference(previousActionTime));
-        previousActionTime = iterator.current.time;
-        yield iterator.current;
+        var action = iterator.current;
+        var timeFromPlaybackStart = DateTime.now().difference(playbackStartTime);
+        var relativeActionTimePoint = action.time.difference(startTime);
+        await Future.delayed(relativeActionTimePoint - timeFromPlaybackStart);
+        yield action;
       }
     }
   }
+  
 
   /// Saves [action] to this [Record].
   /// 
@@ -47,9 +50,7 @@ class Record {
         _recordingVoices.add(action.voiceId);
         break;
       case KeyboardActionType.stop:
-        if (!_recordingVoices.remove(action.voiceId)) { // if no such voice
-          return;
-        }
+        _recordingVoices.remove(action.voiceId);
         break;
       case KeyboardActionType.modify:
         if (!_recordingVoices.contains(action.voiceId)) {
