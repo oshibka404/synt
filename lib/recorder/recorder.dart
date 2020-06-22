@@ -30,7 +30,7 @@ class Recorder {
 
   void _inputListener(KeyboardAction action) {
     if (_currentRecord != null) {
-      _currentRecord.actions.add(action);
+      _currentRecord.add(action);
     }
     _outputController.add(action);
   }
@@ -52,16 +52,14 @@ class Recorder {
     _stateStreamController.add(value);
   }
 
-  void play(Record record) {
-    print('play record ${record.startTime}, duration ${record.duration}');
-    record.actions.forEach((action) {
-      var delayFromPlayStartTime = action.time.difference(record.startTime);
-      Future.delayed(delayFromPlayStartTime, () {
-        _outputController.add(action);
-      });
+  // TODO: create class Looper/Loop
+  void loop(Record record) {
+    print(record.startTime);
+    record.play().listen((action) {
+      _outputController.add(action);
     });
     Future.delayed(record.duration, () {
-      play(record);
+      loop(record);
     });
   }
 
@@ -84,7 +82,6 @@ class Recorder {
     intendedDuration = Duration(
       microseconds: measureDuration.inMicroseconds * bars
     );
-    print("Intended duration: $intendedDuration");
     return intendedDuration;
   }
 
@@ -103,27 +100,19 @@ class Recorder {
   void stopRec() {
     state = RecorderState.playing;
 
-    if (_currentRecord == null || _currentRecord.actions.length == 0) return;
+    if (_currentRecord == null || _currentRecord.isEmpty) return;
     
     var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
 
     if (measureDuration == null) {
-      print("Measure duration: $recordedDuration");
       measureDuration = recordedDuration;
     }
 
     _currentRecord.duration = _computeIntendedDuration(recordedDuration);
 
-    if (_currentRecord.actions.last.type != KeyboardActionType.stop) {
-      _currentRecord.actions.add(
-        KeyboardAction(
-          time: DateTime.now(),
-          voiceId: _currentRecord.actions.last.voiceId,
-          type: KeyboardActionType.stop,
-        ),
-      );
-    }
     records[_currentRecord.startTime] = _currentRecord;
+
+    _currentRecord.close();
 
     Duration delayBeforePlay = _currentRecord.duration >= recordedDuration ?
       _currentRecord.duration - recordedDuration :
@@ -131,7 +120,7 @@ class Recorder {
 
     var startTime = _currentRecord.startTime;
 
-    Future.delayed(delayBeforePlay, () => play(records[startTime]));
+    Future.delayed(delayBeforePlay, () => loop(records[startTime]));
     _currentRecord = null;
   }
 }

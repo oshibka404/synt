@@ -46,9 +46,9 @@ void main() {
 
     test('Bypasses all signals in correct order', () {
       var actions = [
-        KeyboardAction(time: DateTime.now(), type: KeyboardActionType.start, voiceId: 1),
-        KeyboardAction(time: DateTime.now(), type: KeyboardActionType.modify, voiceId: 1),
-        KeyboardAction(time: DateTime.now(), type: KeyboardActionType.start, voiceId: 2),
+        KeyboardAction.start(voiceId: 1),
+        KeyboardAction.modify(voiceId: 1),
+        KeyboardAction.stop(1),
       ];
       var controller = StreamController<KeyboardAction>();
       var recorder = Recorder(input: controller.stream);
@@ -58,5 +58,23 @@ void main() {
       expect(recorder.output, emitsInOrder(actions));
       controller.close();
     });
+    test('Loops all signals in correct order', () {
+      var actions = [
+        KeyboardAction.start(voiceId: 1),
+        KeyboardAction.modify(voiceId: 1),
+        KeyboardAction.stop(1),
+      ];
+
+      var controller = StreamController<KeyboardAction>();
+      var recorder = Recorder(input: controller.stream);
+      recorder.startRec(Offset.zero);
+      actions.forEach((element) {
+        controller.add(element);
+      });
+      recorder.stopRec();
+      List<KeyboardAction> loopedActions = []..addAll(actions)..addAll(actions);
+      expect(recorder.output, emitsInOrder(loopedActions));
+      controller.close();
+    }, skip: "implement start/stop of each loop");
   });
 }

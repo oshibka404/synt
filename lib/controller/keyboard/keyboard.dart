@@ -90,10 +90,8 @@ class _KeyboardState extends State<Keyboard> {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
     _actionStreamController.add(
-      KeyboardAction(
+      KeyboardAction.start(
         voiceId: details.pointer,
-        time: DateTime.now(),
-        type: KeyboardActionType.start,
         stepOffset: _getNormalizedPitchOffset(relativePosition),
         pressure: pressure,
         modulation: _getModulationFromPointerPosition(relativePosition),
@@ -117,10 +115,8 @@ class _KeyboardState extends State<Keyboard> {
     Offset relativePosition = details.position - widget.offset;
     double pressure = details.pressureMax > 0 ? details.pressure : 1;
     _actionStreamController.add(
-      KeyboardAction(
+      KeyboardAction.modify(
         voiceId: details.pointer,
-        time: DateTime.now(),
-        type: KeyboardActionType.modify,
         stepOffset: _getNormalizedPitchOffset(relativePosition),
         pressure: pressure,
         modulation: _getModulationFromPointerPosition(relativePosition),
@@ -134,13 +130,7 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   void _stopNote(PointerEvent details) {
-    _actionStreamController.add(
-      KeyboardAction(
-        voiceId: details.pointer,
-        time: DateTime.now(),
-        type: KeyboardActionType.stop,
-      )
-    );
+    _actionStreamController.add(KeyboardAction.stop(details.pointer));
     setState(() {
       pointers.remove(details.pointer);
     });
