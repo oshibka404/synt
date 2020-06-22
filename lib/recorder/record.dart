@@ -67,7 +67,7 @@ class Record {
 
   /// Ensures that all voices have been stopped
   void close() {
-    _recordingVoices.forEach((voiceId) {
+    Set.from(_recordingVoices).forEach((voiceId) {
       add(KeyboardAction.stop(voiceId));
     });
   }
