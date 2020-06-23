@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/synth/dsp_api.dart';
 
 import 'keyboard_preset.dart';
 import 'preset_selector/preset_selector.dart';
 import 'keyboard/keyboard.dart';
+import 'settings.dart';
 
 class Controller extends StatefulWidget {
   @override
@@ -48,29 +50,56 @@ class _ControllerState extends State<Controller> {
   void disableRecordMode() {
     _recordModeSwitchStreamController.add(false);
   }
+
+  bool _settingsOpen = false;
+
+  void toggleSettings() {
+    setState(() {
+      _settingsOpen = !_settingsOpen;
+      DspApi.allNotesOff();
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double controlPanelWidth = constraints.maxHeight / 3;
-        return Row(
-          children: [
-            PresetSelector(
-              size: Size(controlPanelWidth, constraints.maxHeight),
-              currentPreset: currentPreset,
-              setPreset: setPreset,
-              keyboardPresets: keyboardPresets,
-              onTapDown: enableRecordMode,
-              onTapUp: disableRecordMode,
-            ),
-            Keyboard(
-              size: Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight),
-              offset: Offset(controlPanelWidth, 0),
-              preset: currentPreset,
-              recordModeSwitchStream: _recordModeSwitchStream,
-            ),
-          ],
+        var keyboardSize = Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight);
+        var keyboard = Keyboard(
+          size: keyboardSize,
+          offset: Offset(controlPanelWidth, 0),
+          preset: currentPreset,
+          recordModeSwitchStream: _recordModeSwitchStream,
+        );
+        return Scaffold(
+          body: Row(
+            children: [
+              PresetSelector(
+                size: Size(controlPanelWidth, constraints.maxHeight),
+                currentPreset: currentPreset,
+                setPreset: setPreset,
+                keyboardPresets: keyboardPresets,
+                onTapDown: enableRecordMode,
+                onTapUp: disableRecordMode,
+              ),
+              Stack(
+                children: _settingsOpen ? [
+                  keyboard,
+                  Container(
+                    constraints: BoxConstraints.tight(keyboardSize),
+                    child: Settings(),
+                    color: Theme.of(context).backgroundColor,
+                  ),
+                ] : [keyboard]
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: toggleSettings,
+            tooltip: 'Sound settings',
+            child: const Icon(Icons.settings),
+          ),
         );
       },
     );
