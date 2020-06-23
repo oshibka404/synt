@@ -13,7 +13,7 @@ class KeyboardPainter extends CustomPainter {
 
   Map<int, PointerData> pointers;
 
-  final MaterialColor mainColor;
+  final ColorSwatch mainColor;
 
   final double padding = 30;
 
@@ -24,6 +24,7 @@ class KeyboardPainter extends CustomPainter {
   Color backgroundColor = Colors.white;
   Color get lightMainColor => mainColor[200];
   Color get darkMainColor => mainColor[900];
+  Color get tonicColor => mainColor[700];
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;

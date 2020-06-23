@@ -21,7 +21,7 @@ class _ControllerState extends State<Controller> {
     ),
     KeyboardPreset(
       baseKey: 37,
-      color: Colors.green,
+      color: Colors.amber,
     ),
     KeyboardPreset(
       baseKey: 13,

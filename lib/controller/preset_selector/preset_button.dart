@@ -10,7 +10,6 @@ class PresetButton extends StatefulWidget {
     this.active = false,
     this.size = const Size.square(100),
     this.color = Colors.orange,
-    this.activeColor = Colors.amber,
   });
 
   final Function onTapDown;
@@ -18,8 +17,7 @@ class PresetButton extends StatefulWidget {
   final Function onTap;
   final bool active;
   final Size size;
-  final MaterialColor color;
-  final MaterialColor activeColor;
+  final ColorSwatch color;
 
   @override
   State<StatefulWidget> createState() => _PresetButtonState();
@@ -45,6 +43,14 @@ class _PresetButtonState extends State<PresetButton> {
       widget.onTapDown();
     }
   }
+
+  getColor() {
+    if (isPressed) {
+      return widget.color[700];
+    } else {
+      return widget.active ? widget.color[500] : widget.color[200];
+    }
+  }
   
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -60,11 +66,7 @@ class _PresetButtonState extends State<PresetButton> {
         constraints: BoxConstraints.tight(widget.size),
         child: DecoratedBox(
           decoration: new BoxDecoration(
-            color: isPressed ? widget.activeColor : widget.color,
-            border: widget.active ? Border.all(
-              color: widget.activeColor,
-              width: 8
-            ) : null,
+            color: getColor(),
           )
         )
       ),
