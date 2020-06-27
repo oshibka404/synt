@@ -5,6 +5,6 @@ class KeyboardPreset {
     this.color = Colors.pink,
     this.baseKey = 49,
   });
-  final MaterialColor color;
+  final ColorSwatch color;
   final int baseKey;
 }

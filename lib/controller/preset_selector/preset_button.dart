@@ -51,7 +51,7 @@ class _PresetButtonState extends State<PresetButton> {
       return widget.active ? widget.color[500] : widget.color[200];
     }
   }
-  
+
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
@@ -63,13 +63,11 @@ class _PresetButtonState extends State<PresetButton> {
       onTap: widget.onTap,
       onTapCancel: unpress,
       child: ConstrainedBox(
-        constraints: BoxConstraints.tight(widget.size),
-        child: DecoratedBox(
-          decoration: new BoxDecoration(
+          constraints: BoxConstraints.tight(widget.size),
+          child: DecoratedBox(
+              decoration: new BoxDecoration(
             color: getColor(),
-          )
-        )
-      ),
+          ))),
     );
   }
 }

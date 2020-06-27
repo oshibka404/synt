@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/synth/dsp_api.dart';
 
+import '../synth/action_receiver.dart';
+import '../synth/scales.dart';
+import '../synth/dsp_api.dart';
+import 'keyboard/keyboard_action.dart';
+import 'keyboard/keyboard.dart';
 import 'keyboard_preset.dart';
 import 'preset_selector/preset_selector.dart';
-import 'keyboard/keyboard.dart';
 import 'settings.dart';
 
 class Controller extends StatefulWidget {
@@ -29,26 +33,42 @@ class _ControllerState extends State<Controller> {
     ),
   ];
 
-  bool isInRecordMode = false;
+  @override
+  initState() {
+    super.initState();
+    ActionReceiver(_outputController.stream);
+
+    _keyboardController.stream.listen((action) {
+      _outputController.add(SynthCommand(action.pointerId,
+          modulation: action.modulation,
+          freq: _getFreqFromStepOffset(
+              action.stepOffset, currentPreset.baseKey)));
+    });
+  }
+
+  List<int> _scale = Scales.dorian;
+
+  double _getFreqFromKeyNumber(double keyNumber) {
+    return 440 * pow(2, (keyNumber - 49) / 12);
+  }
+
+  double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
+    int stepNumber = stepOffset.floor();
+    int octaveOffset = (stepNumber ~/ _scale.length);
+    int chromaticStepsOffset = _scale[stepNumber % _scale.length];
+    int semitonesOffset = (octaveOffset * 12) + chromaticStepsOffset;
+    return (baseKey + semitonesOffset).floorToDouble();
+  }
+
+  double _getFreqFromStepOffset(double step, int baseKey) {
+    return _getFreqFromKeyNumber(_convertStepOffsetToPianoKey(step, baseKey));
+  }
 
   KeyboardPreset currentPreset = keyboardPresets[0];
   void setPreset(KeyboardPreset preset) {
     setState(() {
       currentPreset = preset;
     });
-  }
-
-  var _recordModeSwitchStreamController = StreamController<bool>();
-  Stream<bool> get _recordModeSwitchStream {
-    return _recordModeSwitchStreamController.stream;
-  }
-
-  void enableRecordMode() {
-    _recordModeSwitchStreamController.add(true);
-  }
-
-  void disableRecordMode() {
-    _recordModeSwitchStreamController.add(false);
   }
 
   bool _settingsOpen = false;
@@ -59,18 +79,29 @@ class _ControllerState extends State<Controller> {
       DspApi.allNotesOff();
     });
   }
-  
+
+  var _outputController = StreamController<SynthCommand>();
+  var _keyboardController = StreamController<KeyboardAction>();
+
+  @override
+  void dispose() {
+    _outputController.close();
+    _keyboardController.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double controlPanelWidth = constraints.maxHeight / 3;
-        var keyboardSize = Size(constraints.maxWidth - controlPanelWidth, constraints.maxHeight);
+        var keyboardSize = Size(
+            constraints.maxWidth - controlPanelWidth, constraints.maxHeight);
         var keyboard = Keyboard(
           size: keyboardSize,
           offset: Offset(controlPanelWidth, 0),
           preset: currentPreset,
-          recordModeSwitchStream: _recordModeSwitchStream,
+          output: _keyboardController,
         );
         return Scaffold(
           body: Row(
@@ -80,19 +111,18 @@ class _ControllerState extends State<Controller> {
                 currentPreset: currentPreset,
                 setPreset: setPreset,
                 keyboardPresets: keyboardPresets,
-                onTapDown: enableRecordMode,
-                onTapUp: disableRecordMode,
               ),
               Stack(
-                children: _settingsOpen ? [
-                  keyboard,
-                  Container(
-                    constraints: BoxConstraints.tight(keyboardSize),
-                    child: Settings(),
-                    color: Theme.of(context).backgroundColor,
-                  ),
-                ] : [keyboard]
-              ),
+                  children: _settingsOpen
+                      ? [
+                          keyboard,
+                          Container(
+                            constraints: BoxConstraints.tight(keyboardSize),
+                            child: Settings(),
+                            color: Theme.of(context).backgroundColor,
+                          ),
+                        ]
+                      : [keyboard]),
             ],
           ),
           floatingActionButton: FloatingActionButton(

@@ -1,4 +1,2 @@
-enum RecorderState {
-  playing,
-  recording
-}
+// TODO: get rid of it, use bool
+enum RecorderState { playing, recording }

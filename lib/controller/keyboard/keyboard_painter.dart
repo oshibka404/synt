@@ -13,7 +13,7 @@ class KeyboardPainter extends CustomPainter {
 
   Map<int, PointerData> pointers;
 
-  final ColorSwatch mainColor;
+  final ColorSwatch<int> mainColor;
 
   final double padding = 30;
 
@@ -30,7 +30,8 @@ class KeyboardPainter extends CustomPainter {
     return stepNumber % 7 == 0;
   }
 
-  getXPositionOfKey(int keyNumber) => keyNumber * pixelsPerStep + pixelsPerStep / 2;
+  getXPositionOfKey(int keyNumber) =>
+      keyNumber * pixelsPerStep + pixelsPerStep / 2;
 
   // TODO: Isolate drawing primitives
   /// returns [Path] of the wave for pressed key
@@ -49,29 +50,28 @@ class KeyboardPainter extends CustomPainter {
     for (int i = 0; i < waves; i++) {
       double waveStartY = padding + waveLength * i;
       path.quadraticBezierTo(
-        (x + (amplitude * (1 - sharpness))), waveStartY + (waveLength / 4 * (1 - sharpness)),
-        x - amplitude * sharpness, waveStartY + (waveLength / 2 * (1 - sharpness))
-      );
+          (x + (amplitude * (1 - sharpness))),
+          waveStartY + (waveLength / 4 * (1 - sharpness)),
+          x - amplitude * sharpness,
+          waveStartY + (waveLength / 2 * (1 - sharpness)));
       path.quadraticBezierTo(
-        (x - (amplitude * (1 - sharpness))), waveStartY + (waveLength / 2 + (waveLength / 4 * (1 - sharpness))),
-        x + amplitude * sharpness, waveStartY + waveLength
-      );
+          (x - (amplitude * (1 - sharpness))),
+          waveStartY + (waveLength / 2 + (waveLength / 4 * (1 - sharpness))),
+          x + amplitude * sharpness,
+          waveStartY + waveLength);
     }
     return path;
   }
 
   void drawPressedKey(double x, PointerData pressingPointer) {
     var normalizedModulation = pressingPointer.position.dy / size.height;
-    var keyColor = Color.lerp(
-      darkMainColor,
-      lightMainColor,
-      pressingPointer.position.dy / size.height
-    );
+    var keyColor = Color.lerp(darkMainColor, lightMainColor,
+        pressingPointer.position.dy / size.height);
     var paint = Paint()
       ..color = keyColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
-    
+
     var path = getWavePath(x, 3, 1 - normalizedModulation);
     canvas.drawPath(path, paint);
   }
@@ -84,32 +84,28 @@ class KeyboardPainter extends CustomPainter {
     PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
       return pointerData.position.dx ~/ pixelsPerStep == keyNumber;
     }, orElse: () => null);
-    
+
     if (pressingPointer != null) {
       drawPressedKey(x, pressingPointer);
     } else {
       canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromPoints(
-            Offset(x - 2, padding),
-            Offset(x + 2, size.height - padding)
-          ),
-          Radius.circular(2)
-        ),
-        Paint()
-          ..shader = LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: getKeyColors(keyNumber)
-          ).createShader(Rect.fromLTRB(0, 0, size.width, size.height))
-      );
+          RRect.fromRectAndRadius(
+              Rect.fromPoints(
+                  Offset(x - 2, padding), Offset(x + 2, size.height - padding)),
+              Radius.circular(2)),
+          Paint()
+            ..shader = LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: getKeyColors(keyNumber))
+                .createShader(Rect.fromLTRB(0, 0, size.width, size.height)));
     }
   }
-  
+
   final double pixelsPerStep;
 
   /// Returns colors of a gradient to paint a key of a given [keyNumber]
-  /// 
+  ///
   /// (From top to bottom)
   List<Color> getKeyColors(int keyNumber) {
     if (isTonic(keyNumber)) {
@@ -129,7 +125,8 @@ class KeyboardPainter extends CustomPainter {
   }
 
   double getXPositionOfClosestKey(Offset pointerPosition) {
-    return pixelsPerStep * getClosestStepNumber(pointerPosition) + pixelsPerStep / 2;
+    return pixelsPerStep * getClosestStepNumber(pointerPosition) +
+        pixelsPerStep / 2;
   }
 
   @override
@@ -138,26 +135,24 @@ class KeyboardPainter extends CustomPainter {
     this.canvas = canvas;
     int keysOnScreen = size.width ~/ pixelsPerStep;
 
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()..color = backgroundColor
-    );
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
+        Paint()..color = backgroundColor);
 
     for (int key = 0; key < keysOnScreen; key++) {
       drawKey(key, pointers);
     }
-    
+
     pointers.forEach((_, pointer) {
       canvas.drawCircle(
-        Offset(getXPositionOfClosestKey(pointer.position), pointer.position.dy),
-        pointer.pressure * 50,
-        Paint()..color = mainColor.withOpacity(.5)
-      );
+          Offset(
+              getXPositionOfClosestKey(pointer.position), pointer.position.dy),
+          pointer.pressure * 50,
+          Paint()..color = mainColor.withOpacity(.5));
     });
   }
 
   @override
   bool shouldRepaint(KeyboardPainter oldDelegate) {
-    return true; // TODO: check pointers and mainColor (to do it make pointers immutable)
+    return true;
   }
 }

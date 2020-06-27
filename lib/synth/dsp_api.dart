@@ -2,12 +2,12 @@ import 'package:flutter/services.dart';
 
 class DspApi {
   static String _commonPathPrefix = '';
-  
+
   // TODO: Mock platform calls and make it private
   static String getFullPath(String path) {
     return _commonPathPrefix + path;
   }
-  
+
   static set commonPathPrefix(String prefix) {
     _commonPathPrefix = prefix;
   }
@@ -195,9 +195,11 @@ class DspApi {
     }
   }
 
-  static Future<void> setVoiceParamByPath(int voice, String path, double value) {
+  static Future<void> setVoiceParamByPath(
+      int voice, String path, double value) {
     try {
-      return _platform.invokeMethod('setVoiceParamValueByPath', <String, dynamic>{
+      return _platform
+          .invokeMethod('setVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
         'path': getFullPath(path),
         'value': value,
@@ -209,7 +211,8 @@ class DspApi {
 
   static Future<void> getVoiceParamByPath(int voice, String path) {
     try {
-      return _platform.invokeMethod('getVoiceParamValueByPath', <String, dynamic>{
+      return _platform
+          .invokeMethod('getVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
         'path': getFullPath(path),
       });
@@ -225,5 +228,4 @@ class DspApi {
       throw 'Could not get CPU load: ${e.message}';
     }
   }
-
 }

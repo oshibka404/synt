@@ -38,7 +38,7 @@ class Recorder {
   Record _currentRecord;
 
   var _outputController = StreamController<KeyboardAction>();
-  
+
   Stream<KeyboardAction> get output {
     return _outputController.stream;
   }
@@ -72,16 +72,18 @@ class Recorder {
     if (recordedDuration == measureDuration) {
       return recordedDuration;
     }
-    
+
     Duration intendedDuration;
-    double measuresInRecord = recordedDuration.inMicroseconds / measureDuration.inMicroseconds;
+    double measuresInRecord =
+        recordedDuration.inMicroseconds / measureDuration.inMicroseconds;
 
     // TODO: compute fractions (ln 2 not initialized)
-    int bars = measuresInRecord > 1 ? pow(2, (log(measuresInRecord) / ln2).round()) : 1;
-    
-    intendedDuration = Duration(
-      microseconds: measureDuration.inMicroseconds * bars
-    );
+    int bars = measuresInRecord > 1
+        ? pow(2, (log(measuresInRecord) / ln2).round())
+        : 1;
+
+    intendedDuration =
+        Duration(microseconds: measureDuration.inMicroseconds * bars);
     return intendedDuration;
   }
 
@@ -95,13 +97,13 @@ class Recorder {
   }
 
   // TODO: simplify, split, shorten
-  /// Stops recording, decorates the finished record with [Record..duration] 
+  /// Stops recording, decorates the finished record with [Record..duration]
   /// and adds it to [records].
   void stopRec() {
     state = RecorderState.playing;
 
     if (_currentRecord == null || _currentRecord.isEmpty) return;
-    
+
     var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
 
     if (measureDuration == null) {
@@ -114,9 +116,9 @@ class Recorder {
 
     _currentRecord.close();
 
-    Duration delayBeforePlay = _currentRecord.duration >= recordedDuration ?
-      _currentRecord.duration - recordedDuration :
-      _currentRecord.duration * 2 - recordedDuration;
+    Duration delayBeforePlay = _currentRecord.duration >= recordedDuration
+        ? _currentRecord.duration - recordedDuration
+        : _currentRecord.duration * 2 - recordedDuration;
 
     var startTime = _currentRecord.startTime;
 

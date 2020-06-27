@@ -1,60 +1,43 @@
-import 'dart:math';
-
-import '../controller/keyboard/keyboard_action.dart';
-import 'scales.dart';
 import 'synthesizer.dart';
 
+/// Listens to [input] and calls corresponding methods of [DspApi].
 class ActionReceiver {
-  ActionReceiver(Stream<KeyboardAction> input) {
+  ActionReceiver(Stream<SynthCommand> input) {
     input.listen(actionHandler);
   }
 
-  List<int> scale = Scales.dorian;
-
   Synthesizer _synth = new Synthesizer();
 
-  double _getFreqFromKeyNumber(double keyNumber) {
-    return 440 * pow(2, (keyNumber - 49) / 12);
-  }
+  VoiceParams _getVoiceParams(SynthCommand action) => VoiceParams(
+        freq: action.freq, // TODO: use absolute key numbers here
+        gain: action.gain,
+        modulation: action.modulation,
+      );
 
-  double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
-    int stepNumber = stepOffset.floor();
-    int octaveOffset = (stepNumber ~/ scale.length);
-    int chromaticStepsOffset = scale[stepNumber % scale.length];
-    int semitonesOffset = (octaveOffset * 12) + chromaticStepsOffset;
-    return (baseKey + semitonesOffset).floorToDouble();
-  }
+  var voices = Set<int>();
 
-  double _getFreqFromStepOffset(double step, int baseKey) {
-    return _getFreqFromKeyNumber(_convertStepOffsetToPianoKey(step, baseKey));
-  }
-
-  VoiceParams _getVoiceParams(KeyboardAction action) =>
-    VoiceParams(
-      freq: _getFreqFromStepOffset(action.stepOffset, action.preset.baseKey),
-      gain: action.pressure,
-      modulation: action.modulation,
-    );
-
-  void actionHandler(KeyboardAction action) {
-    switch (action.type) {
-      case KeyboardActionType.start:
-        _synth.newVoice(
-          action.voiceId,
-          _getVoiceParams(action)
-        );
-        break;
-      case KeyboardActionType.modify:
-        _synth.modifyVoice(
-          action.voiceId,
-          _getVoiceParams(action)
-        );
-        break;
-      case KeyboardActionType.stop:
-        _synth.stopVoice(action.voiceId);
-        break;
-      default:
-        throw UnimplementedError('Unknown action: neither start, modify nor stop');
+  void actionHandler(SynthCommand action) {
+    if (action.gain > 0) {
+      if (voices.contains(action.voiceId)) {
+        _synth.modifyVoice(action.voiceId, _getVoiceParams(action));
+      } else {
+        _synth.newVoice(action.voiceId, _getVoiceParams(action));
+      }
+    } else {
+      _synth.stopVoice(action.voiceId);
     }
   }
+}
+
+class SynthCommand {
+  SynthCommand(
+    this.voiceId, {
+    this.freq,
+    this.gain = 1,
+    this.modulation = 0,
+  });
+  final int voiceId;
+  final double freq;
+  final double gain;
+  final double modulation;
 }

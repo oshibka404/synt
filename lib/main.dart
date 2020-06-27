@@ -6,10 +6,9 @@ import 'theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight
-  ]).then((_) => runApp(MyApp()));
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
+      .then((_) => runApp(MyApp()));
 }
 
 class MyApp extends StatelessWidget {

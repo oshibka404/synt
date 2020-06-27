@@ -3,33 +3,32 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../../recorder/recorder.dart';
-import '../../recorder/state.dart';
-import '../../synth/action_receiver.dart';
 import '../keyboard_preset.dart';
 
 import 'keyboard_action.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
-import 'recorder_state_indicator.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
+///
 /// Doesn't care how its actions will be interpreted, leaving it to consumers.
 class Keyboard extends StatefulWidget {
   Keyboard({
     @required this.size,
     @required this.offset,
     @required this.preset,
-    @required this.recordModeSwitchStream,
+    @required this.output,
   });
   final Size size;
 
-  final Stream<bool> recordModeSwitchStream;
-
   /// Screen position
+  ///
   /// it's used to compute relative pointer positions since the component uses
   /// low-level [Listener] to handle touch events.
   final Offset offset;
+
+  /// Where this [Keyboard] will send its commands.
+  final StreamConsumer output;
 
   final KeyboardPreset preset;
 
@@ -38,43 +37,22 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  @override
-  initState() {
-    _recorder = Recorder(input: actionStream);
-    _recorderStreamSubscription = _recorder.stateStream.listen((newState) {
-      setState(() {
-        _recorderState = newState;
-      });
-    });
-    ActionReceiver(_recorder.output);
-    this.widget.recordModeSwitchStream.listen((_isInRecordingMode) {
-      setState(() {
-        this._isInRecordingMode = _isInRecordingMode;
-        if (!_isInRecordingMode) {
-          _recorder.stopRec();
-        }
-      });
-    });
-    super.initState();
-  }
-
-  Recorder _recorder;
-  StreamSubscription _recorderStreamSubscription;
-
   double _getModulationFromPointerPosition(Offset position) {
     return 1 - position.dy / widget.size.height;
   }
 
-  // TODO: make immutable
+  @override
+  initState() {
+    super.initState();
+    widget.output.addStream(actionStream);
+  }
+
   Map<int, PointerData> pointers = {};
 
   final int stepsCount = 8;
 
-  RecorderState _recorderState = RecorderState.playing;
-  bool _isInRecordingMode = false;
-
   var _actionStreamController = StreamController<KeyboardAction>();
-  
+
   Stream<KeyboardAction> get actionStream {
     return _actionStreamController.stream;
   }
@@ -82,55 +60,62 @@ class _KeyboardState extends State<Keyboard> {
   double get pixelsPerStep => widget.size.width / stepsCount;
 
   /// Returns distance in scale steps (screen keys) from base key to given [position].
-  double _getNormalizedPitchOffset(Offset position) {
+  double _getStepOffset(Offset position) {
     return position.dx / pixelsPerStep;
   }
 
-  void _playNote(PointerEvent details) {
-    Offset relativePosition = details.position - widget.offset;
-    double pressure = details.pressureMax > 0 ? details.pressure : 1;
-    _actionStreamController.add(
-      KeyboardAction.start(
-        voiceId: details.pointer,
-        stepOffset: _getNormalizedPitchOffset(relativePosition),
+  _getPressure(PointerEvent details) {
+    return details.pressureMax > 0 ? details.pressure : 1;
+  }
+
+  _getRelativePosition(PointerEvent details) {
+    return details.position - widget.offset;
+  }
+
+  _updatePointer(int id, Offset position, double pressure) {
+    Map<int, PointerData> newPointers = {
+      ...pointers,
+      id: PointerData(
+        position: position,
         pressure: pressure,
-        modulation: _getModulationFromPointerPosition(relativePosition),
-        preset: widget.preset,
-      )
-    );
-
-    if (_isInRecordingMode && _recorderState != RecorderState.recording) {
-      _recorder.startRec(relativePosition);
-    }
-
+      ),
+    };
     setState(() {
-      pointers[details.pointer] = PointerData(
-        position: relativePosition,
-        pressure: pressure,
-      );
+      pointers = newPointers;
     });
   }
 
-  void _updateNote(PointerEvent details) {
+  void _addPointer(PointerEvent details) {
+    Offset relativePosition = _getRelativePosition(details);
+    double pressure = _getPressure(details);
+
+    _actionStreamController.add(KeyboardAction.press(
+      details.pointer,
+      stepOffset: _getStepOffset(relativePosition),
+      pressure: pressure,
+      modulation: _getModulationFromPointerPosition(relativePosition),
+    ));
+
+    _updatePointer(details.pointer, relativePosition, pressure);
+  }
+
+  void _modifyPointer(PointerEvent details) {
     Offset relativePosition = details.position - widget.offset;
-    double pressure = details.pressureMax > 0 ? details.pressure : 1;
-    _actionStreamController.add(
-      KeyboardAction.modify(
-        voiceId: details.pointer,
-        stepOffset: _getNormalizedPitchOffset(relativePosition),
-        pressure: pressure,
-        modulation: _getModulationFromPointerPosition(relativePosition),
-        preset: widget.preset,
-      )
-    );
-    
+    double pressure = _getPressure(details);
+    _actionStreamController.add(KeyboardAction.press(
+      details.pointer,
+      stepOffset: _getStepOffset(relativePosition),
+      pressure: pressure,
+      modulation: _getModulationFromPointerPosition(relativePosition),
+    ));
+
     setState(() {
       pointers[details.pointer].position = relativePosition;
     });
   }
 
-  void _stopNote(PointerEvent details) {
-    _actionStreamController.add(KeyboardAction.stop(details.pointer));
+  void _removePointer(PointerEvent details) {
+    _actionStreamController.add(KeyboardAction.release(details.pointer));
     setState(() {
       pointers.remove(details.pointer);
     });
@@ -139,31 +124,27 @@ class _KeyboardState extends State<Keyboard> {
   @override
   Widget build(BuildContext context) {
     return Listener(
-      onPointerDown: _playNote,
-      onPointerMove: _updateNote,
-      onPointerUp: _stopNote,
-      onPointerCancel: _stopNote,
+      onPointerDown: _addPointer,
+      onPointerMove: _modifyPointer,
+      onPointerUp: _removePointer,
+      onPointerCancel: _removePointer,
       child: Container(
-        constraints: BoxConstraints.tight(widget.size),
-        child: ClipRect(
-          child: CustomPaint(
-            painter: KeyboardPainter(
-              pixelsPerStep: pixelsPerStep,
-              mainColor: widget.preset.color,
-              pointers: pointers,
+          constraints: BoxConstraints.tight(widget.size),
+          child: ClipRect(
+            child: CustomPaint(
+              painter: KeyboardPainter(
+                pixelsPerStep: pixelsPerStep,
+                mainColor: widget.preset.color,
+                pointers: pointers,
+              ),
             ),
-            child: RecorderStateIndicator(
-              state: _recorderState,
-              isInRecordingMode: _isInRecordingMode,
-            ),
-          ),
-        )
-      ),
+          )),
     );
   }
+
   @override
   void dispose() {
-    _recorderStreamSubscription.cancel();
+    widget.output.close();
     super.dispose();
   }
 }

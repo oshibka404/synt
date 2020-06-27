@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../keyboard_preset.dart';
@@ -23,18 +22,16 @@ class PresetSelector extends StatelessWidget {
   List<PresetButton> _buildPresetButtons() {
     List<PresetButton> presetButtons = new List<PresetButton>();
     keyboardPresets.forEach((KeyboardPreset preset) {
-      presetButtons.add(
-        new PresetButton(
-          onTapDown: () {
-            setPreset(preset);
-            onTapDown();
-          },
-          onTapUp: onTapUp,
-          active: currentPreset == preset,
-          size: Size(size.height / 3, size.width),
-          color: preset.color,
-        )
-      );
+      presetButtons.add(new PresetButton(
+        onTapDown: () {
+          setPreset(preset);
+          onTapDown();
+        },
+        onTapUp: onTapUp,
+        active: currentPreset == preset,
+        size: Size(size.height / 3, size.width),
+        color: preset.color,
+      ));
     });
     return presetButtons;
   }

@@ -6,7 +6,8 @@ void main() {
     test('getFullPath returns its argument when no commonPathPrefix', () {
       expect(DspApi.getFullPath('test'), 'test');
     });
-    test('getFullPath concatenates its argument with given commonPathPrefix', () {
+    test('getFullPath concatenates its argument with given commonPathPrefix',
+        () {
       DspApi.commonPathPrefix = 'foo/';
       expect(DspApi.getFullPath('bar'), 'foo/bar');
     });

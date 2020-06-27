@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/keyboard/keyboard_action.dart';
+
+import '../controller/keyboard/keyboard_action.dart';
 
 /// Timeline with sequence of [KeyboardAction]s
 class Record {
@@ -16,7 +17,7 @@ class Record {
   bool get isEmpty => _actions.isEmpty;
 
   /// Returns a stream and starts playing this record into it.
-  /// 
+  ///
   /// Starts playing [after] given duration or [at] given time.
   /// When no params given or [at] is in past, starts immediately.
   Stream<KeyboardAction> play({DateTime at, Duration after}) async* {
@@ -30,45 +31,33 @@ class Record {
       var playbackStartTime = DateTime.now();
       while (iterator.moveNext()) {
         var action = iterator.current;
-        var timeFromPlaybackStart = DateTime.now().difference(playbackStartTime);
+        var timeFromPlaybackStart =
+            DateTime.now().difference(playbackStartTime);
         var relativeActionTimePoint = action.time.difference(startTime);
         await Future.delayed(relativeActionTimePoint - timeFromPlaybackStart);
         yield action;
       }
     }
   }
-  
 
   /// Saves [action] to this [Record].
-  /// 
-  /// First ensures that it starts with [KeyboardActionType.start].
-  /// If it doesn't, it either recursively adds the [KeyboardActionType.start]
-  /// or 
+  ///
+  /// takes care of counting number of currently pressed pointers
   void add(KeyboardAction action) {
-    switch (action.type) {
-      case KeyboardActionType.start:
-        _recordingVoices.add(action.voiceId);
-        break;
-      case KeyboardActionType.stop:
-        _recordingVoices.remove(action.voiceId);
-        break;
-      case KeyboardActionType.modify:
-        if (!_recordingVoices.contains(action.voiceId)) {
-          add(KeyboardAction.assign(action, type: KeyboardActionType.start));
-        }
-        break;
-      default:
-        throw UnimplementedError("Method `add` not implemented for type ${action.type}");
+    if (action.pressure > 0) {
+      _pressedPointers.add(action.pointerId);
+    } else {
+      _pressedPointers.remove(action.pointerId);
     }
-    
     _actions.add(action);
   }
-  Set<int> _recordingVoices = Set<int>();
 
-  /// Ensures that all voices have been stopped
+  Set<int> _pressedPointers = Set<int>();
+
+  /// Ensures that all pointers have been released
   void close() {
-    Set.from(_recordingVoices).forEach((voiceId) {
-      add(KeyboardAction.stop(voiceId));
+    Set.from(_pressedPointers).forEach((pointerId) {
+      add(KeyboardAction.release(pointerId));
     });
   }
 

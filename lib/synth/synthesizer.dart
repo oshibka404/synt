@@ -6,7 +6,7 @@ class Voice {
   Map<String, double> _params = {};
 
   Map<String, double> get params => _params;
-  
+
   Voice(Map<String, double> params) {
     _initVoice(params);
   }
@@ -68,7 +68,7 @@ class Synthesizer {
   Future<void> stopVoice(int id) async {
     return voices[id].stop();
   }
-  
+
   Future<double> getCpuLoad() => DspApi.getCpuLoad();
 }
 
