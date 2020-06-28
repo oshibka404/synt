@@ -25,6 +25,7 @@ class TempoController {
   }
 
   Tick _tick(int i) {
+    print(i);
     return Tick(division: i % 16, tempo: tempo);
   }
 }

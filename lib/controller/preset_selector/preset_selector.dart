@@ -25,7 +25,9 @@ class PresetSelector extends StatelessWidget {
       presetButtons.add(new PresetButton(
         onTapDown: () {
           setPreset(preset);
-          onTapDown();
+          if (onTapDown != null) {
+            onTapDown();
+          }
         },
         onTapUp: onTapUp,
         active: currentPreset == preset,
