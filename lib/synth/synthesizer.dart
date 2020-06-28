@@ -66,6 +66,7 @@ class Synthesizer {
   }
 
   Future<void> stopVoice(int id) async {
+    if (voices[id] == null) return;
     return voices[id].stop();
   }
 

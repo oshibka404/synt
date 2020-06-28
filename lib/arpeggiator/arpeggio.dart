@@ -14,9 +14,13 @@ class Arpeggio {
     throw UnimplementedError("toJson method is not implemented");
   }
 
-  operator [](int division) {
+  PlayerAction operator [](int division) {
     return actions[division];
   }
+
+  Arpeggio withOffset(double offset) => Arpeggio(actions
+      .map((action) => action != null ? action.withOffset(offset) : null)
+      .toList());
 }
 
 /// Abstract action
@@ -36,7 +40,7 @@ class PlayerAction {
   });
 
   /// Steps from base note.
-  final int stepOffset;
+  final double stepOffset;
 
   /// Abstract modulation of an external params.
   ///
@@ -48,4 +52,12 @@ class PlayerAction {
   /// Assumed to be released when equals to 0
   /// Supposedd to be from 0 to 1
   final double velocity;
+
+  PlayerAction withOffset(double offset) {
+    return PlayerAction(
+      modulation: modulation,
+      velocity: velocity,
+      stepOffset: stepOffset != null ? offset + stepOffset : null,
+    );
+  }
 }

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/arpeggiator/arpeggiator.dart';
+import 'package:perfect_first_synth/arpeggiator/arpeggio.dart';
+import 'package:perfect_first_synth/tempo_controller/tempo_controller.dart';
 
 import '../synth/action_receiver.dart';
 import '../synth/scales.dart';
@@ -33,22 +36,43 @@ class _ControllerState extends State<Controller> {
     ),
   ];
 
+  Map<int, Arpeggiator> _arpeggiators = {};
+
   @override
   initState() {
     super.initState();
     ActionReceiver(_outputController.stream);
 
-    _outputController.addStream(
-        _keyboardController.stream.map(_keyboardActionToSynthCommand));
+    _tempoController = TempoController();
+
+    _keyboardController.stream.listen((action) {
+      if (!_arpeggiators.containsKey(action.pointerId)) {
+        _arpeggiators[action.pointerId] =
+            Arpeggiator(action.pointerId, _tempoController);
+        _arpeggiators[action.pointerId].output.listen((playerAction) {
+          _outputController
+              .add(_playerActionToSynthCommand(playerAction, action.pointerId));
+        });
+      }
+      if (action.pressure > 0) {
+        _arpeggiators[action.pointerId]
+            .play(action.modulation, baseStep: action.stepOffset);
+      } else {
+        _arpeggiators[action.pointerId].stop();
+        _arpeggiators.remove(action.pointerId);
+      }
+    });
   }
 
-  SynthCommand _keyboardActionToSynthCommand(KeyboardAction action) =>
-      action.pressure > 0
-          ? SynthCommand(action.pointerId,
+  TempoController _tempoController;
+
+  SynthCommand _playerActionToSynthCommand(PlayerAction action, int voiceId) =>
+      action.velocity > 0
+          ? SynthCommand(voiceId,
               modulation: action.modulation,
               freq: _getFreqFromStepOffset(
                   action.stepOffset, currentPreset.baseKey))
-          : SynthCommand.stop(action.pointerId);
+          : SynthCommand.stop(voiceId);
 
   List<int> _scale = Scales.dorian;
 
