@@ -22,9 +22,9 @@ class KeyboardPainter extends CustomPainter {
   Canvas canvas;
 
   Color backgroundColor = Colors.white;
+  // TODO: get rid of 200, 900; use semantically meaningful descriptions
   Color get lightMainColor => mainColor[200];
   Color get darkMainColor => mainColor[900];
-  Color get tonicColor => mainColor[700];
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;
@@ -110,13 +110,13 @@ class KeyboardPainter extends CustomPainter {
   List<Color> getKeyColors(int keyNumber) {
     if (isTonic(keyNumber)) {
       return [
-        Colors.amber[900],
-        Colors.amber[200],
+        darkMainColor,
+        lightMainColor,
       ];
     }
     return [
-      darkMainColor,
-      lightMainColor,
+      Colors.black,
+      Colors.black,
     ];
   }
 

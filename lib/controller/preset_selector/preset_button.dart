@@ -44,11 +44,14 @@ class _PresetButtonState extends State<PresetButton> {
     }
   }
 
-  getColor() {
+  LinearGradient getGradient() {
     if (isPressed) {
-      return widget.color[700];
+      return LinearGradient(colors: [
+        widget.color[200].withOpacity(.8),
+        widget.color[900].withOpacity(.8)
+      ]);
     } else {
-      return widget.active ? widget.color[500] : widget.color[200];
+      return LinearGradient(colors: [widget.color[200], widget.color[900]]);
     }
   }
 
@@ -66,8 +69,20 @@ class _PresetButtonState extends State<PresetButton> {
           constraints: BoxConstraints.tight(widget.size),
           child: DecoratedBox(
               decoration: new BoxDecoration(
-            color: getColor(),
-          ))),
+                  border: widget.active
+                      ? Border(
+                          top: BorderSide(
+                              width: 4,
+                              color: Theme.of(context).backgroundColor),
+                          left: BorderSide(
+                              width: 4,
+                              color: Theme.of(context).backgroundColor),
+                          bottom: BorderSide(
+                              width: 4,
+                              color: Theme.of(context).backgroundColor),
+                        )
+                      : null,
+                  gradient: getGradient()))),
     );
   }
 }
