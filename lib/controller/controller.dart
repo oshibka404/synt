@@ -38,13 +38,17 @@ class _ControllerState extends State<Controller> {
     super.initState();
     ActionReceiver(_outputController.stream);
 
-    _keyboardController.stream.listen((action) {
-      _outputController.add(SynthCommand(action.pointerId,
-          modulation: action.modulation,
-          freq: _getFreqFromStepOffset(
-              action.stepOffset, currentPreset.baseKey)));
-    });
+    _outputController.addStream(
+        _keyboardController.stream.map(_keyboardActionToSynthCommand));
   }
+
+  SynthCommand _keyboardActionToSynthCommand(KeyboardAction action) =>
+      action.pressure > 0
+          ? SynthCommand(action.pointerId,
+              modulation: action.modulation,
+              freq: _getFreqFromStepOffset(
+                  action.stepOffset, currentPreset.baseKey))
+          : SynthCommand.stop(action.pointerId);
 
   List<int> _scale = Scales.dorian;
 

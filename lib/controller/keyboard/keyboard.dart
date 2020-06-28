@@ -64,15 +64,15 @@ class _KeyboardState extends State<Keyboard> {
     return position.dx / pixelsPerStep;
   }
 
-  _getPressure(PointerEvent details) {
+  double _getPressure(PointerEvent details) {
     return details.pressureMax > 0 ? details.pressure : 1;
   }
 
-  _getRelativePosition(PointerEvent details) {
+  Offset _getRelativePosition(PointerEvent details) {
     return details.position - widget.offset;
   }
 
-  _updatePointer(int id, Offset position, double pressure) {
+  void _updatePointer(int id, Offset position, double pressure) {
     Map<int, PointerData> newPointers = {
       ...pointers,
       id: PointerData(
@@ -110,7 +110,7 @@ class _KeyboardState extends State<Keyboard> {
     ));
 
     setState(() {
-      pointers[details.pointer].position = relativePosition;
+      _updatePointer(details.pointer, relativePosition, pressure);
     });
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import '../tempo_controller/tempo_controller.dart';
 
@@ -96,6 +97,8 @@ class Arpeggiator {
     if (complexity < 0 || complexity > 1) {
       throw ArgumentError.value(complexity, 'complexity');
     }
+
+    complexity = min(complexity, .999);
 
     var arpeggioId = (complexity * _arpeggios.length).floor();
     var arpeggio = _arpeggios[arpeggioId];

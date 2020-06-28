@@ -3,28 +3,30 @@ import 'synthesizer.dart';
 /// Listens to [input] and calls corresponding methods of [DspApi].
 class ActionReceiver {
   ActionReceiver(Stream<SynthCommand> input) {
-    input.listen(actionHandler);
+    input.listen(commandHandler);
   }
 
   Synthesizer _synth = new Synthesizer();
 
-  VoiceParams _getVoiceParams(SynthCommand action) => VoiceParams(
-        freq: action.freq, // TODO: use absolute key numbers here
-        gain: action.gain,
-        modulation: action.modulation,
+  VoiceParams _getVoiceParams(SynthCommand command) => VoiceParams(
+        freq: command.freq, // TODO: use absolute key numbers here
+        gain: command.gain,
+        modulation: command.modulation,
       );
 
   var voices = Set<int>();
 
-  void actionHandler(SynthCommand action) {
-    if (action.gain > 0) {
-      if (voices.contains(action.voiceId)) {
-        _synth.modifyVoice(action.voiceId, _getVoiceParams(action));
+  void commandHandler(SynthCommand command) {
+    if (command.gate) {
+      if (voices.contains(command.voiceId)) {
+        _synth.modifyVoice(command.voiceId, _getVoiceParams(command));
       } else {
-        _synth.newVoice(action.voiceId, _getVoiceParams(action));
+        _synth.newVoice(command.voiceId, _getVoiceParams(command));
+        voices.add(command.voiceId);
       }
     } else {
-      _synth.stopVoice(action.voiceId);
+      _synth.stopVoice(command.voiceId);
+      voices.remove(command.voiceId);
     }
   }
 }
@@ -35,9 +37,17 @@ class SynthCommand {
     this.freq,
     this.gain = 1,
     this.modulation = 0,
-  });
+  }) {
+    gate = true;
+  }
+  SynthCommand.stop(this.voiceId) {
+    gate = false;
+  }
+
   final int voiceId;
-  final double freq;
-  final double gain;
-  final double modulation;
+  double freq;
+  double gain;
+  double modulation;
+
+  bool gate;
 }
