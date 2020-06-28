@@ -9,7 +9,7 @@ class ActionReceiver {
   Synthesizer _synth = new Synthesizer();
 
   VoiceParams _getVoiceParams(SynthCommand command) => VoiceParams(
-        freq: command.freq, // TODO: use absolute key numbers here
+        freq: command.freq,
         gain: command.gain,
         modulation: command.modulation,
       );

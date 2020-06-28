@@ -21,6 +21,13 @@ class Arpeggio {
   Arpeggio withOffset(double offset) => Arpeggio(actions
       .map((action) => action != null ? action.withOffset(offset) : null)
       .toList());
+  Arpeggio withModulation(double modulation) => Arpeggio(actions
+      .map(
+          (action) => action != null ? action.withModulation(modulation) : null)
+      .toList());
+  Arpeggio withVelocity(double velocity) => Arpeggio(actions
+      .map((action) => action != null ? action.withVelocity(velocity) : null)
+      .toList());
 }
 
 /// Abstract action
@@ -53,11 +60,21 @@ class PlayerAction {
   /// Supposedd to be from 0 to 1
   final double velocity;
 
-  PlayerAction withOffset(double offset) {
-    return PlayerAction(
-      modulation: modulation,
-      velocity: velocity,
-      stepOffset: stepOffset != null ? offset + stepOffset : null,
-    );
-  }
+  PlayerAction withOffset(double newOffset) => PlayerAction(
+        modulation: modulation,
+        velocity: velocity,
+        stepOffset: stepOffset != null ? newOffset + stepOffset : null,
+      );
+
+  PlayerAction withModulation(double newModulation) => PlayerAction(
+        modulation: newModulation,
+        velocity: velocity,
+        stepOffset: stepOffset,
+      );
+
+  PlayerAction withVelocity(double newVelocity) => PlayerAction(
+        velocity: newVelocity,
+        modulation: modulation,
+        stepOffset: stepOffset,
+      );
 }

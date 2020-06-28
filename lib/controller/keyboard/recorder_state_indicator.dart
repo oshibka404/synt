@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../recorder/state.dart';
 
 class RecorderStateIndicator extends StatelessWidget {
   RecorderStateIndicator({
-    @required this.state,
+    @required this.isRecording,
     @required this.isInRecordingMode,
   });
-  final RecorderState state;
+  final bool isRecording;
   final bool isInRecordingMode;
 
   String _getRecordingStatusText() {
-    if (state == RecorderState.recording) {
+    if (isRecording) {
       return 'Recording';
-    } else if (state == RecorderState.playing && isInRecordingMode) {
+    } else if (isInRecordingMode) {
       return 'Ready to record';
     } else {
       return '';

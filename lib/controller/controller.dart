@@ -43,20 +43,22 @@ class _ControllerState extends State<Controller> {
     super.initState();
     ActionReceiver(_outputController.stream);
 
-    _tempoController = TempoController();
+    _tempoController = TempoController(tempo: 120);
 
     _keyboardController.stream.listen((action) {
       if (!_arpeggiators.containsKey(action.pointerId)) {
-        _arpeggiators[action.pointerId] =
-            Arpeggiator(action.pointerId, _tempoController);
+        _arpeggiators[action.pointerId] = Arpeggiator(_tempoController);
+        _outputController.add(_keyboardActionToSynthCommand(action));
         _arpeggiators[action.pointerId].output.listen((playerAction) {
           _outputController
               .add(_playerActionToSynthCommand(playerAction, action.pointerId));
         });
       }
       if (action.pressure > 0) {
-        _arpeggiators[action.pointerId]
-            .play(action.modulation, baseStep: action.stepOffset);
+        _arpeggiators[action.pointerId].play(action.modulation,
+            baseStep: action.stepOffset,
+            modulation: action.modulation,
+            velocity: action.pressure);
       } else {
         _arpeggiators[action.pointerId].stop();
         _arpeggiators.remove(action.pointerId);
@@ -73,6 +75,14 @@ class _ControllerState extends State<Controller> {
               freq: _getFreqFromStepOffset(
                   action.stepOffset, currentPreset.baseKey))
           : SynthCommand.stop(voiceId);
+
+  SynthCommand _keyboardActionToSynthCommand(KeyboardAction action) =>
+      action.pressure > 0
+          ? SynthCommand(action.pointerId,
+              modulation: action.modulation,
+              freq: _getFreqFromStepOffset(
+                  action.stepOffset, currentPreset.baseKey))
+          : SynthCommand.stop(action.pointerId);
 
   List<int> _scale = Scales.dorian;
 

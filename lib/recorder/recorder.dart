@@ -5,22 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/controller/keyboard/keyboard_action.dart';
 
 import 'record.dart';
-import 'state.dart';
 
 /// Class providing API to record sequences of actions
 /// performed on controller.
 class Recorder {
   Recorder({
-    this.initialState = RecorderState.playing,
     @required this.input,
     this.measureDuration,
   }) {
-    _stateStreamController.add(initialState);
-    _state = initialState;
+    _stateStreamController.add(false);
     input.listen(_inputListener);
   }
-
-  final RecorderState initialState;
 
   Duration measureDuration;
 
@@ -43,12 +38,12 @@ class Recorder {
     return _outputController.stream;
   }
 
-  RecorderState _state;
+  bool _isRecording;
 
-  get state => _state;
+  get isRecording => _isRecording;
 
-  set state(value) {
-    _state = value;
+  set isRecording(value) {
+    _isRecording = value;
     _stateStreamController.add(value);
   }
 
@@ -63,8 +58,8 @@ class Recorder {
     });
   }
 
-  var _stateStreamController = StreamController<RecorderState>();
-  Stream<RecorderState> get stateStream {
+  var _stateStreamController = StreamController<bool>();
+  Stream<bool> get stateStream {
     return _stateStreamController.stream;
   }
 
@@ -77,7 +72,6 @@ class Recorder {
     double measuresInRecord =
         recordedDuration.inMicroseconds / measureDuration.inMicroseconds;
 
-    // TODO: compute fractions (ln 2 not initialized)
     int bars = measuresInRecord > 1
         ? pow(2, (log(measuresInRecord) / ln2).round())
         : 1;
@@ -91,7 +85,7 @@ class Recorder {
   /// Returns start time to be used as the record's id.
   DateTime startRec(Offset initialPosition) {
     var startTime = DateTime.now();
-    state = RecorderState.recording;
+    _isRecording = true;
     _currentRecord = Record(startPoint: initialPosition, startTime: startTime);
     return startTime;
   }
@@ -100,7 +94,7 @@ class Recorder {
   /// Stops recording, decorates the finished record with [Record..duration]
   /// and adds it to [records].
   void stopRec() {
-    state = RecorderState.playing;
+    _isRecording = false;
 
     if (_currentRecord == null || _currentRecord.isEmpty) return;
 

@@ -9,12 +9,10 @@ import 'arpeggio.dart';
 ///
 /// There is always only one voice per arpeggio and one arpeggio per voice.
 class Arpeggiator {
-  Arpeggiator(this._id, this._tempo);
+  Arpeggiator(this._tempo);
   TempoController _tempo;
   var _outputController = StreamController<PlayerAction>();
   Stream<PlayerAction> get output => _outputController.stream;
-
-  final int _id;
 
   StreamSubscription<Tick> _tempoSubscription;
 
@@ -154,8 +152,9 @@ class Arpeggiator {
   /// Starts sending stream of [PlayerAction]s into [output]
   ///
   /// The arpeggio to play is chosen from internal bank of arpeggios
-  /// of the given [complexity].
-  void play(double complexity, {double baseStep}) {
+  /// according to the given [complexity].
+  void play(double complexity,
+      {double baseStep, double modulation, double velocity}) {
     if (complexity < 0 || complexity > 1) {
       throw ArgumentError.value(complexity, 'complexity');
     }
@@ -163,7 +162,10 @@ class Arpeggiator {
     complexity = min(complexity, .999);
 
     var arpeggioId = (complexity * _arpeggios.length).floor();
-    _currentArpeggio = _arpeggios[arpeggioId].withOffset(baseStep);
+    _currentArpeggio = _arpeggios[arpeggioId]
+        .withOffset(baseStep ?? 49)
+        .withModulation(modulation ?? 1)
+        .withVelocity(velocity ?? 1);
 
     if (!_isPlaying) {
       _isPlaying = true;
