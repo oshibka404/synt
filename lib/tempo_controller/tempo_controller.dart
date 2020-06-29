@@ -25,7 +25,6 @@ class TempoController {
   }
 
   Tick _tick(int i) {
-    print(i);
     return Tick(division: i % 16, tempo: tempo);
   }
 }
@@ -34,6 +33,6 @@ class Tick {
   Tick({this.division, this.tempo});
 
   /// Current division from 0 to 15
-  int division;
-  double tempo;
+  final int division;
+  final double tempo;
 }
