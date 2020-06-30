@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'recorded_action.dart';
 import '../controller/keyboard_preset.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
 
 /// Timeline with sequence of [KeyboardAction]s
+///
+/// produces stream of []
 class Record {
   Record({
     @required this.startTime,
@@ -23,7 +26,7 @@ class Record {
   ///
   /// Starts playing [after] given duration or [at] given time.
   /// When no params given or [at] is in past, starts immediately.
-  Stream<KeyboardAction> play({DateTime at, Duration after}) async* {
+  Stream<RecordedAction> play({DateTime at, Duration after}) async* {
     if (after != null) {
       await Future.delayed(after);
       yield* play();
@@ -52,7 +55,7 @@ class Record {
     } else {
       _pressedPointers.remove(action.pointerId);
     }
-    _actions.add(action);
+    _actions.add(RecordedAction.from(action, preset: preset));
   }
 
   Set<int> _pressedPointers = Set<int>();

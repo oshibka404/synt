@@ -7,6 +7,7 @@ import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio.dart';
 import '../arpeggiator/arpeggio_bank.dart';
 import '../recorder/recorder.dart';
+import '../recorder/recorded_action.dart';
 import '../tempo_controller/tempo_controller.dart';
 import '../synth/action_receiver.dart';
 import '../synth/scales.dart';
@@ -49,7 +50,6 @@ class _ControllerState extends State<Controller> {
 
   Map<int, Arpeggiator> _arpeggiators = {};
 
-  // TODO: split method
   @override
   initState() {
     super.initState();
@@ -61,34 +61,42 @@ class _ControllerState extends State<Controller> {
     recorder = Recorder(
         input: _recorderLoopController.stream, tempo: _tempoController);
 
-    _keyboardController.stream.listen((action) {
-      if (_isReadyToRecord && !recorder.isRecording) {
-        // TODO: save records in record store
-        recorder.startRec(
-            Offset(action.stepOffset, action.modulation), currentPreset);
-      }
-      _recorderLoopController.add(action);
-    });
+    _keyboardController.stream.listen(_keyboardHandler);
 
-    recorder.output.listen((action) {
-      if (!_arpeggiators.containsKey(action.pointerId)) {
-        _arpeggiators[action.pointerId] =
-            Arpeggiator(_tempoController, ArpeggioBank());
-        _outputController.add(_keyboardActionToSynthCommand(action));
-        _arpeggiators[action.pointerId].output.listen((playerAction) {
-          _outputController
-              .add(_playerActionToSynthCommand(playerAction, action.pointerId));
-        });
-      }
-      if (action.pressure > 0) {
-        _arpeggiators[action.pointerId].play(action.modulation,
-            baseStep: action.stepOffset,
-            modulation: action.modulation,
-            velocity: action.pressure);
-      } else {
-        _arpeggiators[action.pointerId].stop();
-        _arpeggiators.remove(action.pointerId);
-      }
+    recorder.output.listen(_recorderHandler);
+  }
+
+  void _keyboardHandler(action) {
+    if (_isReadyToRecord && !recorder.isRecording) {
+      // TODO: save records in record store
+      recorder.startRec(
+          Offset(action.stepOffset, action.modulation), currentPreset);
+    }
+    _recorderLoopController.add(action);
+  }
+
+  void _recorderHandler(RecordedAction action) {
+    if (!_arpeggiators.containsKey(action.pointerId)) {
+      _outputController.add(_recordedActionToSynthCommand(action));
+      _addArpeggiator(action);
+    }
+    if (action.pressure > 0) {
+      _arpeggiators[action.pointerId].play(action.modulation,
+          baseStep: action.stepOffset,
+          modulation: action.modulation,
+          velocity: action.pressure);
+    } else {
+      _arpeggiators[action.pointerId].stop();
+      _arpeggiators.remove(action.pointerId);
+    }
+  }
+
+  void _addArpeggiator(RecordedAction action) {
+    _arpeggiators[action.pointerId] =
+        Arpeggiator(_tempoController, ArpeggioBank());
+    _arpeggiators[action.pointerId].output.listen((playerAction) {
+      _outputController.add(_playerActionToSynthCommand(
+          playerAction, action.pointerId, action.preset));
     });
   }
 
@@ -100,20 +108,21 @@ class _ControllerState extends State<Controller> {
 
   TempoController _tempoController;
 
-  SynthCommand _playerActionToSynthCommand(PlayerAction action, int voiceId) =>
+  SynthCommand _playerActionToSynthCommand(
+          PlayerAction action, int voiceId, KeyboardPreset preset) =>
       action.velocity > 0
           ? SynthCommand(voiceId,
               modulation: action.modulation,
               freq: _getFreqFromStepOffset(
-                  action.stepOffset, currentPreset.baseKey))
+                  action.stepOffset, preset?.baseKey ?? currentPreset.baseKey))
           : SynthCommand.stop(voiceId);
 
-  SynthCommand _keyboardActionToSynthCommand(KeyboardAction action) =>
+  SynthCommand _recordedActionToSynthCommand(RecordedAction action) =>
       action.pressure > 0
           ? SynthCommand(action.pointerId,
               modulation: action.modulation,
-              freq: _getFreqFromStepOffset(
-                  action.stepOffset, currentPreset.baseKey))
+              freq: _getFreqFromStepOffset(action.stepOffset,
+                  action.preset?.baseKey ?? currentPreset.baseKey))
           : SynthCommand.stop(action.pointerId);
 
   List<int> _scale = Scales.dorian;

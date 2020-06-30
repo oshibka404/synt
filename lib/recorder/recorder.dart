@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
 import '../tempo_controller/tempo_controller.dart';
+import 'recorded_action.dart';
 import 'record.dart';
 
 /// Class providing API to record sequences of actions
@@ -27,14 +28,14 @@ class Recorder {
     if (_currentRecord != null) {
       _currentRecord.add(action);
     }
-    _outputController.add(action);
+    _outputController.add(RecordedAction.from(action));
   }
 
   Record _currentRecord;
 
-  var _outputController = StreamController<KeyboardAction>();
+  var _outputController = StreamController<RecordedAction>();
 
-  Stream<KeyboardAction> get output {
+  Stream<RecordedAction> get output {
     return _outputController.stream;
   }
 
@@ -43,7 +44,6 @@ class Recorder {
   bool get isRecording => _isRecording;
 
   void loop(Record record) {
-    print(record.startTime);
     record.play().listen((action) {
       _outputController.add(action);
     });
@@ -85,7 +85,6 @@ class Recorder {
     return startTime;
   }
 
-  // TODO: simplify, split, shorten
   /// Stops recording, decorates the finished record with [Record..duration]
   /// and adds it to [records].
   void stopRec() {
