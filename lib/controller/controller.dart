@@ -67,10 +67,13 @@ class _ControllerState extends State<Controller> {
   }
 
   void _keyboardHandler(action) {
-    if (_isReadyToRecord && !recorder.isRecording) {
+    if (isReadyToRecord && !isRecording) {
       // TODO: save records in record store
       recorder.startRec(
           Offset(action.stepOffset, action.modulation), currentPreset);
+      setState(() {
+        isRecording = true;
+      });
     }
     _recorderLoopController.add(action);
   }
@@ -104,7 +107,8 @@ class _ControllerState extends State<Controller> {
 
   Recorder recorder;
 
-  bool _isReadyToRecord = false;
+  bool isReadyToRecord = false;
+  bool isRecording = false;
 
   TempoController _tempoController;
 
@@ -162,9 +166,12 @@ class _ControllerState extends State<Controller> {
   void setReady(bool ready) {
     if (!ready) {
       recorder.stopRec();
+      setState(() {
+        isRecording = false;
+      });
     }
     setState(() {
-      _isReadyToRecord = ready;
+      isReadyToRecord = ready;
     });
   }
 
@@ -190,8 +197,8 @@ class _ControllerState extends State<Controller> {
           offset: Offset(controlPanelWidth, 0),
           preset: currentPreset,
           output: _keyboardController,
-          isReadyToRecord: _isReadyToRecord,
-          isRecording: recorder.isRecording,
+          isReadyToRecord: isReadyToRecord,
+          isRecording: isRecording,
         );
         return Scaffold(
           body: Row(
