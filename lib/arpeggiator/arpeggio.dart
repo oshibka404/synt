@@ -41,7 +41,7 @@ class PlayerAction {
   });
 
   PlayerAction.stop({
-    this.stepOffset,
+    this.stepOffset = 0,
     this.modulation,
     this.velocity = 0,
   });

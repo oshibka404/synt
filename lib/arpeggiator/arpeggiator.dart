@@ -163,9 +163,9 @@ class Arpeggiator {
 
     var arpeggioId = (complexity * _arpeggios.length).floor();
     _currentArpeggio = _arpeggios[arpeggioId]
-        .withOffset(baseStep ?? 49)
-        .withModulation(modulation ?? 1)
-        .withVelocity(velocity ?? 1);
+        .withOffset(baseStep)
+        .withModulation(modulation)
+        .withVelocity(velocity);
 
     if (!_isPlaying) {
       _isPlaying = true;
