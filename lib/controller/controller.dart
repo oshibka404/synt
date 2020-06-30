@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/arpeggiator/arpeggiator.dart';
 import 'package:perfect_first_synth/arpeggiator/arpeggio.dart';
+import 'package:perfect_first_synth/arpeggiator/arpeggio_bank.dart';
 import 'package:perfect_first_synth/tempo_controller/tempo_controller.dart';
 
 import '../synth/action_receiver.dart';
@@ -56,7 +57,8 @@ class _ControllerState extends State<Controller> {
 
     _keyboardController.stream.listen((action) {
       if (!_arpeggiators.containsKey(action.pointerId)) {
-        _arpeggiators[action.pointerId] = Arpeggiator(_tempoController);
+        _arpeggiators[action.pointerId] =
+            Arpeggiator(_tempoController, ArpeggioBank());
         _outputController.add(_keyboardActionToSynthCommand(action));
         _arpeggiators[action.pointerId].output.listen((playerAction) {
           _outputController
