@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:perfect_first_synth/controller/keyboard/recorder_state_indicator.dart';
 
 import '../keyboard_preset.dart';
 
@@ -18,6 +19,8 @@ class Keyboard extends StatefulWidget {
     @required this.offset,
     @required this.preset,
     @required this.output,
+    this.isRecording = false,
+    this.isReadyToRecord = false,
   });
   final Size size;
 
@@ -31,6 +34,10 @@ class Keyboard extends StatefulWidget {
   final StreamConsumer output;
 
   final KeyboardPreset preset;
+
+  final bool isRecording;
+
+  final bool isReadyToRecord;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -130,14 +137,22 @@ class _KeyboardState extends State<Keyboard> {
       onPointerCancel: _removePointer,
       child: Container(
           constraints: BoxConstraints.tight(widget.size),
-          child: ClipRect(
-            child: CustomPaint(
-              painter: KeyboardPainter(
-                pixelsPerStep: pixelsPerStep,
-                mainColor: widget.preset.color,
-                pointers: pointers,
+          child: Stack(
+            children: [
+              ClipRect(
+                child: CustomPaint(
+                  size: widget.size,
+                  painter: KeyboardPainter(
+                    pixelsPerStep: pixelsPerStep,
+                    mainColor: widget.preset.color,
+                    pointers: pointers,
+                  ),
+                ),
               ),
-            ),
+              RecorderStateIndicator(
+                  isRecording: widget.isRecording,
+                  isInRecordingMode: widget.isReadyToRecord),
+            ],
           )),
     );
   }

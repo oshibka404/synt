@@ -49,6 +49,7 @@ class _ControllerState extends State<Controller> {
 
   Map<int, Arpeggiator> _arpeggiators = {};
 
+  // TODO: split method
   @override
   initState() {
     super.initState();
@@ -57,7 +58,18 @@ class _ControllerState extends State<Controller> {
 
     _tempoController = TempoController(tempo: 120);
 
-    recorder = Recorder(input: _keyboardController.stream);
+    recorder = Recorder(
+        input: _recorderLoopController.stream, tempo: _tempoController);
+
+    _keyboardController.stream.listen((action) {
+      if (_isReadyToRecord && !recorder.isRecording) {
+        // TODO: save records in record store
+        recorder.startRec(
+            Offset(action.stepOffset, action.modulation), currentPreset);
+      }
+      _recorderLoopController.add(action);
+    });
+
     recorder.output.listen((action) {
       if (!_arpeggiators.containsKey(action.pointerId)) {
         _arpeggiators[action.pointerId] =
@@ -80,7 +92,11 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  var _recorderLoopController = StreamController<KeyboardAction>();
+
   Recorder recorder;
+
+  bool _isReadyToRecord = false;
 
   TempoController _tempoController;
 
@@ -134,6 +150,15 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  void setReady(bool ready) {
+    if (!ready) {
+      recorder.stopRec();
+    }
+    setState(() {
+      _isReadyToRecord = ready;
+    });
+  }
+
   var _outputController = StreamController<SynthCommand>();
   var _keyboardController = StreamController<KeyboardAction>();
 
@@ -156,6 +181,8 @@ class _ControllerState extends State<Controller> {
           offset: Offset(controlPanelWidth, 0),
           preset: currentPreset,
           output: _keyboardController,
+          isReadyToRecord: _isReadyToRecord,
+          isRecording: recorder.isRecording,
         );
         return Scaffold(
           body: Row(
@@ -165,6 +192,8 @@ class _ControllerState extends State<Controller> {
                 currentPreset: currentPreset,
                 setPreset: setPreset,
                 keyboardPresets: keyboardPresets,
+                onTapDown: () => setReady(true),
+                onTapUp: () => setReady(false),
               ),
               Stack(
                   children: _settingsOpen
@@ -180,6 +209,7 @@ class _ControllerState extends State<Controller> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
+            backgroundColor: currentPreset.color,
             onPressed: toggleSettings,
             tooltip: 'Sound settings',
             child: const Icon(Icons.settings),

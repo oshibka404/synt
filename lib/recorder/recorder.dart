@@ -12,7 +12,6 @@ import 'record.dart';
 /// performed on controller.
 class Recorder {
   Recorder({@required this.input, this.tempo}) {
-    _stateStreamController.add(false);
     input.listen(_inputListener);
   }
 
@@ -39,14 +38,9 @@ class Recorder {
     return _outputController.stream;
   }
 
-  bool _isRecording;
+  bool _isRecording = false;
 
-  get isRecording => _isRecording;
-
-  set isRecording(value) {
-    _isRecording = value;
-    _stateStreamController.add(value);
-  }
+  bool get isRecording => _isRecording;
 
   void loop(Record record) {
     print(record.startTime);
