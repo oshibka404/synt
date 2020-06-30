@@ -52,11 +52,6 @@ class Recorder {
     });
   }
 
-  var _stateStreamController = StreamController<bool>();
-  Stream<bool> get stateStream {
-    return _stateStreamController.stream;
-  }
-
   Duration _computeIntendedDuration(Duration recordedDuration) {
     if (recordedDuration == barDuration) {
       return recordedDuration;

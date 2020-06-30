@@ -18,16 +18,12 @@ class Arpeggio {
     return actions[division];
   }
 
-  Arpeggio withOffset(double offset) => Arpeggio(actions
-      .map((action) => action != null ? action.withOffset(offset) : null)
-      .toList());
-  Arpeggio withModulation(double modulation) => Arpeggio(actions
-      .map(
-          (action) => action != null ? action.withModulation(modulation) : null)
-      .toList());
-  Arpeggio withVelocity(double velocity) => Arpeggio(actions
-      .map((action) => action != null ? action.withVelocity(velocity) : null)
-      .toList());
+  Arpeggio withOffset(double offset) =>
+      Arpeggio(actions.map((action) => action?.withOffset(offset)).toList());
+  Arpeggio withModulation(double modulation) => Arpeggio(
+      actions.map((action) => action?.withModulation(modulation)).toList());
+  Arpeggio withVelocity(double velocity) => Arpeggio(
+      actions.map((action) => action?.withVelocity(velocity)).toList());
 }
 
 /// Abstract action
@@ -41,10 +37,14 @@ class PlayerAction {
   });
 
   PlayerAction.stop({
-    this.stepOffset = 0,
+    this.stepOffset,
     this.modulation,
     this.velocity = 0,
-  });
+  }) {
+    _isStop = true;
+  }
+
+  bool _isStop = false;
 
   /// Steps from base note.
   final double stepOffset;
@@ -60,21 +60,27 @@ class PlayerAction {
   /// Supposedd to be from 0 to 1
   final double velocity;
 
-  PlayerAction withOffset(double newOffset) => PlayerAction(
-        modulation: modulation,
-        velocity: velocity,
-        stepOffset: stepOffset != null ? newOffset + stepOffset : null,
-      );
+  PlayerAction withOffset(double newOffset) => _isStop
+      ? this
+      : PlayerAction(
+          modulation: modulation,
+          velocity: velocity,
+          stepOffset: stepOffset != null ? newOffset + stepOffset : null,
+        );
 
-  PlayerAction withModulation(double newModulation) => PlayerAction(
-        modulation: newModulation,
-        velocity: velocity,
-        stepOffset: stepOffset,
-      );
+  PlayerAction withModulation(double newModulation) => _isStop
+      ? this
+      : PlayerAction(
+          modulation: newModulation,
+          velocity: velocity,
+          stepOffset: stepOffset,
+        );
 
-  PlayerAction withVelocity(double newVelocity) => PlayerAction(
-        velocity: newVelocity,
-        modulation: modulation,
-        stepOffset: stepOffset,
-      );
+  PlayerAction withVelocity(double newVelocity) => _isStop
+      ? this
+      : PlayerAction(
+          velocity: newVelocity,
+          modulation: modulation,
+          stepOffset: stepOffset,
+        );
 }
