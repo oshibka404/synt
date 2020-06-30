@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:perfect_first_synth/arpeggiator/arpeggio_bank.dart';
+import 'arpeggio_bank.dart';
 
 import '../tempo_controller/tempo_controller.dart';
 

@@ -2,24 +2,25 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/keyboard/keyboard_action.dart';
 
+import '../controller/keyboard/keyboard_action.dart';
+import '../controller/keyboard_preset.dart';
+import '../tempo_controller/tempo_controller.dart';
 import 'record.dart';
 
 /// Class providing API to record sequences of actions
 /// performed on controller.
 class Recorder {
-  Recorder({
-    @required this.input,
-    this.measureDuration,
-  }) {
+  Recorder({@required this.input, this.tempo}) {
     _stateStreamController.add(false);
     input.listen(_inputListener);
   }
 
-  Duration measureDuration;
+  Duration get barDuration => tempo?.bar;
 
   final Stream<KeyboardAction> input;
+
+  final TempoController tempo;
 
   final records = Map<DateTime, Record>();
 
@@ -47,7 +48,6 @@ class Recorder {
     _stateStreamController.add(value);
   }
 
-  // TODO: create class Looper/Loop
   void loop(Record record) {
     print(record.startTime);
     record.play().listen((action) {
@@ -64,29 +64,30 @@ class Recorder {
   }
 
   Duration _computeIntendedDuration(Duration recordedDuration) {
-    if (recordedDuration == measureDuration) {
+    if (recordedDuration == barDuration) {
       return recordedDuration;
     }
 
     Duration intendedDuration;
     double measuresInRecord =
-        recordedDuration.inMicroseconds / measureDuration.inMicroseconds;
+        recordedDuration.inMicroseconds / barDuration.inMicroseconds;
 
     int bars = measuresInRecord > 1
         ? pow(2, (log(measuresInRecord) / ln2).round())
         : 1;
 
     intendedDuration =
-        Duration(microseconds: measureDuration.inMicroseconds * bars);
+        Duration(microseconds: barDuration.inMicroseconds * bars);
     return intendedDuration;
   }
 
   /// Creates [Record] and starts writing actions received from [input] to it.
   /// Returns start time to be used as the record's id.
-  DateTime startRec(Offset initialPosition) {
+  DateTime startRec(Offset initialPosition, KeyboardPreset preset) {
     var startTime = DateTime.now();
     _isRecording = true;
-    _currentRecord = Record(startPoint: initialPosition, startTime: startTime);
+    _currentRecord = Record(
+        startPoint: initialPosition, startTime: startTime, preset: preset);
     return startTime;
   }
 
@@ -99,10 +100,6 @@ class Recorder {
     if (_currentRecord == null || _currentRecord.isEmpty) return;
 
     var recordedDuration = DateTime.now().difference(_currentRecord.startTime);
-
-    if (measureDuration == null) {
-      measureDuration = recordedDuration;
-    }
 
     _currentRecord.duration = _computeIntendedDuration(recordedDuration);
 

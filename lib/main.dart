@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Perfect First Synth',
+      title: 'Synt',
       home: Controller(),
       theme: themeData,
     );

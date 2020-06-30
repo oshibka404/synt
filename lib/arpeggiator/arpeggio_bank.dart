@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:perfect_first_synth/arpeggiator/arpeggio.dart';
+import 'arpeggio.dart';
 
 class ArpeggioBank {
   Arpeggio getBy({double intensity}) {

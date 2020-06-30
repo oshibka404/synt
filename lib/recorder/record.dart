@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../controller/keyboard_preset.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
 
@@ -9,10 +10,12 @@ class Record {
   Record({
     @required this.startTime,
     @required this.startPoint,
+    @required this.preset,
   });
   final Offset startPoint;
   final DateTime startTime;
   final List<KeyboardAction> _actions = [];
+  final KeyboardPreset preset;
 
   bool get isEmpty => _actions.isEmpty;
 

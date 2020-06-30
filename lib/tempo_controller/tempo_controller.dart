@@ -10,6 +10,7 @@ class TempoController {
 
   Duration get sixteenth =>
       Duration(microseconds: Duration.microsecondsPerMinute ~/ (tempo * 4));
+  Duration get bar => sixteenth * 16;
 
   Stream<Tick> _internalStream;
 

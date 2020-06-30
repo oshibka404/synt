@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/arpeggiator/arpeggiator.dart';
-import 'package:perfect_first_synth/arpeggiator/arpeggio.dart';
-import 'package:perfect_first_synth/arpeggiator/arpeggio_bank.dart';
-import 'package:perfect_first_synth/tempo_controller/tempo_controller.dart';
 
+import '../arpeggiator/arpeggiator.dart';
+import '../arpeggiator/arpeggio.dart';
+import '../arpeggiator/arpeggio_bank.dart';
+import '../recorder/recorder.dart';
+import '../tempo_controller/tempo_controller.dart';
 import '../synth/action_receiver.dart';
 import '../synth/scales.dart';
 import '../synth/dsp_api.dart';
@@ -51,11 +52,13 @@ class _ControllerState extends State<Controller> {
   @override
   initState() {
     super.initState();
+
     ActionReceiver(_outputController.stream);
 
     _tempoController = TempoController(tempo: 120);
 
-    _keyboardController.stream.listen((action) {
+    recorder = Recorder(input: _keyboardController.stream);
+    recorder.output.listen((action) {
       if (!_arpeggiators.containsKey(action.pointerId)) {
         _arpeggiators[action.pointerId] =
             Arpeggiator(_tempoController, ArpeggioBank());
@@ -76,6 +79,8 @@ class _ControllerState extends State<Controller> {
       }
     });
   }
+
+  Recorder recorder;
 
   TempoController _tempoController;
 
