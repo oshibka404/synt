@@ -15,6 +15,7 @@ import '../synth/dsp_api.dart';
 import 'keyboard/keyboard_action.dart';
 import 'keyboard/keyboard.dart';
 import 'keyboard_preset.dart';
+import 'keyboard_presets.dart' show keyboardPresets;
 import 'preset_selector/preset_selector.dart';
 import 'settings.dart';
 
@@ -24,30 +25,6 @@ class Controller extends StatefulWidget {
 }
 
 class _ControllerState extends State<Controller> {
-  static List<KeyboardPreset> keyboardPresets = [
-    KeyboardPreset(
-      baseKey: 61,
-      color: ColorSwatch<int>(0xFF3885ED, {
-        200: Color(0xFF3885ED),
-        900: Color(0xFF2f74d0),
-      }),
-    ),
-    KeyboardPreset(
-      baseKey: 37,
-      color: ColorSwatch<int>(0xFFfbf043, {
-        200: Color(0xFFfbf043),
-        900: Color(0xFFe7dc33),
-      }),
-    ),
-    KeyboardPreset(
-      baseKey: 13,
-      color: ColorSwatch<int>(0xFFf7642c, {
-        200: Color(0xFFf7642c),
-        900: Color(0xFFda4d17),
-      }),
-    ),
-  ];
-
   Map<int, Arpeggiator> _arpeggiators = {};
 
   @override
@@ -68,7 +45,6 @@ class _ControllerState extends State<Controller> {
 
   void _keyboardHandler(action) {
     if (isReadyToRecord && !isRecording) {
-      // TODO: save records in record store
       recorder.startRec(
           Offset(action.stepOffset, action.modulation), currentPreset);
       setState(() {
