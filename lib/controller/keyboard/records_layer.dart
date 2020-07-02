@@ -6,12 +6,14 @@ class RecordsLayer extends StatelessWidget {
   final Size size;
   final double pixelsPerStep;
   final Function toggleRecord;
+  final Function deleteRecord;
   final double _iconSize = 24;
 
   final double _buttonPadding = 8;
   RecordsLayer(
       {@required this.size,
       @required this.recordViews,
+      @required this.deleteRecord,
       @required this.pixelsPerStep,
       @required this.toggleRecord});
   get _buttonSize => _iconSize + 2 * _buttonPadding;
@@ -43,7 +45,8 @@ class RecordsLayer extends StatelessWidget {
       buttons.add(Positioned(
           left: offsetInPixels.dx - _buttonSize / 2,
           top: offsetInPixels.dy - _buttonSize / 2,
-          child: Container(
+          child: GestureDetector(
+            child: Container(
               decoration: ShapeDecoration(
                 gradient: LinearGradient(colors: [
                   recordView.preset.color[200],
@@ -51,16 +54,20 @@ class RecordsLayer extends StatelessWidget {
                 ]),
                 shape: CircleBorder(),
               ),
-              child: IconButton(
-                  icon: Icon(
-                    icon,
-                    color: Theme.of(context).backgroundColor,
-                  ),
-                  iconSize: _iconSize,
-                  padding: EdgeInsets.all(_buttonPadding),
-                  onPressed: () {
-                    toggleRecord(time);
-                  }))));
+              child: Icon(
+                icon,
+                color: Theme.of(context).backgroundColor,
+                size: _iconSize,
+              ),
+              padding: EdgeInsets.all(_buttonPadding),
+            ),
+            onTap: () {
+              toggleRecord(time);
+            },
+            onLongPress: () {
+              deleteRecord(time);
+            },
+          )));
     });
     return buttons;
   }

@@ -64,6 +64,7 @@ class _ControllerState extends State<Controller> {
           isRecording: isRecording,
           toggleRecord: toggleRecord,
           recordViews: _recordViews,
+          deleteRecord: deleteRecord,
         );
         return Scaffold(
           body: Row(
@@ -98,6 +99,11 @@ class _ControllerState extends State<Controller> {
         );
       },
     );
+  }
+
+  void deleteRecord(DateTime id) {
+    recorder.delete(recorder.records[id]);
+    _recordViews.remove(id);
   }
 
   @override

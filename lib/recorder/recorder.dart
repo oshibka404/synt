@@ -36,6 +36,11 @@ class Recorder {
     return _outputController.stream;
   }
 
+  void delete(Record record) {
+    stop(record);
+    records.remove(record.startTime);
+  }
+
   void loop(Record record) {
     record.play().listen((action) {
       _outputController.add(action);

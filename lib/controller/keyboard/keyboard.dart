@@ -36,6 +36,8 @@ class Keyboard extends StatefulWidget {
 
   final Function toggleRecord;
 
+  final Function deleteRecord;
+
   Keyboard({
     @required this.size,
     @required this.offset,
@@ -45,6 +47,7 @@ class Keyboard extends StatefulWidget {
     this.isRecording = false,
     this.isReadyToRecord = false,
     this.recordViews,
+    this.deleteRecord,
   });
 
   @override
@@ -93,6 +96,7 @@ class _KeyboardState extends State<Keyboard> {
                 recordViews: widget.recordViews,
                 pixelsPerStep: pixelsPerStep,
                 toggleRecord: widget.toggleRecord,
+                deleteRecord: widget.deleteRecord,
               ),
             ],
           )),
