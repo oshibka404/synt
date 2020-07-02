@@ -17,6 +17,7 @@ import 'keyboard/keyboard.dart';
 import 'keyboard_preset.dart';
 import 'keyboard_presets.dart' show keyboardPresets;
 import 'preset_selector/preset_selector.dart';
+import 'record_view.dart';
 import 'settings.dart';
 
 class Controller extends StatefulWidget {
@@ -26,6 +27,7 @@ class Controller extends StatefulWidget {
 
 class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
+  Map<DateTime, RecordView> _recordViews = {};
 
   @override
   initState() {
@@ -45,9 +47,15 @@ class _ControllerState extends State<Controller> {
 
   void _keyboardHandler(action) {
     if (isReadyToRecord && !isRecording) {
-      recorder.startRec(
-          Offset(action.stepOffset, action.modulation), currentPreset);
+      var startOffset = Offset(action.stepOffset, action.modulation);
+      var startTime = recorder.startRec(startOffset, currentPreset);
       setState(() {
+        _recordViews[startTime] = RecordView(
+          startOffset,
+          currentPreset,
+          true,
+          true,
+        );
         isRecording = true;
       });
     }
@@ -139,11 +147,34 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  void toggleRecord(DateTime recordId) {
+    var record = recorder.records[recordId];
+    if (record == null) return;
+    if (record.isPlaying) {
+      recorder.stop(record);
+      setState(() {
+        _recordViews[recordId] =
+            _recordViews[recordId].assign(isPlaying: false);
+      });
+      print("Stopped");
+    } else {
+      recorder.loop(record);
+      setState(() {
+        _recordViews[recordId] = _recordViews[recordId].assign(isPlaying: true);
+      });
+      print("Play!");
+    }
+  }
+
   void setReady(bool ready) {
     if (!ready) {
       recorder.stopRec();
       setState(() {
         isRecording = false;
+
+        // TODO: address specific recordView instead of iterating
+        _recordViews = _recordViews.map(
+            (key, value) => MapEntry(key, value.assign(isRecording: false)));
       });
     }
     setState(() {
@@ -175,6 +206,8 @@ class _ControllerState extends State<Controller> {
           output: _keyboardController,
           isReadyToRecord: isReadyToRecord,
           isRecording: isRecording,
+          toggleRecord: toggleRecord,
+          recordViews: _recordViews,
         );
         return Scaffold(
           body: Row(

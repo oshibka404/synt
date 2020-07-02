@@ -20,6 +20,9 @@ class Record {
   final List<KeyboardAction> _actions = [];
   final KeyboardPreset preset;
 
+  bool _isPlaying = false;
+  bool get isPlaying => _isPlaying;
+
   bool get isEmpty => _actions.isEmpty;
 
   /// Returns a stream and starts playing this record into it.
@@ -33,9 +36,10 @@ class Record {
     } else if (at != null && at.isAfter(DateTime.now())) {
       yield* play(after: at.difference(DateTime.now()));
     } else {
+      _isPlaying = true;
       var iterator = _actions.iterator;
       var playbackStartTime = DateTime.now();
-      while (iterator.moveNext()) {
+      while (iterator.moveNext() && _isPlaying) {
         var action = iterator.current;
         var timeFromPlaybackStart =
             DateTime.now().difference(playbackStartTime);
@@ -44,6 +48,10 @@ class Record {
         yield action;
       }
     }
+  }
+
+  void stop() {
+    _isPlaying = false;
   }
 
   /// Saves [action] to this [Record].

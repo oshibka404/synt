@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:perfect_first_synth/controller/keyboard/recorder_state_indicator.dart';
+import 'recorder_state_indicator.dart';
 
 import '../keyboard_preset.dart';
+import '../record_view.dart';
 
 import 'keyboard_action.dart';
 import 'pointer_data.dart';
 import 'keyboard_painter.dart';
+import 'records_layer.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///
@@ -19,8 +21,10 @@ class Keyboard extends StatefulWidget {
     @required this.offset,
     @required this.preset,
     @required this.output,
+    @required this.toggleRecord,
     this.isRecording = false,
     this.isReadyToRecord = false,
+    this.recordViews,
   });
   final Size size;
 
@@ -38,6 +42,10 @@ class Keyboard extends StatefulWidget {
   final bool isRecording;
 
   final bool isReadyToRecord;
+
+  final Map<DateTime, RecordView> recordViews;
+
+  final Function toggleRecord;
 
   @override
   _KeyboardState createState() => _KeyboardState();
@@ -152,6 +160,12 @@ class _KeyboardState extends State<Keyboard> {
               RecorderStateIndicator(
                   isRecording: widget.isRecording,
                   isInRecordingMode: widget.isReadyToRecord),
+              RecordsLayer(
+                size: widget.size,
+                recordViews: widget.recordViews,
+                pixelsPerStep: pixelsPerStep,
+                toggleRecord: widget.toggleRecord,
+              ),
             ],
           )),
     );

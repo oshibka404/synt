@@ -9,6 +9,7 @@
 .history
 .svn/
 /coverage/
+/ios/build/
 
 # IntelliJ related
 *.iml

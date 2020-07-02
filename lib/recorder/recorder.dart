@@ -48,8 +48,14 @@ class Recorder {
       _outputController.add(action);
     });
     Future.delayed(record.duration, () {
-      loop(record);
+      if (record.isPlaying) {
+        loop(record);
+      }
     });
+  }
+
+  void stop(Record record) {
+    record.stop();
   }
 
   Duration _computeIntendedDuration(Duration recordedDuration) {
@@ -102,6 +108,7 @@ class Recorder {
     var startTime = _currentRecord.startTime;
 
     Future.delayed(delayBeforePlay, () => loop(records[startTime]));
+
     _currentRecord = null;
   }
 }
