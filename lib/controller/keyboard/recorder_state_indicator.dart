@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
 
 class RecorderStateIndicator extends StatelessWidget {
+  final bool isRecording;
+  final bool isInRecordingMode;
   RecorderStateIndicator({
     @required this.isRecording,
     @required this.isInRecordingMode,
   });
-  final bool isRecording;
-  final bool isInRecordingMode;
-
-  String _getRecordingStatusText() {
-    if (isRecording) {
-      return 'Recording';
-    } else if (isInRecordingMode) {
-      return 'Ready to record';
-    } else {
-      return '';
-    }
-  }
 
   Widget build(BuildContext context) {
     return Padding(
@@ -31,5 +21,15 @@ class RecorderStateIndicator extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getRecordingStatusText() {
+    if (isRecording) {
+      return 'Recording';
+    } else if (isInRecordingMode) {
+      return 'Ready to record';
+    } else {
+      return '';
+    }
   }
 }

@@ -2,21 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/controller/record_view.dart';
 
 class RecordsLayer extends StatelessWidget {
+  final Map<DateTime, RecordView> recordViews;
+  final Size size;
+  final double pixelsPerStep;
+  final Function toggleRecord;
+  final double _iconSize = 24;
+
+  final double _buttonPadding = 8;
   RecordsLayer(
       {@required this.size,
       @required this.recordViews,
       @required this.pixelsPerStep,
       @required this.toggleRecord});
-  final Map<DateTime, RecordView> recordViews;
-  final Size size;
-  final double pixelsPerStep;
-  final Function toggleRecord;
-
   get _buttonSize => _iconSize + 2 * _buttonPadding;
-  final double _iconSize = 24;
-  final double _buttonPadding = 8;
 
   // TODO: use something other than Offset for normalized positions
+  Widget build(context) {
+    return Stack(
+      children: _getRecordButtons(context),
+    );
+  }
+
   Offset _getDenormalizedOffset(Offset normalizedPosition) {
     return Offset(normalizedPosition.dx * pixelsPerStep,
         (1 - normalizedPosition.dy) * size.height);
@@ -57,11 +63,5 @@ class RecordsLayer extends StatelessWidget {
                   }))));
     });
     return buttons;
-  }
-
-  Widget build(context) {
-    return Stack(
-      children: _getRecordButtons(context),
-    );
   }
 }

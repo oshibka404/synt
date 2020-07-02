@@ -1,26 +1,25 @@
 import 'dart:async';
-import 'arpeggio_bank.dart';
 
 import '../tempo_controller/tempo_controller.dart';
-
 import 'arpeggio.dart';
+import 'arpeggio_bank.dart';
 
 /// Service streaming [Arpeggio] from a given note, according to given [_tempo]
 ///
 /// There is always only one voice per arpeggio and one arpeggio per voice.
 class Arpeggiator {
-  Arpeggiator(this.tempo, this.arpeggioBank);
   TempoController tempo;
   var _outputController = StreamController<PlayerAction>();
-  Stream<PlayerAction> get output => _outputController.stream;
-
   StreamSubscription<Tick> _tempoSubscription;
-
   ArpeggioBank arpeggioBank;
 
   var _isPlaying = false;
 
   Arpeggio _currentArpeggio;
+
+  Arpeggiator(this.tempo, this.arpeggioBank);
+
+  Stream<PlayerAction> get output => _outputController.stream;
 
   /// Starts sending stream of [PlayerAction]s into [output]
   ///

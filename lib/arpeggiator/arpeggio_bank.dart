@@ -3,17 +3,6 @@ import 'dart:math';
 import 'arpeggio.dart';
 
 class ArpeggioBank {
-  Arpeggio getBy({double intensity}) {
-    if (intensity < 0 || intensity > 1) {
-      throw ArgumentError.value(intensity, 'intensity');
-    }
-
-    intensity = min(intensity, .999);
-    var id = (intensity * _arpeggios.length).floor();
-    return _arpeggios[id];
-  }
-
-  // TODO: this should be somewhere in JSON
   List<Arpeggio> _arpeggios = [
     Arpeggio([
       PlayerAction(),
@@ -142,4 +131,15 @@ class ArpeggioBank {
       PlayerAction.stop(),
     ]),
   ];
+
+  // TODO: this should be somewhere in JSON
+  Arpeggio getBy({double intensity}) {
+    if (intensity < 0 || intensity > 1) {
+      throw ArgumentError.value(intensity, 'intensity');
+    }
+
+    intensity = min(intensity, .999);
+    var id = (intensity * _arpeggios.length).floor();
+    return _arpeggios[id];
+  }
 }

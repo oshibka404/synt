@@ -4,6 +4,12 @@ import '../keyboard_preset.dart';
 import 'preset_button.dart';
 
 class PresetSelector extends StatelessWidget {
+  final Size size;
+  final KeyboardPreset currentPreset;
+  final Function setPreset;
+  final List<KeyboardPreset> keyboardPresets;
+  final Function onTapDown;
+  final Function onTapUp;
   PresetSelector({
     @required this.size,
     @required this.currentPreset,
@@ -12,12 +18,12 @@ class PresetSelector extends StatelessWidget {
     this.onTapDown,
     this.onTapUp,
   });
-  final Size size;
-  final KeyboardPreset currentPreset;
-  final Function setPreset;
-  final List<KeyboardPreset> keyboardPresets;
-  final Function onTapDown;
-  final Function onTapUp;
+
+  Widget build(BuildContext context) {
+    return Column(
+      children: _buildPresetButtons(),
+    );
+  }
 
   List<PresetButton> _buildPresetButtons() {
     List<PresetButton> presetButtons = new List<PresetButton>();
@@ -36,11 +42,5 @@ class PresetSelector extends StatelessWidget {
       ));
     });
     return presetButtons;
-  }
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: _buildPresetButtons(),
-    );
   }
 }

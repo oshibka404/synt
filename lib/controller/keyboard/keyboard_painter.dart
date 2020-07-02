@@ -5,12 +5,6 @@ import 'package:flutter/material.dart';
 import 'pointer_data.dart';
 
 class KeyboardPainter extends CustomPainter {
-  KeyboardPainter({
-    @required this.pixelsPerStep,
-    this.mainColor = Colors.grey,
-    this.pointers,
-  });
-
   Map<int, PointerData> pointers;
 
   final ColorSwatch<int> mainColor;
@@ -22,18 +16,78 @@ class KeyboardPainter extends CustomPainter {
   Canvas canvas;
 
   Color backgroundColor = Colors.white;
+
+  final double pixelsPerStep;
   // TODO: get rid of 200, 900; use semantically meaningful descriptions
-  Color get lightMainColor => mainColor[200];
+  KeyboardPainter({
+    @required this.pixelsPerStep,
+    this.mainColor = Colors.grey,
+    this.pointers,
+  });
   Color get darkMainColor => mainColor[900];
 
-  bool isTonic(int stepNumber) {
-    return stepNumber % 7 == 0;
+  Color get lightMainColor => mainColor[200];
+
+  void drawKey(
+    int keyNumber,
+    Map<int, PointerData> pointers,
+  ) {
+    double x = getXPositionOfKey(keyNumber);
+    PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
+      return pointerData.position.dx ~/ pixelsPerStep == keyNumber;
+    }, orElse: () => null);
+
+    if (pressingPointer != null) {
+      drawPressedKey(x, pressingPointer);
+    } else {
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              Rect.fromPoints(
+                  Offset(x - 2, padding), Offset(x + 2, size.height - padding)),
+              Radius.circular(2)),
+          Paint()
+            ..shader = LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: getKeyColors(keyNumber))
+                .createShader(Rect.fromLTRB(0, 0, size.width, size.height)));
+    }
   }
 
-  getXPositionOfKey(int keyNumber) =>
-      keyNumber * pixelsPerStep + pixelsPerStep / 2;
-
   // TODO: Isolate drawing primitives
+  void drawPressedKey(double x, PointerData pressingPointer) {
+    var normalizedModulation = pressingPointer.position.dy / size.height;
+    var keyColor = Color.lerp(darkMainColor, lightMainColor,
+        pressingPointer.position.dy / size.height);
+    var paint = Paint()
+      ..color = keyColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0;
+
+    var path = getWavePath(x, 3, 1 - normalizedModulation);
+    canvas.drawPath(path, paint);
+  }
+
+  int getClosestStepNumber(Offset position) {
+    return position.dx ~/ pixelsPerStep;
+  }
+
+  /// Returns colors of a gradient to paint a key of a given [keyNumber]
+  ///
+  /// (From top to bottom)
+  List<Color> getKeyColors(int keyNumber) {
+    if (isTonic(keyNumber)) {
+      return [
+        darkMainColor,
+        lightMainColor,
+      ];
+    }
+    return [
+      Colors.black,
+      Colors.black,
+    ];
+  }
+
   /// returns [Path] of the wave for pressed key
   ///
   /// From smooth sine-ish (when) [sharpness] = 0
@@ -63,70 +117,16 @@ class KeyboardPainter extends CustomPainter {
     return path;
   }
 
-  void drawPressedKey(double x, PointerData pressingPointer) {
-    var normalizedModulation = pressingPointer.position.dy / size.height;
-    var keyColor = Color.lerp(darkMainColor, lightMainColor,
-        pressingPointer.position.dy / size.height);
-    var paint = Paint()
-      ..color = keyColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0;
-
-    var path = getWavePath(x, 3, 1 - normalizedModulation);
-    canvas.drawPath(path, paint);
-  }
-
-  void drawKey(
-    int keyNumber,
-    Map<int, PointerData> pointers,
-  ) {
-    double x = getXPositionOfKey(keyNumber);
-    PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
-      return pointerData.position.dx ~/ pixelsPerStep == keyNumber;
-    }, orElse: () => null);
-
-    if (pressingPointer != null) {
-      drawPressedKey(x, pressingPointer);
-    } else {
-      canvas.drawRRect(
-          RRect.fromRectAndRadius(
-              Rect.fromPoints(
-                  Offset(x - 2, padding), Offset(x + 2, size.height - padding)),
-              Radius.circular(2)),
-          Paint()
-            ..shader = LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: getKeyColors(keyNumber))
-                .createShader(Rect.fromLTRB(0, 0, size.width, size.height)));
-    }
-  }
-
-  final double pixelsPerStep;
-
-  /// Returns colors of a gradient to paint a key of a given [keyNumber]
-  ///
-  /// (From top to bottom)
-  List<Color> getKeyColors(int keyNumber) {
-    if (isTonic(keyNumber)) {
-      return [
-        darkMainColor,
-        lightMainColor,
-      ];
-    }
-    return [
-      Colors.black,
-      Colors.black,
-    ];
-  }
-
-  int getClosestStepNumber(Offset position) {
-    return position.dx ~/ pixelsPerStep;
-  }
-
   double getXPositionOfClosestKey(Offset pointerPosition) {
     return pixelsPerStep * getClosestStepNumber(pointerPosition) +
         pixelsPerStep / 2;
+  }
+
+  getXPositionOfKey(int keyNumber) =>
+      keyNumber * pixelsPerStep + pixelsPerStep / 2;
+
+  bool isTonic(int stepNumber) {
+    return stepNumber % 7 == 0;
   }
 
   @override

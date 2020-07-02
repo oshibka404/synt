@@ -2,19 +2,13 @@ import 'synthesizer.dart';
 
 /// Listens to [input] and calls corresponding methods of [DspApi].
 class ActionReceiver {
+  Synthesizer _synth = new Synthesizer();
+
+  var voices = Set<int>();
+
   ActionReceiver(Stream<SynthCommand> input) {
     input.listen(commandHandler);
   }
-
-  Synthesizer _synth = new Synthesizer();
-
-  VoiceParams _getVoiceParams(SynthCommand command) => VoiceParams(
-        freq: command.freq,
-        gain: command.gain,
-        modulation: command.modulation,
-      );
-
-  var voices = Set<int>();
 
   void commandHandler(SynthCommand command) {
     if (command.gate) {
@@ -29,9 +23,21 @@ class ActionReceiver {
       voices.remove(command.voiceId);
     }
   }
+
+  VoiceParams _getVoiceParams(SynthCommand command) => VoiceParams(
+        freq: command.freq,
+        gain: command.gain,
+        modulation: command.modulation,
+      );
 }
 
 class SynthCommand {
+  final int voiceId;
+  double freq;
+
+  double gain;
+  double modulation;
+  bool gate;
   SynthCommand(
     this.voiceId, {
     this.freq,
@@ -40,14 +46,8 @@ class SynthCommand {
   }) {
     gate = true;
   }
+
   SynthCommand.stop(this.voiceId) {
     gate = false;
   }
-
-  final int voiceId;
-  double freq;
-  double gain;
-  double modulation;
-
-  bool gate;
 }

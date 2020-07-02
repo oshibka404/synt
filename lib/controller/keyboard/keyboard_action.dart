@@ -6,6 +6,20 @@
 /// [stepOffset] (number of scale steps from [Keyboard]'s baseNote) and
 /// [modulation] which can modulate any voice param.
 class KeyboardAction {
+  int pointerId;
+
+  /// time when the event occured
+  DateTime time;
+
+  /// distance in scale steps (screen keys) from base key
+  double stepOffset;
+
+  /// normalized (0-1) pressure
+  double pressure;
+
+  /// normalized (0-1) vertical position of the pointer
+  double modulation;
+
   /// Creates copy of a given [action] with overriden properties
   KeyboardAction.assign(
     KeyboardAction action, {
@@ -22,12 +36,6 @@ class KeyboardAction {
     this.modulation = modulation ?? action.modulation;
   }
 
-  /// Creates action of type [KeyboardActionType.release] for pointer #[pointerId]
-  KeyboardAction.release(this.pointerId) {
-    this.time = DateTime.now();
-    this.pressure = 0;
-  }
-
   /// pointer #[pointerId] is either created or modified
   KeyboardAction.press(
     this.pointerId, {
@@ -38,17 +46,9 @@ class KeyboardAction {
     this.time = DateTime.now();
   }
 
-  int pointerId;
-
-  /// time when the event occured
-  DateTime time;
-
-  /// distance in scale steps (screen keys) from base key
-  double stepOffset;
-
-  /// normalized (0-1) pressure
-  double pressure;
-
-  /// normalized (0-1) vertical position of the pointer
-  double modulation;
+  /// Creates action of type [KeyboardActionType.release] for pointer #[pointerId]
+  KeyboardAction.release(this.pointerId) {
+    this.time = DateTime.now();
+    this.pressure = 0;
+  }
 }

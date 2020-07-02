@@ -1,14 +1,54 @@
 import 'dsp_api.dart';
 
+class Synthesizer {
+  Map<int, Voice> voices = {};
+
+  Future<double> getCpuLoad() => DspApi.getCpuLoad();
+
+  Future<Voice> modifyVoice(int id, VoiceParams voiceParams) async {
+    await voices[id]._modify({
+      'freq': voiceParams.freq,
+      'gain': voiceParams.gain,
+      'gate': voiceParams.gate,
+      'modulation': voiceParams.modulation,
+    });
+    return voices[id];
+  }
+
+  Voice newVoice(int id, VoiceParams voiceParams) {
+    voices[id] = new Voice({
+      'freq': voiceParams.freq,
+      'gain': voiceParams.gain,
+      'gate': 1,
+      'modulation': voiceParams.modulation,
+    });
+    return voices[id];
+  }
+
+  Future<void> stopVoice(int id) async {
+    if (voices[id] == null) return;
+    return voices[id].stop();
+  }
+}
+
 class Voice {
   int _id = 0;
 
   Map<String, double> _params = {};
 
-  Map<String, double> get params => _params;
-
   Voice(Map<String, double> params) {
     _initVoice(params);
+  }
+
+  Map<String, double> get params => _params;
+
+  Future<void> stop() async {
+    if (_id == 0) {
+      await Future.delayed(const Duration(milliseconds: 10), () {
+        stop();
+      });
+    }
+    return DspApi.deleteVoice(_id);
   }
 
   Future<void> _initVoice(Map<String, double> params) async {
@@ -31,57 +71,17 @@ class Voice {
     });
     return null;
   }
-
-  Future<void> stop() async {
-    if (_id == 0) {
-      await Future.delayed(const Duration(milliseconds: 10), () {
-        stop();
-      });
-    }
-    return DspApi.deleteVoice(_id);
-  }
-}
-
-class Synthesizer {
-  Map<int, Voice> voices = {};
-
-  Voice newVoice(int id, VoiceParams voiceParams) {
-    voices[id] = new Voice({
-      'freq': voiceParams.freq,
-      'gain': voiceParams.gain,
-      'gate': 1,
-      'modulation': voiceParams.modulation,
-    });
-    return voices[id];
-  }
-
-  Future<Voice> modifyVoice(int id, VoiceParams voiceParams) async {
-    await voices[id]._modify({
-      'freq': voiceParams.freq,
-      'gain': voiceParams.gain,
-      'gate': voiceParams.gate,
-      'modulation': voiceParams.modulation,
-    });
-    return voices[id];
-  }
-
-  Future<void> stopVoice(int id) async {
-    if (voices[id] == null) return;
-    return voices[id].stop();
-  }
-
-  Future<double> getCpuLoad() => DspApi.getCpuLoad();
 }
 
 class VoiceParams {
+  final double gain;
+  final double gate;
+  final double freq;
+  final double modulation;
   VoiceParams({
     this.gain,
     this.gate,
     this.freq,
     this.modulation,
   });
-  final double gain;
-  final double gate;
-  final double freq;
-  final double modulation;
 }

@@ -2,30 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'recorder_state_indicator.dart';
 
 import '../keyboard_preset.dart';
 import '../record_view.dart';
-
 import 'keyboard_action.dart';
-import 'pointer_data.dart';
 import 'keyboard_painter.dart';
+import 'pointer_data.dart';
+import 'recorder_state_indicator.dart';
 import 'records_layer.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///
 /// Doesn't care how its actions will be interpreted, leaving it to consumers.
 class Keyboard extends StatefulWidget {
-  Keyboard({
-    @required this.size,
-    @required this.offset,
-    @required this.preset,
-    @required this.output,
-    @required this.toggleRecord,
-    this.isRecording = false,
-    this.isReadyToRecord = false,
-    this.recordViews,
-  });
   final Size size;
 
   /// Screen position
@@ -47,21 +36,22 @@ class Keyboard extends StatefulWidget {
 
   final Function toggleRecord;
 
+  Keyboard({
+    @required this.size,
+    @required this.offset,
+    @required this.preset,
+    @required this.output,
+    @required this.toggleRecord,
+    this.isRecording = false,
+    this.isReadyToRecord = false,
+    this.recordViews,
+  });
+
   @override
   _KeyboardState createState() => _KeyboardState();
 }
 
 class _KeyboardState extends State<Keyboard> {
-  double _getModulationFromPointerPosition(Offset position) {
-    return 1 - position.dy / widget.size.height;
-  }
-
-  @override
-  initState() {
-    super.initState();
-    widget.output.addStream(actionStream);
-  }
-
   Map<int, PointerData> pointers = {};
 
   final int stepsCount = 8;
@@ -73,68 +63,6 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   double get pixelsPerStep => widget.size.width / stepsCount;
-
-  /// Returns distance in scale steps (screen keys) from base key to given [position].
-  double _getStepOffset(Offset position) {
-    return position.dx / pixelsPerStep;
-  }
-
-  double _getPressure(PointerEvent details) {
-    return details.pressureMax > 0 ? details.pressure : 1;
-  }
-
-  Offset _getRelativePosition(PointerEvent details) {
-    return details.position - widget.offset;
-  }
-
-  void _updatePointer(int id, Offset position, double pressure) {
-    Map<int, PointerData> newPointers = {
-      ...pointers,
-      id: PointerData(
-        position: position,
-        pressure: pressure,
-      ),
-    };
-    setState(() {
-      pointers = newPointers;
-    });
-  }
-
-  void _addPointer(PointerEvent details) {
-    Offset relativePosition = _getRelativePosition(details);
-    double pressure = _getPressure(details);
-
-    _actionStreamController.add(KeyboardAction.press(
-      details.pointer,
-      stepOffset: _getStepOffset(relativePosition),
-      pressure: pressure,
-      modulation: _getModulationFromPointerPosition(relativePosition),
-    ));
-
-    _updatePointer(details.pointer, relativePosition, pressure);
-  }
-
-  void _modifyPointer(PointerEvent details) {
-    Offset relativePosition = details.position - widget.offset;
-    double pressure = _getPressure(details);
-    _actionStreamController.add(KeyboardAction.press(
-      details.pointer,
-      stepOffset: _getStepOffset(relativePosition),
-      pressure: pressure,
-      modulation: _getModulationFromPointerPosition(relativePosition),
-    ));
-
-    setState(() {
-      _updatePointer(details.pointer, relativePosition, pressure);
-    });
-  }
-
-  void _removePointer(PointerEvent details) {
-    _actionStreamController.add(KeyboardAction.release(details.pointer));
-    setState(() {
-      pointers.remove(details.pointer);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,5 +103,77 @@ class _KeyboardState extends State<Keyboard> {
   void dispose() {
     widget.output.close();
     super.dispose();
+  }
+
+  @override
+  initState() {
+    super.initState();
+    widget.output.addStream(actionStream);
+  }
+
+  void _addPointer(PointerEvent details) {
+    Offset relativePosition = _getRelativePosition(details);
+    double pressure = _getPressure(details);
+
+    _actionStreamController.add(KeyboardAction.press(
+      details.pointer,
+      stepOffset: _getStepOffset(relativePosition),
+      pressure: pressure,
+      modulation: _getModulationFromPointerPosition(relativePosition),
+    ));
+
+    _updatePointer(details.pointer, relativePosition, pressure);
+  }
+
+  double _getModulationFromPointerPosition(Offset position) {
+    return 1 - position.dy / widget.size.height;
+  }
+
+  double _getPressure(PointerEvent details) {
+    return details.pressureMax > 0 ? details.pressure : 1;
+  }
+
+  Offset _getRelativePosition(PointerEvent details) {
+    return details.position - widget.offset;
+  }
+
+  /// Returns distance in scale steps (screen keys) from base key to given [position].
+  double _getStepOffset(Offset position) {
+    return position.dx / pixelsPerStep;
+  }
+
+  void _modifyPointer(PointerEvent details) {
+    Offset relativePosition = details.position - widget.offset;
+    double pressure = _getPressure(details);
+    _actionStreamController.add(KeyboardAction.press(
+      details.pointer,
+      stepOffset: _getStepOffset(relativePosition),
+      pressure: pressure,
+      modulation: _getModulationFromPointerPosition(relativePosition),
+    ));
+
+    setState(() {
+      _updatePointer(details.pointer, relativePosition, pressure);
+    });
+  }
+
+  void _removePointer(PointerEvent details) {
+    _actionStreamController.add(KeyboardAction.release(details.pointer));
+    setState(() {
+      pointers.remove(details.pointer);
+    });
+  }
+
+  void _updatePointer(int id, Offset position, double pressure) {
+    Map<int, PointerData> newPointers = {
+      ...pointers,
+      id: PointerData(
+        position: position,
+        pressure: pressure,
+      ),
+    };
+    setState(() {
+      pointers = newPointers;
+    });
   }
 }

@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 /// Button switching keyboard presets.
 /// Can handle [onTap], [onTapDown], [onTapUp]. Can be [active]
 class PresetButton extends StatefulWidget {
+  final Function onTapDown;
+
+  final Function onTapUp;
+  final Function onTap;
+  final bool active;
+  final Size size;
+  final ColorSwatch color;
   PresetButton({
     this.onTapDown,
     this.onTapUp,
@@ -12,48 +19,12 @@ class PresetButton extends StatefulWidget {
     this.color = Colors.orange,
   });
 
-  final Function onTapDown;
-  final Function onTapUp;
-  final Function onTap;
-  final bool active;
-  final Size size;
-  final ColorSwatch color;
-
   @override
   State<StatefulWidget> createState() => _PresetButtonState();
 }
 
 class _PresetButtonState extends State<PresetButton> {
   bool isPressed = false;
-
-  void unpress() {
-    setState(() {
-      isPressed = false;
-    });
-    if (widget.onTapUp != null) {
-      widget.onTapUp();
-    }
-  }
-
-  void press() {
-    setState(() {
-      isPressed = true;
-    });
-    if (widget.onTapDown != null) {
-      widget.onTapDown();
-    }
-  }
-
-  LinearGradient getGradient() {
-    if (isPressed) {
-      return LinearGradient(colors: [
-        widget.color[200].withOpacity(.8),
-        widget.color[900].withOpacity(.8)
-      ]);
-    } else {
-      return LinearGradient(colors: [widget.color[200], widget.color[900]]);
-    }
-  }
 
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -84,5 +55,34 @@ class _PresetButtonState extends State<PresetButton> {
                       : null,
                   gradient: getGradient()))),
     );
+  }
+
+  LinearGradient getGradient() {
+    if (isPressed) {
+      return LinearGradient(colors: [
+        widget.color[200].withOpacity(.8),
+        widget.color[900].withOpacity(.8)
+      ]);
+    } else {
+      return LinearGradient(colors: [widget.color[200], widget.color[900]]);
+    }
+  }
+
+  void press() {
+    setState(() {
+      isPressed = true;
+    });
+    if (widget.onTapDown != null) {
+      widget.onTapDown();
+    }
+  }
+
+  void unpress() {
+    setState(() {
+      isPressed = false;
+    });
+    if (widget.onTapUp != null) {
+      widget.onTapUp();
+    }
   }
 }
