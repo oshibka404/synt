@@ -64,12 +64,23 @@ class Record {
       var playbackStartTime = DateTime.now();
       while (iterator.moveNext() && _isPlaying) {
         var action = iterator.current;
+        if (action.pressure > 0) {
+          _pressedPointers.add(action.pointerId);
+        } else {
+          _pressedPointers.remove(action.pointerId);
+        }
         var timeFromPlaybackStart =
             DateTime.now().difference(playbackStartTime);
         var relativeActionTimePoint = action.time.difference(startTime);
         await Future.delayed(relativeActionTimePoint - timeFromPlaybackStart);
         yield action;
       }
+
+      var pointersToRelease = _pressedPointers.toList();
+      for (var i = 0; i < _pressedPointers.length; i++) {
+        yield RecordedAction.from(KeyboardAction.release(pointersToRelease[i]));
+      }
+      _pressedPointers.clear();
     }
   }
 
