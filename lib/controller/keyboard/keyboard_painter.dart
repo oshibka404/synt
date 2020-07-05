@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'pointer_data.dart';
+import 'real_pointer_data.dart';
+import 'virtual_pointer_data.dart';
 
 class KeyboardPainter extends CustomPainter {
-  Map<int, PointerData> pointers;
+  Map<int, RealPointerData> pointers;
 
   final ColorSwatch<int> mainColor;
 
@@ -19,23 +21,28 @@ class KeyboardPainter extends CustomPainter {
   Color backgroundColor = Colors.white;
 
   final double pixelsPerStep;
+
+  final Map<int, VirtualPointerData> virtualPointers;
+
   // TODO: get rid of 200, 900; use semantically meaningful descriptions
   KeyboardPainter({
     @required this.pixelsPerStep,
     this.mainColor = Colors.grey,
     this.pointers,
     this.sidePadding,
+    this.virtualPointers,
   });
+
   Color get darkMainColor => mainColor[900];
 
   Color get lightMainColor => mainColor[200];
 
   void drawKey(
     int keyNumber,
-    Map<int, PointerData> pointers,
+    Map<int, RealPointerData> pointers,
   ) {
     double x = getXPositionOfKey(keyNumber);
-    PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
+    RealPointerData pressingPointer = pointers.values.firstWhere((pointerData) {
       return getClosestStepNumber(pointerData.position) == keyNumber;
     }, orElse: () => null);
 
@@ -57,7 +64,7 @@ class KeyboardPainter extends CustomPainter {
   }
 
   // TODO: Isolate drawing primitives
-  void drawPressedKey(double x, PointerData pressingPointer) {
+  void drawPressedKey(double x, RealPointerData pressingPointer) {
     var normalizedModulation = pressingPointer.position.dy / size.height;
     var keyColor = Color.lerp(darkMainColor, lightMainColor,
         pressingPointer.position.dy / size.height);
@@ -129,6 +136,27 @@ class KeyboardPainter extends CustomPainter {
     return stepNumber % 7 == 0;
   }
 
+  void drawPointer(PointerData pointer, Color color) {
+    canvas.drawCircle(
+        Offset(getXPositionOfClosestKey(pointer.position), pointer.position.dy),
+        pointer.pressure * 50,
+        Paint()..color = color.withOpacity(.5));
+  }
+
+  void drawRealPointer(RealPointerData pointer) =>
+      drawPointer(pointer, mainColor);
+
+  void drawVirtualPointer(VirtualPointerData pointer) {
+    if (pointer.preset == null) return;
+    drawPointer(pointer, pointer.preset.color);
+    canvas.drawLine(
+        pointer.origin,
+        pointer.position,
+        Paint()
+          ..strokeWidth = 2
+          ..color = pointer.preset.color.withOpacity(.5));
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     this.size = size;
@@ -142,13 +170,8 @@ class KeyboardPainter extends CustomPainter {
       drawKey(key, pointers);
     }
 
-    pointers.forEach((_, pointer) {
-      canvas.drawCircle(
-          Offset(
-              getXPositionOfClosestKey(pointer.position), pointer.position.dy),
-          pointer.pressure * 50,
-          Paint()..color = mainColor.withOpacity(.5));
-    });
+    pointers.forEach((_, pointer) => drawRealPointer(pointer));
+    virtualPointers.forEach((_, pointer) => drawVirtualPointer(pointer));
   }
 
   @override

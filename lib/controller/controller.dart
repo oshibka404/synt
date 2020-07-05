@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/synth_command_factory.dart';
-import 'package:perfect_first_synth/synth/synth_command.dart';
+import 'keyboard/virtual_keyboard_action.dart';
+import 'synth_command_factory.dart';
+import '../synth/synth_command.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
@@ -27,6 +28,7 @@ class Controller extends StatefulWidget {
 class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
   Map<DateTime, LoopView> _loopViews = {};
+  Map<int, VirtualKeyboardAction> _virtualActions = {};
 
   var _loopController = StreamController<KeyboardAction>();
 
@@ -74,6 +76,7 @@ class _ControllerState extends State<Controller> {
                   toggleLoop: toggleLoop,
                   loopViews: _loopViews,
                   deleteRecord: deleteLoop,
+                  virtualKeyboardActions: _virtualActions,
                 ),
                 if (_settingsOpen)
                   Container(
@@ -204,9 +207,19 @@ class _ControllerState extends State<Controller> {
           baseStep: sample.stepOffset,
           modulation: sample.modulation,
           velocity: sample.pressure);
+      setState(() {
+        _virtualActions[sample.pointerId] = VirtualKeyboardAction(
+            sample.origin,
+            sample.preset,
+            sample.pressure,
+            Offset(sample.stepOffset, sample.modulation));
+      });
     } else {
       _arpeggiators[sample.pointerId].stop();
       _arpeggiators.remove(sample.pointerId);
+      setState(() {
+        _virtualActions.remove(sample.pointerId);
+      });
     }
   }
 }

@@ -2,14 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:perfect_first_synth/controller/keyboard/virtual_pointer_data.dart';
 
 import '../keyboard_preset.dart';
 import '../loop_view.dart';
 import 'keyboard_action.dart';
 import 'keyboard_painter.dart';
-import 'pointer_data.dart';
+import 'real_pointer_data.dart';
 import 'looper_state_indicator.dart';
 import 'loops_layer.dart';
+import 'virtual_keyboard_action.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///
@@ -38,6 +40,8 @@ class Keyboard extends StatefulWidget {
 
   final Function deleteRecord;
 
+  final Map<int, VirtualKeyboardAction> virtualKeyboardActions;
+
   Keyboard({
     @required this.size,
     @required this.offset,
@@ -48,6 +52,7 @@ class Keyboard extends StatefulWidget {
     this.isReadyToRecord = false,
     this.loopViews,
     this.deleteRecord,
+    this.virtualKeyboardActions,
   });
 
   @override
@@ -55,7 +60,17 @@ class Keyboard extends StatefulWidget {
 }
 
 class _KeyboardState extends State<Keyboard> {
-  Map<int, PointerData> pointers = {};
+  Map<int, RealPointerData> pointers = {};
+  Map<int, VirtualPointerData> get virtualPointers =>
+      widget.virtualKeyboardActions.map((pointerId, action) => MapEntry(
+          pointerId,
+          VirtualPointerData(
+              action.origin != null
+                  ? _getPointerPosition(action.origin.dx, action.origin.dy)
+                  : _getPointerPosition(action.position.dx, action.position.dy),
+              action.preset,
+              action.pressure,
+              _getPointerPosition(action.position.dx, action.position.dy))));
 
   // TODO: use actual scale steps count
   final int stepsCount = 8;
@@ -90,6 +105,7 @@ class _KeyboardState extends State<Keyboard> {
                     pixelsPerStep: pixelsPerStep,
                     mainColor: widget.preset.color,
                     pointers: pointers,
+                    virtualPointers: virtualPointers,
                   ),
                 ),
               ),
@@ -135,6 +151,11 @@ class _KeyboardState extends State<Keyboard> {
     _updatePointer(details.pointer, relativePosition, pressure);
   }
 
+  Offset _getPointerPosition(double stepOffset, double modulation) {
+    return Offset(sidePadding + stepOffset * pixelsPerStep,
+        (1 - modulation) * widget.size.height);
+  }
+
   double _getModulationFromPointerPosition(Offset position) {
     return 1 - position.dy / widget.size.height;
   }
@@ -175,9 +196,9 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   void _updatePointer(int id, Offset position, double pressure) {
-    Map<int, PointerData> newPointers = {
+    Map<int, RealPointerData> newPointers = {
       ...pointers,
-      id: PointerData(
+      id: RealPointerData(
         position: position,
         pressure: pressure,
       ),

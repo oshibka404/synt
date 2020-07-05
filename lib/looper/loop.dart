@@ -10,7 +10,7 @@ import 'sample.dart';
 ///
 /// produces stream of [Sample]s.
 class Loop {
-  final Offset startPoint;
+  final Offset origin;
   final DateTime startTime;
   final List<KeyboardAction> _actions = [];
   final KeyboardPreset preset;
@@ -21,7 +21,7 @@ class Loop {
 
   Loop({
     @required this.startTime,
-    @required this.startPoint,
+    @required this.origin,
     @required this.preset,
   });
 
@@ -38,7 +38,7 @@ class Loop {
     } else {
       _pressedPointers.remove(action.pointerId);
     }
-    _actions.add(Sample.from(action, preset: preset));
+    _actions.add(Sample.from(action, preset: preset, origin: origin));
   }
 
   /// Ensures that all pointers have been released
@@ -83,7 +83,8 @@ class Loop {
 
       var pointersToRelease = _pressedPointers.toList();
       for (var i = 0; i < _pressedPointers.length; i++) {
-        yield Sample.from(KeyboardAction.release(pointersToRelease[i]));
+        yield Sample.from(KeyboardAction.release(pointersToRelease[i]),
+            origin: origin, preset: preset);
       }
       print("delete remaining ${pointersToRelease.length} from $startTime");
       _pressedPointers.clear();

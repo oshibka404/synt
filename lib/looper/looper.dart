@@ -58,7 +58,7 @@ class Looper {
     var startTime = DateTime.now();
     _isLooping = true;
     _currentLoop =
-        Loop(startPoint: initialPosition, startTime: startTime, preset: preset);
+        Loop(origin: initialPosition, startTime: startTime, preset: preset);
     return startTime;
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PointerData {
-  Offset position;
-  double pressure;
-  PointerData({this.position, this.pressure});
+abstract class PointerData {
+  Offset get position;
+  double get pressure;
 }
