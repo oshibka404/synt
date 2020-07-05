@@ -10,6 +10,7 @@ class KeyboardPainter extends CustomPainter {
   final ColorSwatch<int> mainColor;
 
   final double padding = 30;
+  final double sidePadding;
 
   Size size;
 
@@ -23,6 +24,7 @@ class KeyboardPainter extends CustomPainter {
     @required this.pixelsPerStep,
     this.mainColor = Colors.grey,
     this.pointers,
+    this.sidePadding,
   });
   Color get darkMainColor => mainColor[900];
 
@@ -34,7 +36,7 @@ class KeyboardPainter extends CustomPainter {
   ) {
     double x = getXPositionOfKey(keyNumber);
     PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
-      return pointerData.position.dx ~/ pixelsPerStep == keyNumber;
+      return getClosestStepNumber(pointerData.position) == keyNumber;
     }, orElse: () => null);
 
     if (pressingPointer != null) {
@@ -69,7 +71,7 @@ class KeyboardPainter extends CustomPainter {
   }
 
   int getClosestStepNumber(Offset position) {
-    return position.dx ~/ pixelsPerStep;
+    return (position.dx - sidePadding) ~/ pixelsPerStep;
   }
 
   /// Returns colors of a gradient to paint a key of a given [keyNumber]
@@ -117,13 +119,11 @@ class KeyboardPainter extends CustomPainter {
     return path;
   }
 
-  double getXPositionOfClosestKey(Offset pointerPosition) {
-    return pixelsPerStep * getClosestStepNumber(pointerPosition) +
-        pixelsPerStep / 2;
-  }
+  double getXPositionOfClosestKey(Offset pointerPosition) =>
+      getXPositionOfKey(getClosestStepNumber(pointerPosition));
 
-  getXPositionOfKey(int keyNumber) =>
-      keyNumber * pixelsPerStep + pixelsPerStep / 2;
+  double getXPositionOfKey(int keyNumber) =>
+      sidePadding + (keyNumber * pixelsPerStep) + (pixelsPerStep / 2);
 
   bool isTonic(int stepNumber) {
     return stepNumber % 7 == 0;
@@ -133,7 +133,7 @@ class KeyboardPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     this.size = size;
     this.canvas = canvas;
-    int keysOnScreen = size.width ~/ pixelsPerStep;
+    int keysOnScreen = (size.width - 2 * sidePadding) ~/ pixelsPerStep;
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
         Paint()..color = backgroundColor);

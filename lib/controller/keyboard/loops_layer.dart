@@ -8,6 +8,7 @@ class LoopsLayer extends StatelessWidget {
   final Function toggleLoop;
   final Function deleteRecord;
   final double _iconSize = 24;
+  final double sidePadding;
 
   final double _buttonPadding = 8;
   LoopsLayer(
@@ -15,6 +16,7 @@ class LoopsLayer extends StatelessWidget {
       @required this.loops,
       @required this.deleteRecord,
       @required this.pixelsPerStep,
+      @required this.sidePadding,
       @required this.toggleLoop});
   get _buttonSize => _iconSize + 2 * _buttonPadding;
 
@@ -26,7 +28,7 @@ class LoopsLayer extends StatelessWidget {
   }
 
   Offset _getDenormalizedOffset(Offset normalizedPosition) {
-    return Offset(normalizedPosition.dx * pixelsPerStep,
+    return Offset(normalizedPosition.dx * pixelsPerStep + sidePadding,
         (1 - normalizedPosition.dy) * size.height);
   }
 

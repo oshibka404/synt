@@ -57,7 +57,10 @@ class Keyboard extends StatefulWidget {
 class _KeyboardState extends State<Keyboard> {
   Map<int, PointerData> pointers = {};
 
+  // TODO: use actual scale steps count
   final int stepsCount = 8;
+
+  final double sidePadding = 24;
 
   var _actionStreamController = StreamController<KeyboardAction>();
 
@@ -65,7 +68,8 @@ class _KeyboardState extends State<Keyboard> {
     return _actionStreamController.stream;
   }
 
-  double get pixelsPerStep => widget.size.width / stepsCount;
+  double get pixelsPerStep =>
+      (widget.size.width - sidePadding * 2) / stepsCount;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,7 @@ class _KeyboardState extends State<Keyboard> {
                 child: CustomPaint(
                   size: widget.size,
                   painter: KeyboardPainter(
+                    sidePadding: sidePadding,
                     pixelsPerStep: pixelsPerStep,
                     mainColor: widget.preset.color,
                     pointers: pointers,
@@ -97,6 +102,7 @@ class _KeyboardState extends State<Keyboard> {
                 pixelsPerStep: pixelsPerStep,
                 toggleLoop: widget.toggleLoop,
                 deleteRecord: widget.deleteRecord,
+                sidePadding: sidePadding,
               ),
             ],
           )),
@@ -143,7 +149,7 @@ class _KeyboardState extends State<Keyboard> {
 
   /// Returns distance in scale steps (screen keys) from base key to given [position].
   double _getStepOffset(Offset position) {
-    return position.dx / pixelsPerStep;
+    return (position.dx - sidePadding) / pixelsPerStep;
   }
 
   void _modifyPointer(PointerEvent details) {
