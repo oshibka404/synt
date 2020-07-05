@@ -62,12 +62,17 @@ class Record {
       _isPlaying = true;
       var iterator = _actions.iterator;
       var playbackStartTime = DateTime.now();
+      print("Play $startTime! 0");
       while (iterator.moveNext() && _isPlaying) {
         var action = iterator.current;
         if (action.pressure > 0) {
-          _pressedPointers.add(action.pointerId);
+          if (_pressedPointers.add(action.pointerId)) {
+            print("+1 $startTime = ${_pressedPointers.length}");
+          }
         } else {
-          _pressedPointers.remove(action.pointerId);
+          if (_pressedPointers.remove(action.pointerId)) {
+            print("-1 $startTime = ${_pressedPointers.length}");
+          }
         }
         var timeFromPlaybackStart =
             DateTime.now().difference(playbackStartTime);
@@ -80,6 +85,7 @@ class Record {
       for (var i = 0; i < _pressedPointers.length; i++) {
         yield RecordedAction.from(KeyboardAction.release(pointersToRelease[i]));
       }
+      print("delete remaining ${pointersToRelease.length} from $startTime");
       _pressedPointers.clear();
     }
   }

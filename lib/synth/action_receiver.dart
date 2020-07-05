@@ -1,3 +1,4 @@
+import 'synth_command.dart';
 import 'synthesizer.dart';
 
 /// Listens to [input] and calls corresponding methods of [DspApi].
@@ -29,25 +30,4 @@ class ActionReceiver {
         gain: command.gain,
         modulation: command.modulation,
       );
-}
-
-class SynthCommand {
-  final int voiceId;
-  double freq;
-
-  double gain;
-  double modulation;
-  bool gate;
-  SynthCommand(
-    this.voiceId, {
-    this.freq,
-    this.gain = 1,
-    this.modulation = 0,
-  }) {
-    gate = true;
-  }
-
-  SynthCommand.stop(this.voiceId) {
-    gate = false;
-  }
 }
