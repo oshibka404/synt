@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
-import 'recorded_action.dart';
+import 'sample.dart';
 
 /// Timeline with sequence of [KeyboardAction]s
 ///
-/// produces stream of []
-class Record {
+/// produces stream of [Sample]s.
+class Loop {
   final Offset startPoint;
   final DateTime startTime;
   final List<KeyboardAction> _actions = [];
@@ -19,7 +19,7 @@ class Record {
   Set<int> _pressedPointers = Set<int>();
   Duration duration;
 
-  Record({
+  Loop({
     @required this.startTime,
     @required this.startPoint,
     @required this.preset,
@@ -38,7 +38,7 @@ class Record {
     } else {
       _pressedPointers.remove(action.pointerId);
     }
-    _actions.add(RecordedAction.from(action, preset: preset));
+    _actions.add(Sample.from(action, preset: preset));
   }
 
   /// Ensures that all pointers have been released
@@ -52,7 +52,7 @@ class Record {
   ///
   /// Starts playing [after] given duration or [at] given time.
   /// When no params given or [at] is in past, starts immediately.
-  Stream<RecordedAction> play({DateTime at, Duration after}) async* {
+  Stream<Sample> play({DateTime at, Duration after}) async* {
     if (after != null) {
       await Future.delayed(after);
       yield* play();
@@ -83,7 +83,7 @@ class Record {
 
       var pointersToRelease = _pressedPointers.toList();
       for (var i = 0; i < _pressedPointers.length; i++) {
-        yield RecordedAction.from(KeyboardAction.release(pointersToRelease[i]));
+        yield Sample.from(KeyboardAction.release(pointersToRelease[i]));
       }
       print("delete remaining ${pointersToRelease.length} from $startTime");
       _pressedPointers.clear();

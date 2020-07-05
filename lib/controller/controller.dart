@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/synth_command_factory.dart';
 import 'package:perfect_first_synth/synth/synth_command.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
-import '../recorder/recorded_action.dart';
-import '../recorder/recorder.dart';
-import '../synth/action_receiver.dart';
+import '../looper/sample.dart';
+import '../looper/looper.dart';
+import '../synth/synth_input.dart';
 import '../synth/dsp_api.dart';
 import '../tempo_controller/tempo_controller.dart';
 import 'controls.dart';
@@ -16,7 +17,7 @@ import 'keyboard/keyboard_action.dart';
 import 'keyboard_preset.dart';
 import 'keyboard_presets.dart' show keyboardPresets;
 import 'preset_selector/preset_selector.dart';
-import 'record_view.dart';
+import 'loop_view.dart';
 
 class Controller extends StatefulWidget {
   @override
@@ -25,11 +26,11 @@ class Controller extends StatefulWidget {
 
 class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
-  Map<DateTime, RecordView> _recordViews = {};
+  Map<DateTime, LoopView> _loopViews = {};
 
-  var _recorderLoopController = StreamController<KeyboardAction>();
+  var _loopController = StreamController<KeyboardAction>();
 
-  Recorder recorder;
+  Looper looper;
 
   bool isReadyToRecord = false;
 
@@ -70,9 +71,9 @@ class _ControllerState extends State<Controller> {
                   output: _keyboardController,
                   isReadyToRecord: isReadyToRecord,
                   isRecording: isRecording,
-                  toggleRecord: toggleRecord,
-                  recordViews: _recordViews,
-                  deleteRecord: deleteRecord,
+                  toggleLoop: toggleLoop,
+                  loopViews: _loopViews,
+                  deleteRecord: deleteLoop,
                 ),
                 if (_settingsOpen)
                   Container(
@@ -94,9 +95,9 @@ class _ControllerState extends State<Controller> {
     );
   }
 
-  void deleteRecord(DateTime id) {
-    recorder.delete(recorder.records[id]);
-    _recordViews.remove(id);
+  void deleteLoop(DateTime id) {
+    looper.delete(looper.loops[id]);
+    _loopViews.remove(id);
   }
 
   @override
@@ -109,17 +110,14 @@ class _ControllerState extends State<Controller> {
   @override
   initState() {
     super.initState();
-
-    ActionReceiver(_outputController.stream);
-
     _tempoController = TempoController(tempo: 120);
-
-    recorder = Recorder(
-        input: _recorderLoopController.stream, tempo: _tempoController);
 
     _keyboardController.stream.listen(_keyboardHandler);
 
-    recorder.output.listen(_recorderHandler);
+    looper = Looper(input: _loopController.stream, tempo: _tempoController);
+    looper.output.listen(_looperHandler);
+
+    SynthInput.connect(_outputController.stream);
   }
 
   void setPreset(KeyboardPreset preset) {
@@ -130,12 +128,12 @@ class _ControllerState extends State<Controller> {
 
   void setReady(bool ready) {
     if (!ready) {
-      recorder.stopRec();
+      looper.stopRec();
       setState(() {
         isRecording = false;
 
-        // TODO: address specific recordView instead of iterating
-        _recordViews = _recordViews.map(
+        // TODO: address specific loopView instead of iterating
+        _loopViews = _loopViews.map(
             (key, value) => MapEntry(key, value.assign(isRecording: false)));
       });
     }
@@ -144,22 +142,21 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void toggleRecord(DateTime recordId) {
-    var record = recorder.records[recordId];
-    if (record == null) return;
-    if (record.isPlaying) {
-      recorder.stop(record);
+  void toggleLoop(DateTime id) {
+    var loop = looper.loops[id];
+    if (loop == null) return;
+    if (loop.isPlaying) {
+      looper.stop(loop);
       setState(() {
-        _recordViews[recordId] =
-            _recordViews[recordId].assign(isPlaying: false);
+        _loopViews[id] = _loopViews[id].assign(isPlaying: false);
       });
-      print("Stopped");
+      print("Stopped $id");
     } else {
-      recorder.loop(record);
+      looper.start(loop);
       setState(() {
-        _recordViews[recordId] = _recordViews[recordId].assign(isPlaying: true);
+        _loopViews[id] = _loopViews[id].assign(isPlaying: true);
       });
-      print("Play!");
+      print("Play $id!");
     }
   }
 
@@ -170,21 +167,21 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void _addArpeggiator(RecordedAction action) {
-    _arpeggiators[action.pointerId] =
+  void _addArpeggiator(Sample sample) {
+    _arpeggiators[sample.pointerId] =
         Arpeggiator(_tempoController, ArpeggioBank());
-    _arpeggiators[action.pointerId].output.listen((playerAction) {
-      _outputController.add(SynthCommand.fromPlayerAction(
-          playerAction, action.pointerId, action.preset));
+    _arpeggiators[sample.pointerId].output.listen((playerAction) {
+      _outputController.add(SynthCommandFactory.fromPlayerAction(
+          playerAction, sample.pointerId, sample.preset ?? currentPreset));
     });
   }
 
-  void _keyboardHandler(action) {
+  void _keyboardHandler(KeyboardAction action) {
     if (isReadyToRecord && !isRecording) {
       var startOffset = Offset(action.stepOffset, action.modulation);
-      var startTime = recorder.startRec(startOffset, currentPreset);
+      var startTime = looper.startRec(startOffset, currentPreset);
       setState(() {
-        _recordViews[startTime] = RecordView(
+        _loopViews[startTime] = LoopView(
           startOffset,
           currentPreset,
           true,
@@ -193,23 +190,23 @@ class _ControllerState extends State<Controller> {
         isRecording = true;
       });
     }
-    _recorderLoopController.add(action);
+    _loopController.add(action);
   }
 
-  void _recorderHandler(RecordedAction action) {
-    if (!_arpeggiators.containsKey(action.pointerId)) {
-      _outputController
-          .add(SynthCommand.fromRecordedAction(action, action.pointerId));
-      _addArpeggiator(action);
+  void _looperHandler(Sample sample) {
+    if (!_arpeggiators.containsKey(sample.pointerId)) {
+      _addArpeggiator(sample);
+      _outputController.add(SynthCommandFactory.fromKeyboardAction(
+          sample, sample.pointerId, sample.preset ?? currentPreset));
     }
-    if (action.pressure > 0) {
-      _arpeggiators[action.pointerId].play(action.modulation,
-          baseStep: action.stepOffset,
-          modulation: action.modulation,
-          velocity: action.pressure);
+    if (sample.pressure > 0) {
+      _arpeggiators[sample.pointerId].play(sample.modulation,
+          baseStep: sample.stepOffset,
+          modulation: sample.modulation,
+          velocity: sample.pressure);
     } else {
-      _arpeggiators[action.pointerId].stop();
-      _arpeggiators.remove(action.pointerId);
+      _arpeggiators[sample.pointerId].stop();
+      _arpeggiators.remove(sample.pointerId);
     }
   }
 }

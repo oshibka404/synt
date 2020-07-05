@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../keyboard_preset.dart';
-import '../record_view.dart';
+import '../loop_view.dart';
 import 'keyboard_action.dart';
 import 'keyboard_painter.dart';
 import 'pointer_data.dart';
-import 'recorder_state_indicator.dart';
-import 'records_layer.dart';
+import 'looper_state_indicator.dart';
+import 'loops_layer.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///
@@ -32,9 +32,9 @@ class Keyboard extends StatefulWidget {
 
   final bool isReadyToRecord;
 
-  final Map<DateTime, RecordView> recordViews;
+  final Map<DateTime, LoopView> loopViews;
 
-  final Function toggleRecord;
+  final Function toggleLoop;
 
   final Function deleteRecord;
 
@@ -43,10 +43,10 @@ class Keyboard extends StatefulWidget {
     @required this.offset,
     @required this.preset,
     @required this.output,
-    @required this.toggleRecord,
+    @required this.toggleLoop,
     this.isRecording = false,
     this.isReadyToRecord = false,
-    this.recordViews,
+    this.loopViews,
     this.deleteRecord,
   });
 
@@ -88,14 +88,14 @@ class _KeyboardState extends State<Keyboard> {
                   ),
                 ),
               ),
-              RecorderStateIndicator(
+              LooperStateIndicator(
                   isRecording: widget.isRecording,
                   isInRecordingMode: widget.isReadyToRecord),
-              RecordsLayer(
+              LoopsLayer(
                 size: widget.size,
-                recordViews: widget.recordViews,
+                loops: widget.loopViews,
                 pixelsPerStep: pixelsPerStep,
-                toggleRecord: widget.toggleRecord,
+                toggleLoop: widget.toggleLoop,
                 deleteRecord: widget.deleteRecord,
               ),
             ],

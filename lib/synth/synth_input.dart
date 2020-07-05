@@ -1,13 +1,13 @@
 import 'synth_command.dart';
 import 'synthesizer.dart';
 
-/// Listens to [input] and calls corresponding methods of [DspApi].
-class ActionReceiver {
+/// Listens to [input] and calls corresponding methods of [Synthesizer].
+class SynthInput {
   Synthesizer _synth = new Synthesizer();
 
   var voices = Set<int>();
 
-  ActionReceiver(Stream<SynthCommand> input) {
+  SynthInput.connect(Stream<SynthCommand> input) {
     input.listen(commandHandler);
   }
 

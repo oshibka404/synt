@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/record_view.dart';
+import 'package:perfect_first_synth/controller/loop_view.dart';
 
-class RecordsLayer extends StatelessWidget {
-  final Map<DateTime, RecordView> recordViews;
+class LoopsLayer extends StatelessWidget {
+  final Map<DateTime, LoopView> loops;
   final Size size;
   final double pixelsPerStep;
-  final Function toggleRecord;
+  final Function toggleLoop;
   final Function deleteRecord;
   final double _iconSize = 24;
 
   final double _buttonPadding = 8;
-  RecordsLayer(
+  LoopsLayer(
       {@required this.size,
-      @required this.recordViews,
+      @required this.loops,
       @required this.deleteRecord,
       @required this.pixelsPerStep,
-      @required this.toggleRecord});
+      @required this.toggleLoop});
   get _buttonSize => _iconSize + 2 * _buttonPadding;
 
   // TODO: use something other than Offset for normalized positions
@@ -32,13 +32,13 @@ class RecordsLayer extends StatelessWidget {
 
   List<Widget> _getRecordButtons(BuildContext context) {
     List<Widget> buttons = [];
-    recordViews.forEach((time, recordView) {
-      var offsetInPixels = _getDenormalizedOffset(recordView.position);
+    loops.forEach((time, loop) {
+      var offsetInPixels = _getDenormalizedOffset(loop.position);
 
       IconData icon = Icons.play_arrow;
-      if (recordView.isRecording) {
+      if (loop.isRecording) {
         icon = Icons.fiber_manual_record;
-      } else if (recordView.isPlaying) {
+      } else if (loop.isPlaying) {
         icon = Icons.pause;
       }
 
@@ -49,8 +49,8 @@ class RecordsLayer extends StatelessWidget {
             child: Container(
               decoration: ShapeDecoration(
                 gradient: LinearGradient(colors: [
-                  recordView.preset.color[200],
-                  recordView.preset.color[900],
+                  loop.preset.color[200],
+                  loop.preset.color[900],
                 ]),
                 shape: CircleBorder(),
               ),
@@ -62,7 +62,7 @@ class RecordsLayer extends StatelessWidget {
               padding: EdgeInsets.all(_buttonPadding),
             ),
             onTap: () {
-              toggleRecord(time);
+              toggleLoop(time);
             },
             onLongPress: () {
               deleteRecord(time);

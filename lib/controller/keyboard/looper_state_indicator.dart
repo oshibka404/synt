@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class RecorderStateIndicator extends StatelessWidget {
+class LooperStateIndicator extends StatelessWidget {
   final bool isRecording;
   final bool isInRecordingMode;
-  RecorderStateIndicator({
+  LooperStateIndicator({
     @required this.isRecording,
     @required this.isInRecordingMode,
   });

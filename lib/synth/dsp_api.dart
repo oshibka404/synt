@@ -1,14 +1,7 @@
 import 'package:flutter/services.dart';
 
 class DspApi {
-  static String _commonPathPrefix = '';
-
-  // TODO: Mock platform calls and make it private
   static const _platform = const MethodChannel('synth.ae/control');
-
-  static set commonPathPrefix(String prefix) {
-    _commonPathPrefix = prefix;
-  }
 
   static Future<void> allNotesOff() {
     try {
@@ -36,10 +29,6 @@ class DspApi {
     }
   }
 
-  static String getFullPath(String path) {
-    return _commonPathPrefix + path;
-  }
-
   static Future<double> getParamInit(int id) {
     try {
       return _platform.invokeMethod('getParamInit', <String, int>{
@@ -53,7 +42,7 @@ class DspApi {
   static Future<double> getParamInitByPath(String path) {
     try {
       return _platform.invokeMethod('getParamInitByPath', <String, String>{
-        'path': getFullPath(path),
+        'path': path,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get initial value of param "$path": ${e.message}';
@@ -73,7 +62,7 @@ class DspApi {
   static Future<double> getParamMaxByPath(String path) {
     try {
       return _platform.invokeMethod('getParamMaxByPath', <String, String>{
-        'path': getFullPath(path),
+        'path': path,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get max value of param "$path": ${e.message}';
@@ -93,7 +82,7 @@ class DspApi {
   static Future<double> getParamMinByPath(String path) {
     try {
       return _platform.invokeMethod('getParamMinByPath', <String, String>{
-        'path': getFullPath(path),
+        'path': path,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get min value of param "$path": ${e.message}';
@@ -121,7 +110,7 @@ class DspApi {
   static Future<double> getParamValueByPath(String path) {
     try {
       return _platform.invokeMethod('getParamValueByPath', <String, String>{
-        'path': getFullPath(path),
+        'path': path,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get current value of param "$path": ${e.message}';
@@ -133,7 +122,7 @@ class DspApi {
       return _platform
           .invokeMethod('getVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
-        'path': getFullPath(path),
+        'path': path,
       });
     } on PlatformException catch (e) {
       throw 'Unable to get param $path of voice #$voice: ${e.message}';
@@ -191,7 +180,7 @@ class DspApi {
   static Future<void> setParamValueByPath(String path, double value) {
     try {
       return _platform.invokeMethod('setParamValueByPath', <String, dynamic>{
-        'path': getFullPath(path),
+        'path': path,
         'value': value,
       });
     } on PlatformException catch (e) {
@@ -205,7 +194,7 @@ class DspApi {
       return _platform
           .invokeMethod('setVoiceParamValueByPath', <String, dynamic>{
         'voice': voice,
-        'path': getFullPath(path),
+        'path': path,
         'value': value,
       });
     } on PlatformException catch (e) {

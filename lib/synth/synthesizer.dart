@@ -1,5 +1,6 @@
 import 'dsp_api.dart';
 
+/// Handles voices and calls underlying [DspApi].
 class Synthesizer {
   Map<int, Voice> voices = {};
 
