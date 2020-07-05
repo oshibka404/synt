@@ -25,26 +25,6 @@ class SynthCommand {
     gate = true;
   }
 
-  SynthCommand.stop(this.voiceId) {
-    gate = false;
-  }
-
-  double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
-    int stepNumber = stepOffset.floor();
-    int octaveOffset = (stepNumber ~/ _scale.length);
-    int chromaticStepsOffset = _scale[stepNumber % _scale.length];
-    int semitonesOffset = (octaveOffset * 12) + chromaticStepsOffset;
-    return (baseKey + semitonesOffset).floorToDouble();
-  }
-
-  double _getFreqFromKeyNumber(double keyNumber) {
-    return 440 * pow(2, (keyNumber - 49) / 12);
-  }
-
-  double _getFreqFromStepOffset(double step, int baseKey) {
-    return _getFreqFromKeyNumber(_convertStepOffsetToPianoKey(step, baseKey));
-  }
-
   SynthCommand.fromPlayerAction(
       PlayerAction action, this.voiceId, KeyboardPreset preset) {
     action.velocity > 0
@@ -66,5 +46,25 @@ class SynthCommand {
                 // action.preset?.baseKey ?? currentPreset.baseKey))
                 action.preset?.baseKey))
         : SynthCommand.stop(action.pointerId);
+  }
+
+  SynthCommand.stop(this.voiceId) {
+    gate = false;
+  }
+
+  double _convertStepOffsetToPianoKey(double stepOffset, int baseKey) {
+    int stepNumber = stepOffset.floor();
+    int octaveOffset = (stepNumber ~/ _scale.length);
+    int chromaticStepsOffset = _scale[stepNumber % _scale.length];
+    int semitonesOffset = (octaveOffset * 12) + chromaticStepsOffset;
+    return (baseKey + semitonesOffset).floorToDouble();
+  }
+
+  double _getFreqFromKeyNumber(double keyNumber) {
+    return 440 * pow(2, (keyNumber - 49) / 12);
+  }
+
+  double _getFreqFromStepOffset(double step, int baseKey) {
+    return _getFreqFromKeyNumber(_convertStepOffsetToPianoKey(step, baseKey));
   }
 }

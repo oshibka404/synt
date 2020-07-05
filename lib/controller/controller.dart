@@ -10,13 +10,13 @@ import '../recorder/recorder.dart';
 import '../synth/action_receiver.dart';
 import '../synth/dsp_api.dart';
 import '../tempo_controller/tempo_controller.dart';
+import 'controls.dart';
 import 'keyboard/keyboard.dart';
 import 'keyboard/keyboard_action.dart';
 import 'keyboard_preset.dart';
 import 'keyboard_presets.dart' show keyboardPresets;
 import 'preset_selector/preset_selector.dart';
 import 'record_view.dart';
-import 'controls.dart';
 
 class Controller extends StatefulWidget {
   @override
