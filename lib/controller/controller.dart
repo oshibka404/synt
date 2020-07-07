@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/synth_command_factory.dart';
-import 'package:perfect_first_synth/synth/synth_command.dart';
+import 'synth_command_factory.dart';
+import '../synth/synth_command.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';

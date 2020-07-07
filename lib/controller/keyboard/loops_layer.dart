@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/loop_view.dart';
+import '../loop_view.dart';
 
 class LoopsLayer extends StatelessWidget {
   final Map<DateTime, LoopView> loops;
