@@ -217,4 +217,20 @@ class DspApi {
       throw 'Could not stop audio processing: ${e.message}';
     }
   }
+
+  static Future<String> getJsonUi() {
+    try {
+      return _platform.invokeMethod('getJSONUI');
+    } on PlatformException catch (e) {
+      throw 'Could not get UI JSON: ${e.message}';
+    }
+  }
+
+  static Future<String> getJsonMeta() {
+    try {
+      return _platform.invokeMethod('getJSONUI');
+    } on PlatformException catch (e) {
+      throw 'Could not get UI Metadata: ${e.message}';
+    }
+  }
 }

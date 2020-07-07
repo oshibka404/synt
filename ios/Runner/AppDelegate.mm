@@ -106,6 +106,12 @@
         } else if ([@"getCPULoad" isEqualToString:call.method]) {
             float cpuLoad = [weakSelf getCpuLoad];
             result(@(cpuLoad));
+        } else if ([@"getJSONUI" isEqualToString:call.method]) {
+            const char * jsonUi = [weakSelf getJSONUI];
+            result(@(jsonUi));
+        } else if ([@"getJSONMeta" isEqualToString:call.method]) {
+            const char * jsonMeta = [weakSelf getJSONMeta];
+            result(@(jsonMeta));
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -201,6 +207,14 @@
 
 - (float)getCpuLoad {
     return dspFaust->getCPULoad();
+}
+
+- (const char *)getJSONUI {
+    return dspFaust->getJSONUI();
+}
+
+- (const char *)getJSONMeta {
+    return dspFaust->getJSONMeta();
 }
 
 @end
