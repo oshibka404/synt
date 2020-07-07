@@ -9,8 +9,8 @@ import("stdfaust.lib");
 
 cc = library("midi_controls.dsp");
 
-envelope = component("envelope.dsp");
+global_envelope = component("global_envelope.dsp");
 
-oscillators = component("oscillators.dsp") * envelope;
+oscillators = component("oscillators.dsp");
 
-process = oscillators : component("filters.dsp");
+process = oscillators * global_envelope : component("filters.dsp");
