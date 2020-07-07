@@ -17,7 +17,8 @@ pulse_level_envelope = en.adsr(
 
 pulse_duty = hslider("Oscillators/Pulse/Duty", .5, .01, 1, .01);
 
-pulse_osc = os.pulsetrain(cc.freq, pulse_duty) * pulse_level_envelope;
+// pulse_osc = os.pulsetrain(cc.freq, pulse_duty) * pulse_level_envelope;
+pulse_osc = os.pulsetrain(cc.freq, pulse_duty);
 
 
 process = pulse_osc;

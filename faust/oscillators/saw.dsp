@@ -15,6 +15,7 @@ saw_level_envelope = en.adsr(
     cc.gate
 );
 
-saw_osc = os.sawtooth(cc.freq) * saw_level_envelope;
+// saw_osc = os.sawtooth(cc.freq) * saw_level_envelope;
+saw_osc = os.sawtooth(cc.freq);
 
 process = saw_osc;

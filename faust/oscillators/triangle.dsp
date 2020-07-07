@@ -15,7 +15,7 @@ triangle_level_envelope = en.adsr(
     cc.gate
 );
 
-triangle_osc = os.triangle(cc.freq) * triangle_level_envelope;
-
+// triangle_osc = os.triangle(cc.freq) * triangle_level_envelope;
+triangle_osc = os.triangle(cc.freq);
 
 process = triangle_osc;
