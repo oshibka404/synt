@@ -1,23 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'synth_command_factory.dart';
-import '../synth/synth_command.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
-import '../looper/sample.dart';
 import '../looper/looper.dart';
-import '../synth/synth_input.dart';
+import '../looper/sample.dart';
 import '../synth/dsp_api.dart';
+import '../synth/synth_command.dart';
+import '../synth/synth_input.dart';
 import '../tempo_controller/tempo_controller.dart';
-import 'controls.dart';
 import 'keyboard/keyboard.dart';
 import 'keyboard/keyboard_action.dart';
 import 'keyboard_preset.dart';
 import 'keyboard_presets.dart' show keyboardPresets;
-import 'preset_selector/preset_selector.dart';
 import 'loop_view.dart';
+import 'preset_selector/preset_selector.dart';
+import 'settings/controls.dart';
+import 'synth_command_factory.dart';
 
 class Controller extends StatefulWidget {
   @override

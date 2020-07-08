@@ -1,42 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import '../faust_ui/faust_ui.dart';
-import '../faust_ui/faust_control.dart';
-import '../synth/dsp_api.dart';
 
-/// Settings screen
-class Controls extends StatefulWidget {
-  @override
-  State<Controls> createState() => ControlsState();
-}
-
-class ControlsState extends State<Controls> {
-  FaustUi faustUi;
-
-  List<FaustControl> get controls => faustUi.items;
-
-  @override
-  void initState() {
-    _getInitialParams();
-    super.initState();
-  }
-
-  void _getInitialParams() async {
-    String jsonUi = await DspApi.getJsonUi();
-    Map<String, dynamic> uiParams = jsonDecode(jsonUi);
-    setState(() {
-      faustUi = FaustUi.fromJson(uiParams);
-    });
-  }
-
-  @override
-  Widget build(context) {
-    if (faustUi == null) return Center();
-
-    return SynthControls.fromFaustUi(faustUi);
-  }
-}
+import '../../faust_ui/faust_control.dart';
+import '../../faust_ui/faust_ui.dart';
+import '../../synth/dsp_api.dart';
 
 class SynthControls extends StatefulWidget {
   final FaustUi uiDescription;
@@ -47,6 +13,20 @@ class SynthControls extends StatefulWidget {
 
 class SynthControlsState extends State<SynthControls> {
   Map<String, double> params = {};
+
+  build(context) {
+    return ListView(
+      children: widget.uiDescription.items
+          .map<Widget>((control) => _buildControl(control))
+          .toList(),
+    );
+  }
+
+  Widget _buildControl(FaustControl control) {
+    if (control is FaustGroup) return _buildGroup(control);
+    if (control is FaustSlider) return _buildSlider(control);
+    return Container();
+  }
 
   Widget _buildGroup(FaustGroup group) {
     return Column(
@@ -73,24 +53,10 @@ class SynthControlsState extends State<SynthControls> {
     ]);
   }
 
-  Widget _buildControl(FaustControl control) {
-    if (control is FaustGroup) return _buildGroup(control);
-    if (control is FaustSlider) return _buildSlider(control);
-    return Container();
-  }
-
   void _setParam(String address, double value) {
     DspApi.setParamValueByPath(address, value);
     setState(() {
       params[address] = value;
     });
-  }
-
-  build(context) {
-    return ListView(
-      children: widget.uiDescription.items
-          .map<Widget>((control) => _buildControl(control))
-          .toList(),
-    );
   }
 }
