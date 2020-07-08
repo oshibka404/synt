@@ -29,5 +29,6 @@ class SynthInput {
         freq: command.freq,
         gain: command.gain,
         modulation: command.modulation,
+        params: command.preset,
       );
 }

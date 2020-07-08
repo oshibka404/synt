@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import '../../faust_ui/faust_control.dart';
 import '../../faust_ui/faust_ui.dart';
 import '../../synth/dsp_api.dart';
+import '../keyboard_preset.dart';
 import 'synth_controls.dart';
 
 /// Settings screen
 class Controls extends StatefulWidget {
+  final KeyboardPreset preset;
+
+  Controls(this.preset);
+
   @override
   State<Controls> createState() => ControlsState();
 }
@@ -22,7 +27,7 @@ class ControlsState extends State<Controls> {
   Widget build(context) {
     if (faustUi == null) return Center();
 
-    return SynthControls.fromFaustUi(faustUi);
+    return SynthControls.fromFaustUi(faustUi, widget.preset);
   }
 
   @override

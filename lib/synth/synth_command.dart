@@ -6,11 +6,14 @@ class SynthCommand {
   double modulation;
   bool gate;
 
+  Map<String, double> preset;
+
   SynthCommand(
     this.voiceId, {
     this.freq,
     this.gain = 1,
     this.modulation = 0,
+    this.preset,
   }) {
     gate = true;
   }

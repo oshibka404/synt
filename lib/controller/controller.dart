@@ -78,7 +78,7 @@ class _ControllerState extends State<Controller> {
                 if (_settingsOpen)
                   Container(
                     constraints: BoxConstraints.tight(keyboardSize),
-                    child: Controls(),
+                    child: Controls(currentPreset),
                     color: Theme.of(context).backgroundColor,
                   ),
               ]),

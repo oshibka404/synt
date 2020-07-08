@@ -4,10 +4,12 @@ class KeyboardPreset {
   final ColorSwatch color;
   final int baseKey;
   final SynthPreset synthPreset;
+  final String arpeggio;
   KeyboardPreset({
     this.color = Colors.pink,
     this.baseKey = 49,
     this.synthPreset,
+    this.arpeggio,
   });
 }
 

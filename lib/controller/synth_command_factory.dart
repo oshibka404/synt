@@ -17,6 +17,7 @@ class SynthCommandFactory {
         ? SynthCommand(voiceId,
             modulation: action.modulation,
             freq: _getFreqFromStepOffset(action.stepOffset, preset?.baseKey),
+            preset: preset.synthPreset.params,
             gain: action.velocity)
         : SynthCommand.stop(voiceId);
   }
@@ -27,6 +28,7 @@ class SynthCommandFactory {
             modulation: sample.modulation,
             freq: _getFreqFromStepOffset(
                 sample.stepOffset, sample.preset?.baseKey),
+            preset: sample.preset.synthPreset.params,
             gain: sample.pressure)
         : SynthCommand.stop(sample.pointerId);
   }
@@ -37,6 +39,7 @@ class SynthCommandFactory {
         ? SynthCommand(voiceId,
             modulation: action.modulation,
             freq: _getFreqFromStepOffset(action.stepOffset, preset?.baseKey),
+            preset: preset.synthPreset.params,
             gain: action.pressure)
         : SynthCommand.stop(voiceId);
   }

@@ -12,6 +12,7 @@ class Synthesizer {
       'gain': voiceParams.gain,
       'gate': voiceParams.gate,
       'modulation': voiceParams.modulation,
+      ...voiceParams.params,
     });
     return voices[id];
   }
@@ -22,6 +23,7 @@ class Synthesizer {
       'gain': voiceParams.gain,
       'gate': 1,
       'modulation': voiceParams.modulation,
+      ...voiceParams.params,
     });
     return voices[id];
   }
@@ -79,10 +81,12 @@ class VoiceParams {
   final double gate;
   final double freq;
   final double modulation;
+  final Map<String, double> params;
   VoiceParams({
     this.gain,
     this.gate,
     this.freq,
     this.modulation,
+    this.params,
   });
 }
