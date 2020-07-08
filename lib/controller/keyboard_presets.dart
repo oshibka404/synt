@@ -19,6 +19,7 @@ List<KeyboardPreset> keyboardPresets = [
       'Triangle/Attack': 1,
       'Pulse/Sustain': 1,
       'Filter/Cutoff': 4000,
+      'Envelope/Attack': 1,
     }),
   ),
   KeyboardPreset(
