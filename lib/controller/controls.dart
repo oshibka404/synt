@@ -11,20 +11,6 @@ class Controls extends StatefulWidget {
   State<Controls> createState() => ControlsState();
 }
 
-class Param {
-  Param(
-      this.label, this.initialValue, this.min, this.max, this.step, this.type);
-  double get value => _value ?? initialValue;
-  double _value;
-  set value(double newValue) => _value = newValue;
-  final double min;
-  final double max;
-  final double initialValue;
-  final double step;
-  final String label;
-  final String type; // enum
-}
-
 class ControlsState extends State<Controls> {
   FaustUi faustUi;
 
@@ -65,14 +51,18 @@ class SynthControlsState extends State<SynthControls> {
   Widget _buildGroup(FaustGroup group) {
     return Column(
       children: [
-        Text(group.label),
+        if (group.items.length > 1)
+          Text(
+            group.label,
+            style: TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+          ),
         ...group.items.map<Widget>((control) => _buildControl(control)),
       ],
     );
   }
 
   Widget _buildSlider(FaustSlider slider) {
-    return Row(children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(slider.label),
       Slider(
           value: params[slider.address] ?? slider.initialValue,
