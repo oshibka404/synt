@@ -10,8 +10,10 @@ import 'synth_controls.dart';
 /// Settings screen
 class Controls extends StatefulWidget {
   final KeyboardPreset preset;
+  final double tempo;
+  final Function setTempo;
 
-  Controls(this.preset);
+  Controls(this.preset, this.tempo, this.setTempo);
 
   @override
   State<Controls> createState() => ControlsState();
@@ -28,7 +30,7 @@ class ControlsState extends State<Controls> {
 
     return ListView(
       children: [
-        GlobalControls(),
+        GlobalControls(widget.tempo, widget.setTempo),
         RaisedButton(
             color: widget.preset.color,
             child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'),
@@ -61,6 +63,20 @@ class ControlsState extends State<Controls> {
 }
 
 class GlobalControls extends StatelessWidget {
-  // TODO: implement build
-  Widget build(BuildContext context) => Container();
+  GlobalControls(this._tempo, this._setTempo);
+  final double _tempo;
+  final Function _setTempo;
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Tempo: ${_tempo.toStringAsFixed(0)}"),
+        Slider(
+          min: 60,
+          max: 240,
+          value: _tempo,
+          onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
+        )
+      ],
+    );
+  }
 }

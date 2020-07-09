@@ -6,9 +6,9 @@ class TempoController {
 
   Timer _internalTimer;
 
-  var _outputController = StreamController<Tick>();
+  var _outputController = StreamController<Tick>.broadcast();
 
-  Stream<Tick> _output;
+  Stream<Tick> get _output => _outputController.stream;
 
   TempoController({
     this.tempo = 80,
@@ -17,17 +17,8 @@ class TempoController {
 
   Stream<Tick> get clock {
     if (_internalTimer == null) {
-      _output = _outputController.stream.asBroadcastStream(
-        onCancel: (subscription) {
-          subscription.cancel();
-          _output = null;
-          _internalTimer.cancel();
-          _internalTimer = null;
-        },
-      );
       startTimer();
     }
-
     return _output;
   }
 
@@ -35,13 +26,19 @@ class TempoController {
       Duration(microseconds: Duration.microsecondsPerMinute ~/ (tempo * 4));
 
   void setTempo(double newTempo) {
-    this.tempo = tempo;
-    startTimer();
+    this.tempo = newTempo;
+    if (_internalTimer != null) {
+      _internalTimer.cancel();
+      startTimer();
+    }
   }
 
   void startTimer() {
-    if (_internalTimer != null) _internalTimer.cancel();
     _internalTimer = Timer.periodic(sixteenth, _tick);
+    _outputController.onCancel = () {
+      _internalTimer.cancel();
+      _internalTimer = null;
+    };
     _outputController.add(Tick(division: 0, tempo: tempo));
   }
 

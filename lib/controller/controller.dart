@@ -79,7 +79,7 @@ class _ControllerState extends State<Controller> {
               if (_settingsOpen)
                 Container(
                   constraints: BoxConstraints.tight(keyboardSize),
-                  child: Controls(currentPreset),
+                  child: Controls(currentPreset, _tempo, setTempo),
                   color: Theme.of(context).backgroundColor,
                 ),
             ]),
@@ -131,10 +131,12 @@ class _ControllerState extends State<Controller> {
     super.dispose();
   }
 
+  double _tempo = 120;
+
   @override
   initState() {
     super.initState();
-    _tempoController = TempoController(tempo: 120);
+    _tempoController = TempoController(tempo: _tempo);
 
     _keyboardController.stream.listen(_keyboardHandler);
 
@@ -163,6 +165,13 @@ class _ControllerState extends State<Controller> {
     }
     setState(() {
       isReadyToRecord = ready;
+    });
+  }
+
+  void setTempo(double newTempo) {
+    _tempoController.setTempo(newTempo);
+    setState(() {
+      _tempo = newTempo;
     });
   }
 
