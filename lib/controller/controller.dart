@@ -47,6 +47,10 @@ class _ControllerState extends State<Controller> {
 
   var _keyboardController = StreamController<KeyboardAction>();
 
+  double _tempo = 120;
+
+  Scale _scale = Scale.minor;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -134,8 +138,6 @@ class _ControllerState extends State<Controller> {
     super.dispose();
   }
 
-  double _tempo = 120;
-
   @override
   initState() {
     super.initState();
@@ -168,6 +170,12 @@ class _ControllerState extends State<Controller> {
     }
     setState(() {
       isReadyToRecord = ready;
+    });
+  }
+
+  void setScale(Scale newScale) {
+    setState(() {
+      _scale = newScale;
     });
   }
 
@@ -227,14 +235,6 @@ class _ControllerState extends State<Controller> {
       });
     }
     _loopController.add(action);
-  }
-
-  Scale _scale = Scale.minor;
-
-  void setScale(Scale newScale) {
-    setState(() {
-      _scale = newScale;
-    });
   }
 
   void _looperHandler(Sample sample) {

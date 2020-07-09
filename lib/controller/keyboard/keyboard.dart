@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../keyboard_preset.dart';
-import '../loop_view.dart';
 import 'keyboard_action.dart';
 import 'keyboard_painter.dart';
-import 'pointer_data.dart';
 import 'looper_state_indicator.dart';
+import 'pointer_data.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///

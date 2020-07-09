@@ -91,9 +91,9 @@ class GlobalControls extends StatelessWidget {
     Scale.locrian: 'Locrian',
   };
 
-  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale);
   final double _tempo;
   final Function _setTempo;
+  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale);
   Widget build(BuildContext context) {
     return Column(
       children: [

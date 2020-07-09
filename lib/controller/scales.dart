@@ -1,3 +1,20 @@
+enum Scale {
+  chromatic,
+  pentatonic,
+  blues,
+  harmonicMinor,
+  melodicMinor,
+  ionian,
+  dorian,
+  phrygian,
+  lydian,
+  myxolydian,
+  aeolian,
+  locrian,
+  major,
+  minor,
+}
+
 class Scales {
   static Map<Scale, List<int>> _scales = {
     Scale.chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -26,21 +43,4 @@ class Scales {
     if (scale == Scale.major) return major;
     return _scales[scale];
   }
-}
-
-enum Scale {
-  chromatic,
-  pentatonic,
-  blues,
-  harmonicMinor,
-  melodicMinor,
-  ionian,
-  dorian,
-  phrygian,
-  lydian,
-  myxolydian,
-  aeolian,
-  locrian,
-  major,
-  minor,
 }
