@@ -21,13 +21,21 @@ class Controls extends StatefulWidget {
 class ControlsState extends State<Controls> {
   FaustUi faustUi;
 
-  List<FaustControl> get controls => faustUi.items;
+  bool _advancedExpanded = false;
 
   @override
   Widget build(context) {
     if (faustUi == null) return Center();
 
-    return SynthControls.fromFaustUi(faustUi, widget.preset);
+    return ListView(
+      children: [
+        GlobalControls(),
+        RaisedButton(
+            child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'), onPressed: _toggleAdvancedSettings),
+        if (_advancedExpanded)
+          SynthControls.fromFaustUi(faustUi, widget.preset),
+      ],
+    );
   }
 
   @override
@@ -43,4 +51,15 @@ class ControlsState extends State<Controls> {
       faustUi = FaustUi.fromJson(uiParams);
     });
   }
+
+  _toggleAdvancedSettings() {
+    setState(() {
+      _advancedExpanded = !_advancedExpanded;
+    });
+  }
+}
+
+class GlobalControls extends StatelessWidget {
+  // TODO: implement build
+  Widget build(BuildContext context) => Container();
 }

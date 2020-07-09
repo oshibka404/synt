@@ -17,7 +17,7 @@ class SynthControlsState extends State<SynthControls> {
   Map<String, double> params = {};
 
   build(context) {
-    return ListView(
+    return Column(
       children: widget.uiDescription.items
           .map<Widget>((control) => _buildControl(control))
           .toList(),
