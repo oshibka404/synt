@@ -31,11 +31,14 @@ class Keyboard extends StatefulWidget {
 
   final bool isReadyToRecord;
 
+  final int scaleLength;
+
   Keyboard({
     @required this.size,
     @required this.offset,
     @required this.preset,
     @required this.output,
+    this.scaleLength = 7,
     this.isRecording = false,
     this.isReadyToRecord = false,
   });
@@ -47,8 +50,7 @@ class Keyboard extends StatefulWidget {
 class _KeyboardState extends State<Keyboard> {
   Map<int, PointerData> pointers = {};
 
-  // TODO: use actual scale steps count
-  final int stepsCount = 8;
+  final int keysOnScreen = 8;
 
   final double sidePadding = 24;
 
@@ -59,7 +61,7 @@ class _KeyboardState extends State<Keyboard> {
   }
 
   double get pixelsPerStep =>
-      (widget.size.width - sidePadding * 2) / stepsCount;
+      (widget.size.width - sidePadding * 2) / keysOnScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +82,7 @@ class _KeyboardState extends State<Keyboard> {
                     pixelsPerStep: pixelsPerStep,
                     mainColor: widget.preset.color,
                     pointers: pointers,
+                    scaleLength: widget.scaleLength,
                   ),
                 ),
               ),

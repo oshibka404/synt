@@ -11,6 +11,7 @@ class KeyboardPainter extends CustomPainter {
 
   final double padding = 30;
   final double sidePadding;
+  final int scaleLength;
 
   Size size;
 
@@ -25,6 +26,7 @@ class KeyboardPainter extends CustomPainter {
     this.mainColor = Colors.grey,
     this.pointers,
     this.sidePadding,
+    this.scaleLength,
   });
   Color get darkMainColor => mainColor[900];
 
@@ -126,7 +128,7 @@ class KeyboardPainter extends CustomPainter {
       sidePadding + (keyNumber * pixelsPerStep) + (pixelsPerStep / 2);
 
   bool isTonic(int stepNumber) {
-    return stepNumber % 7 == 0;
+    return stepNumber % scaleLength == 0;
   }
 
   @override

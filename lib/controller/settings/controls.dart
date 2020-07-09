@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../faust_ui/faust_ui.dart';
 import '../../synth/dsp_api.dart';
 import '../keyboard_preset.dart';
+import '../scales.dart';
 import 'synth_controls.dart';
 
 /// Settings screen
@@ -12,8 +13,10 @@ class Controls extends StatefulWidget {
   final KeyboardPreset preset;
   final double tempo;
   final Function setTempo;
+  final Scale scale;
+  final Function setScale;
 
-  Controls(this.preset, this.tempo, this.setTempo);
+  Controls(this.preset, this.tempo, this.setTempo, this.scale, this.setScale);
 
   @override
   State<Controls> createState() => ControlsState();
@@ -30,7 +33,8 @@ class ControlsState extends State<Controls> {
 
     return ListView(
       children: [
-        GlobalControls(widget.tempo, widget.setTempo),
+        GlobalControls(
+            widget.tempo, widget.setTempo, widget.scale, widget.setScale),
         RaisedButton(
             color: widget.preset.color,
             child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'),
@@ -63,7 +67,31 @@ class ControlsState extends State<Controls> {
 }
 
 class GlobalControls extends StatelessWidget {
-  GlobalControls(this._tempo, this._setTempo);
+  final Scale _scale;
+  final Function _setScale;
+
+  final Map<Scale, String> scaleNames = {
+    Scale.chromatic: 'Chromatic',
+
+    Scale.pentatonic: 'Pentatonic',
+    Scale.blues: 'Blues',
+
+    Scale.harmonicMinor: 'Harmonic minor',
+    Scale.melodicMinor: 'Melodic minor',
+
+    // Diatonic scales
+    Scale.major: 'Major',
+    Scale.minor: 'Minor',
+    Scale.ionian: 'Ionian',
+    Scale.dorian: 'Dorian',
+    Scale.phrygian: 'Phrygian',
+    Scale.lydian: 'Lydian',
+    Scale.myxolydian: 'Myxolydian',
+    Scale.aeolian: 'Aeolian',
+    Scale.locrian: 'Locrian',
+  };
+
+  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale);
   final double _tempo;
   final Function _setTempo;
   Widget build(BuildContext context) {
@@ -75,7 +103,18 @@ class GlobalControls extends StatelessWidget {
           max: 240,
           value: _tempo,
           onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
-        )
+        ),
+        Text("Scale:"),
+        DropdownButton<Scale>(
+            value: _scale,
+            items: scaleNames.keys
+                .map<DropdownMenuItem<Scale>>(
+                    (scale) => DropdownMenuItem<Scale>(
+                          value: scale,
+                          child: Text(scaleNames[scale]),
+                        ))
+                .toList(),
+            onChanged: _setScale)
       ],
     );
   }

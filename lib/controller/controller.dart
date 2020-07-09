@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/scales.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
@@ -75,11 +76,13 @@ class _ControllerState extends State<Controller> {
                 output: _keyboardController,
                 isReadyToRecord: isReadyToRecord,
                 isRecording: isRecording,
+                scaleLength: Scales.getScale(_scale).length,
               ),
               if (_settingsOpen)
                 Container(
                   constraints: BoxConstraints.tight(keyboardSize),
-                  child: Controls(currentPreset, _tempo, setTempo),
+                  child: Controls(
+                      currentPreset, _tempo, setTempo, _scale, setScale),
                   color: Theme.of(context).backgroundColor,
                 ),
             ]),
@@ -204,8 +207,8 @@ class _ControllerState extends State<Controller> {
     _arpeggiators[sample.pointerId] =
         Arpeggiator(_tempoController, ArpeggioBank());
     _arpeggiators[sample.pointerId].output.listen((playerAction) {
-      _outputController.add(SynthCommandFactory.fromPlayerAction(
-          playerAction, sample.pointerId, sample.preset ?? currentPreset));
+      _outputController.add(SynthCommandFactory.fromPlayerAction(playerAction,
+          sample.pointerId, sample.preset ?? currentPreset, _scale));
     });
   }
 
@@ -226,11 +229,19 @@ class _ControllerState extends State<Controller> {
     _loopController.add(action);
   }
 
+  Scale _scale = Scale.minor;
+
+  void setScale(Scale newScale) {
+    setState(() {
+      _scale = newScale;
+    });
+  }
+
   void _looperHandler(Sample sample) {
     if (!_arpeggiators.containsKey(sample.pointerId)) {
       _addArpeggiator(sample);
       _outputController.add(SynthCommandFactory.fromKeyboardAction(
-          sample, sample.pointerId, sample.preset ?? currentPreset));
+          sample, sample.pointerId, sample.preset ?? currentPreset, _scale));
     }
     if (sample.pressure > 0) {
       _arpeggiators[sample.pointerId].play(sample.modulation,
