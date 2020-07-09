@@ -4,7 +4,11 @@ class TempoController {
   /// BPM, Number of quarter notes played per minute
   double tempo;
 
-  Stream<Tick> _internalStream;
+  Timer _internalTimer;
+
+  var _outputController = StreamController<Tick>();
+
+  Stream<Tick> _output;
 
   TempoController({
     this.tempo = 80,
@@ -12,21 +16,37 @@ class TempoController {
   Duration get bar => sixteenth * 16;
 
   Stream<Tick> get clock {
-    if (_internalStream == null) {
-      _internalStream = Stream.periodic(sixteenth, _tick).asBroadcastStream(
-          onCancel: (subscription) {
-        subscription.cancel();
-        _internalStream = null;
-      });
+    if (_internalTimer == null) {
+      _output = _outputController.stream.asBroadcastStream(
+        onCancel: (subscription) {
+          subscription.cancel();
+          _output = null;
+          _internalTimer.cancel();
+          _internalTimer = null;
+        },
+      );
+      startTimer();
     }
-    return _internalStream;
+
+    return _output;
   }
 
   Duration get sixteenth =>
       Duration(microseconds: Duration.microsecondsPerMinute ~/ (tempo * 4));
 
-  Tick _tick(int i) {
-    return Tick(division: i % 16, tempo: tempo);
+  void setTempo(double newTempo) {
+    this.tempo = tempo;
+    startTimer();
+  }
+
+  void startTimer() {
+    if (_internalTimer != null) _internalTimer.cancel();
+    _internalTimer = Timer.periodic(sixteenth, _tick);
+    _outputController.add(Tick(division: 0, tempo: tempo));
+  }
+
+  void _tick(Timer timer) {
+    _outputController.add(Tick(division: timer.tick % 16, tempo: tempo));
   }
 }
 
