@@ -15,6 +15,7 @@ import 'keyboard/keyboard_action.dart';
 import 'keyboard_preset.dart';
 import 'keyboard_presets.dart' show keyboardPresets;
 import 'loop_view.dart';
+import 'loops_layer.dart';
 import 'preset_selector/preset_selector.dart';
 import 'settings/controls.dart';
 import 'synth_command_factory.dart';
@@ -49,47 +50,68 @@ class _ControllerState extends State<Controller> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double controlPanelWidth = constraints.maxHeight / 3;
+        final int presetsCount = keyboardPresets.length;
+        final double controlPanelWidth = constraints.maxHeight / presetsCount;
+        final int maxLoopCount = 8;
+        final double loopPanelWidth = constraints.maxHeight / maxLoopCount;
         var keyboardSize = Size(
-            constraints.maxWidth - controlPanelWidth, constraints.maxHeight);
-        return Scaffold(
-          body: Row(
-            children: [
-              PresetSelector(
-                size: Size(controlPanelWidth, constraints.maxHeight),
-                currentPreset: currentPreset,
-                setPreset: setPreset,
-                keyboardPresets: keyboardPresets,
-                onTapDown: () => setReady(true),
-                onTapUp: () => setReady(false),
+            constraints.maxWidth - controlPanelWidth - loopPanelWidth,
+            constraints.maxHeight);
+        return Row(
+          children: [
+            PresetSelector(
+              size: Size(controlPanelWidth, constraints.maxHeight),
+              currentPreset: currentPreset,
+              setPreset: setPreset,
+              keyboardPresets: keyboardPresets,
+              onTapDown: () => setReady(true),
+              onTapUp: () => setReady(false),
+            ),
+            Stack(children: [
+              Keyboard(
+                size: keyboardSize,
+                offset: Offset(controlPanelWidth, 0),
+                preset: currentPreset,
+                output: _keyboardController,
+                isReadyToRecord: isReadyToRecord,
+                isRecording: isRecording,
               ),
-              Stack(children: [
-                Keyboard(
-                  size: keyboardSize,
-                  offset: Offset(controlPanelWidth, 0),
-                  preset: currentPreset,
-                  output: _keyboardController,
-                  isReadyToRecord: isReadyToRecord,
-                  isRecording: isRecording,
-                  toggleLoop: toggleLoop,
-                  loopViews: _loopViews,
-                  deleteRecord: deleteLoop,
+              if (_settingsOpen)
+                Container(
+                  constraints: BoxConstraints.tight(keyboardSize),
+                  child: Controls(currentPreset),
+                  color: Theme.of(context).backgroundColor,
                 ),
-                if (_settingsOpen)
-                  Container(
-                    constraints: BoxConstraints.tight(keyboardSize),
-                    child: Controls(currentPreset),
-                    color: Theme.of(context).backgroundColor,
+            ]),
+            Container(
+              decoration: BoxDecoration(color: Colors.black),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: LoopsLayer(
+                      size: Size(loopPanelWidth,
+                          constraints.maxHeight - loopPanelWidth),
+                      loops: _loopViews,
+                      toggleLoop: toggleLoop,
+                      deleteLoop: deleteLoop,
+                    ),
                   ),
-              ]),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: currentPreset.color,
-            onPressed: toggleSettings,
-            tooltip: 'Sound settings',
-            child: const Icon(Icons.settings),
-          ),
+                  GestureDetector(
+                    onTap: toggleSettings,
+                    child: Container(
+                      constraints:
+                          BoxConstraints.tight(Size.square(loopPanelWidth)),
+                      decoration: BoxDecoration(color: Colors.black),
+                      child: Icon(
+                        Icons.settings,
+                        color: Theme.of(context).backgroundColor,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         );
       },
     );
@@ -97,7 +119,9 @@ class _ControllerState extends State<Controller> {
 
   void deleteLoop(DateTime id) {
     looper.delete(looper.loops[id]);
-    _loopViews.remove(id);
+    setState(() {
+      _loopViews.remove(id);
+    });
   }
 
   @override

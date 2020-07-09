@@ -9,7 +9,6 @@ import 'keyboard_action.dart';
 import 'keyboard_painter.dart';
 import 'pointer_data.dart';
 import 'looper_state_indicator.dart';
-import 'loops_layer.dart';
 
 /// UI component emitting stream of [KeyboardAction] events.
 ///
@@ -32,22 +31,13 @@ class Keyboard extends StatefulWidget {
 
   final bool isReadyToRecord;
 
-  final Map<DateTime, LoopView> loopViews;
-
-  final Function toggleLoop;
-
-  final Function deleteRecord;
-
   Keyboard({
     @required this.size,
     @required this.offset,
     @required this.preset,
     @required this.output,
-    @required this.toggleLoop,
     this.isRecording = false,
     this.isReadyToRecord = false,
-    this.loopViews,
-    this.deleteRecord,
   });
 
   @override
@@ -96,14 +86,6 @@ class _KeyboardState extends State<Keyboard> {
               LooperStateIndicator(
                   isRecording: widget.isRecording,
                   isInRecordingMode: widget.isReadyToRecord),
-              LoopsLayer(
-                size: widget.size,
-                loops: widget.loopViews,
-                pixelsPerStep: pixelsPerStep,
-                toggleLoop: widget.toggleLoop,
-                deleteRecord: widget.deleteRecord,
-                sidePadding: sidePadding,
-              ),
             ],
           )),
     );

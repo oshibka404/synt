@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import '../../faust_ui/faust_control.dart';
 import '../../faust_ui/faust_ui.dart';
 import '../../synth/dsp_api.dart';
 import '../keyboard_preset.dart';
@@ -31,7 +30,9 @@ class ControlsState extends State<Controls> {
       children: [
         GlobalControls(),
         RaisedButton(
-            child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'), onPressed: _toggleAdvancedSettings),
+            color: widget.preset.color,
+            child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'),
+            onPressed: _toggleAdvancedSettings),
         if (_advancedExpanded)
           SynthControls.fromFaustUi(faustUi, widget.preset),
       ],
