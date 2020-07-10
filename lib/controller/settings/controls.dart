@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../faust_ui/faust_ui.dart';
 import '../../synth/dsp_api.dart';
 import '../keyboard_preset.dart';
-import '../scales.dart';
+import '../../scales/scale_patterns.dart';
 import 'synth_controls.dart';
 
 /// Settings screen
@@ -13,7 +13,7 @@ class Controls extends StatefulWidget {
   final KeyboardPreset preset;
   final double tempo;
   final Function setTempo;
-  final Scale scale;
+  final ScalePattern scale;
   final Function setScale;
 
   Controls(this.preset, this.tempo, this.setTempo, this.scale, this.setScale);
@@ -67,28 +67,28 @@ class ControlsState extends State<Controls> {
 }
 
 class GlobalControls extends StatelessWidget {
-  final Scale _scale;
+  final ScalePattern _scale;
   final Function _setScale;
 
-  final Map<Scale, String> scaleNames = {
-    Scale.chromatic: 'Chromatic',
+  final Map<ScalePattern, String> scaleNames = {
+    ScalePattern.chromatic: 'Chromatic',
 
-    Scale.pentatonic: 'Pentatonic',
-    Scale.blues: 'Blues',
+    ScalePattern.pentatonic: 'Pentatonic',
+    ScalePattern.blues: 'Blues',
 
-    Scale.harmonicMinor: 'Harmonic minor',
-    Scale.melodicMinor: 'Melodic minor',
+    ScalePattern.harmonicMinor: 'Harmonic minor',
+    ScalePattern.melodicMinor: 'Melodic minor',
 
     // Diatonic scales
-    Scale.major: 'Major',
-    Scale.minor: 'Minor',
-    Scale.ionian: 'Ionian',
-    Scale.dorian: 'Dorian',
-    Scale.phrygian: 'Phrygian',
-    Scale.lydian: 'Lydian',
-    Scale.myxolydian: 'Myxolydian',
-    Scale.aeolian: 'Aeolian',
-    Scale.locrian: 'Locrian',
+    ScalePattern.major: 'Major',
+    ScalePattern.minor: 'Minor',
+    ScalePattern.ionian: 'Ionian',
+    ScalePattern.dorian: 'Dorian',
+    ScalePattern.phrygian: 'Phrygian',
+    ScalePattern.lydian: 'Lydian',
+    ScalePattern.myxolydian: 'Myxolydian',
+    ScalePattern.aeolian: 'Aeolian',
+    ScalePattern.locrian: 'Locrian',
   };
 
   final double _tempo;
@@ -105,11 +105,11 @@ class GlobalControls extends StatelessWidget {
           onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
         ),
         Text("Scale:"),
-        DropdownButton<Scale>(
+        DropdownButton<ScalePattern>(
             value: _scale,
             items: scaleNames.keys
-                .map<DropdownMenuItem<Scale>>(
-                    (scale) => DropdownMenuItem<Scale>(
+                .map<DropdownMenuItem<ScalePattern>>(
+                    (scale) => DropdownMenuItem<ScalePattern>(
                           value: scale,
                           child: Text(scaleNames[scale]),
                         ))

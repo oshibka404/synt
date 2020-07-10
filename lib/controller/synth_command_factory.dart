@@ -6,11 +6,11 @@ import '../controller/keyboard_preset.dart';
 import '../looper/sample.dart';
 import '../synth/synth_command.dart';
 
-import 'scales.dart';
+import '../scales/scale_patterns.dart';
 
 class SynthCommandFactory {
   static SynthCommand fromPlayerAction(
-      PlayerAction action, voiceId, KeyboardPreset preset, Scale scale) {
+      PlayerAction action, voiceId, KeyboardPreset preset, ScalePattern scale) {
     return action.velocity > 0
         ? SynthCommand(voiceId,
             modulation: action.modulation,
@@ -21,7 +21,8 @@ class SynthCommandFactory {
         : SynthCommand.stop(voiceId);
   }
 
-  static SynthCommand fromSample(Sample sample, int voiceId, Scale scale) {
+  static SynthCommand fromSample(
+      Sample sample, int voiceId, ScalePattern scale) {
     return sample.pressure > 0
         ? SynthCommand(sample.pointerId,
             modulation: sample.modulation,
@@ -32,8 +33,8 @@ class SynthCommandFactory {
         : SynthCommand.stop(sample.pointerId);
   }
 
-  static SynthCommand fromKeyboardAction(
-      KeyboardAction action, voiceId, KeyboardPreset preset, Scale scale) {
+  static SynthCommand fromKeyboardAction(KeyboardAction action, voiceId,
+      KeyboardPreset preset, ScalePattern scale) {
     return action.pressure > 0
         ? SynthCommand(voiceId,
             modulation: action.modulation,
@@ -45,8 +46,8 @@ class SynthCommandFactory {
   }
 
   static double _convertStepOffsetToPianoKey(
-      double stepOffset, int baseKey, Scale scale) {
-    List<int> scaleIntervals = Scales.getScale(scale);
+      double stepOffset, int baseKey, ScalePattern scale) {
+    List<int> scaleIntervals = ScalePatterns.getScale(scale);
     int stepNumber = stepOffset.floor();
     int octaveOffset = (stepNumber ~/ scaleIntervals.length);
     int chromaticStepsOffset =
@@ -59,7 +60,8 @@ class SynthCommandFactory {
     return 440 * pow(2, (keyNumber - 49) / 12);
   }
 
-  static double _getFreqFromStepOffset(double step, int baseKey, Scale scale) {
+  static double _getFreqFromStepOffset(
+      double step, int baseKey, ScalePattern scale) {
     return _getFreqFromKeyNumber(
         _convertStepOffsetToPianoKey(step, baseKey, scale));
   }

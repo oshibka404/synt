@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/scales.dart';
+import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
@@ -49,7 +49,7 @@ class _ControllerState extends State<Controller> {
 
   double _tempo = 120;
 
-  Scale _scale = Scale.minor;
+  ScalePattern _scale = ScalePattern.minor;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class _ControllerState extends State<Controller> {
                 output: _keyboardController,
                 isReadyToRecord: isReadyToRecord,
                 isRecording: isRecording,
-                scaleLength: Scales.getScale(_scale).length,
+                scaleLength: ScalePatterns.getScale(_scale).length,
               ),
               if (_settingsOpen)
                 Container(
@@ -173,7 +173,7 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void setScale(Scale newScale) {
+  void setScale(ScalePattern newScale) {
     setState(() {
       _scale = newScale;
     });
