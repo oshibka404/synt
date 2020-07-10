@@ -17,7 +17,7 @@ class TempoController {
 
   Stream<Tick> get clock {
     if (_internalTimer == null) {
-      startTimer();
+      _outputController.onListen = startTimer;
     }
     return _output;
   }
@@ -35,11 +35,11 @@ class TempoController {
 
   void startTimer() {
     _internalTimer = Timer.periodic(sixteenth, _tick);
+    _outputController.add(Tick(division: 0, tempo: tempo));
     _outputController.onCancel = () {
       _internalTimer.cancel();
       _internalTimer = null;
     };
-    _outputController.add(Tick(division: 0, tempo: tempo));
   }
 
   void _tick(Timer timer) {
@@ -53,4 +53,9 @@ class Tick {
 
   final double tempo;
   Tick({this.division, this.tempo});
+
+  @override
+  String toString() {
+    return '#$division at $tempo bpm';
+  }
 }
