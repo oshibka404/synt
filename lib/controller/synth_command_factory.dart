@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import '../arpeggiator/arpeggio.dart';
+import '../arpeggiator/player_action.dart';
+
 import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
 import '../looper/sample.dart';

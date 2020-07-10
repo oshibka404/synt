@@ -3,6 +3,7 @@ import 'dart:async';
 import '../tempo_controller/tempo_controller.dart';
 import 'arpeggio.dart';
 import 'arpeggio_bank.dart';
+import 'player_action.dart';
 
 /// Service streaming [Arpeggio] from a given note, according to given [_tempo]
 ///
