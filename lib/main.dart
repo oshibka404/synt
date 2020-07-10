@@ -17,7 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Synt',
-      home: Material(child: Controller()),
+      home: SafeArea(
+        left: false,
+        bottom: false,
+        top: false,
+        child: Material(child: Controller()),
+      ),
       theme: themeData,
     );
   }
