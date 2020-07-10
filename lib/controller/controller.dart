@@ -5,7 +5,7 @@ import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
-import '../arpeggiator/arpeggio_banks.dart' show shit;
+import '../arpeggiator/arpeggio_banks.dart' show harmony;
 import '../looper/looper.dart';
 import '../looper/sample.dart';
 import '../synth/dsp_api.dart';
@@ -214,7 +214,7 @@ class _ControllerState extends State<Controller> {
 
   void _addArpeggiator(Sample sample) {
     _arpeggiators[sample.pointerId] =
-        Arpeggiator(_tempoController, ArpeggioBank(shit));
+        Arpeggiator(_tempoController, ArpeggioBank(harmony));
     _arpeggiators[sample.pointerId].output.listen((playerAction) {
       _outputController.add(SynthCommandFactory.fromPlayerAction(playerAction,
           sample.pointerId, sample.preset ?? currentPreset, _scale));
