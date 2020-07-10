@@ -46,6 +46,8 @@ class Arpeggiator {
 
   void stop() {
     _outputController.add(PlayerAction.stop());
-    _tempoSubscription.cancel();
+    if (_tempoSubscription != null) {
+      _tempoSubscription.cancel();
+    }
   }
 }
