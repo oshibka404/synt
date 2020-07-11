@@ -97,7 +97,7 @@ class GlobalControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Tempo: ${_tempo.toStringAsFixed(0)}"),
+        Text("Tempo: ${_tempo.toStringAsFixed(0)} bpm"),
         Slider(
           min: 60,
           max: 240,
@@ -116,7 +116,7 @@ class GlobalControls extends StatelessWidget {
                           child: Text(scaleNames[scale]),
                         ))
                 .toList(),
-            onChanged: _setScale)
+            onChanged: _setScale),
       ],
     );
   }
