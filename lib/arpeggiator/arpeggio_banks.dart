@@ -3,7 +3,7 @@
 import 'arpeggio.dart';
 import 'player_action.dart';
 
-Map<String, List<Arpeggio>> arpeggio_bank = {
+Map<String, List<Arpeggio>> arpeggioBank = {
   'harmony': [
     Arpeggio([
       PlayerAction(),
