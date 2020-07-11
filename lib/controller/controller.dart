@@ -85,6 +85,7 @@ class _ControllerState extends State<Controller> {
               ),
               if (_settingsOpen)
                 Container(
+                  padding: EdgeInsets.all(16),
                   constraints: BoxConstraints.tight(keyboardSize),
                   child: Controls(
                       currentPreset, _tempo, setTempo, _scale, setScale),

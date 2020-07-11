@@ -37,7 +37,7 @@ class ControlsState extends State<Controls> {
             widget.tempo, widget.setTempo, widget.scale, widget.setScale),
         RaisedButton(
             color: widget.preset.color,
-            child: Text('›ﬁÔÓ ˘¯Âı˜Â˝'),
+            child: Text('Experimental voice settings'),
             onPressed: _toggleAdvancedSettings),
         if (_advancedExpanded)
           SynthControls.fromFaustUi(faustUi, widget.preset),
@@ -102,6 +102,8 @@ class GlobalControls extends StatelessWidget {
           min: 60,
           max: 240,
           value: _tempo,
+          activeColor: Colors.black,
+          inactiveColor: Colors.grey,
           onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
         ),
         Text("Scale:"),
