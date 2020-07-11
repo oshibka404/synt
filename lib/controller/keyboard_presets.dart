@@ -9,6 +9,7 @@ List<KeyboardPreset> keyboardPresets = [
       200: Color(0xFF3885ED),
       900: Color(0xFF2f74d0),
     }),
+    arpeggio: 'melody',
     synthPreset: SynthPreset({
       'Pulse/Level': 0.3,
       'Triangle/Level': 1,
@@ -28,6 +29,7 @@ List<KeyboardPreset> keyboardPresets = [
       200: Color(0xFFfbf043),
       900: Color(0xFFe7dc33),
     }),
+    arpeggio: 'harmony',
     synthPreset: SynthPreset({
       'Pulse/Level': 0.5,
       'Triangle/Level': 0.4,
@@ -46,6 +48,7 @@ List<KeyboardPreset> keyboardPresets = [
       200: Color(0xFFf7642c),
       900: Color(0xFFda4d17),
     }),
+    arpeggio: 'bass',
     synthPreset: SynthPreset({
       'Pulse/Level': 1,
       'Triangle/Level': 1,
