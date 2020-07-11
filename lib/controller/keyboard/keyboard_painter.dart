@@ -32,6 +32,8 @@ class KeyboardPainter extends CustomPainter {
 
   Color get lightMainColor => mainColor[200];
 
+  double lineThickness = 3;
+
   void drawKey(
     int keyNumber,
     Map<int, PointerData> pointers,
@@ -46,8 +48,8 @@ class KeyboardPainter extends CustomPainter {
     } else {
       canvas.drawRRect(
           RRect.fromRectAndRadius(
-              Rect.fromPoints(
-                  Offset(x - 2, padding), Offset(x + 2, size.height - padding)),
+              Rect.fromPoints(Offset(x - lineThickness / 2, padding),
+                  Offset(x + lineThickness / 2, size.height - padding)),
               Radius.circular(2)),
           Paint()
             ..shader = LinearGradient(
@@ -66,7 +68,7 @@ class KeyboardPainter extends CustomPainter {
     var paint = Paint()
       ..color = keyColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0;
+      ..strokeWidth = lineThickness;
 
     var path = getWavePath(x, 3, 1 - normalizedModulation);
     canvas.drawPath(path, paint);

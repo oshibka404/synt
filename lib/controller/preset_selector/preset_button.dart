@@ -27,6 +27,7 @@ class _PresetButtonState extends State<PresetButton> {
   bool isPressed = false;
 
   Widget build(BuildContext context) {
+    var borderWidth = 3.0;
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
         press();
@@ -43,13 +44,13 @@ class _PresetButtonState extends State<PresetButton> {
                   border: widget.active
                       ? Border(
                           top: BorderSide(
-                              width: 4,
+                              width: borderWidth,
                               color: Theme.of(context).backgroundColor),
                           left: BorderSide(
-                              width: 4,
+                              width: borderWidth,
                               color: Theme.of(context).backgroundColor),
                           bottom: BorderSide(
-                              width: 4,
+                              width: borderWidth,
                               color: Theme.of(context).backgroundColor),
                         )
                       : null,
