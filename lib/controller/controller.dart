@@ -41,7 +41,7 @@ class _ControllerState extends State<Controller> {
 
   TempoController _tempoController;
 
-  KeyboardPreset currentPreset = keyboardPresets[0];
+  KeyboardPreset currentPreset = keyboardPresets[2];
   bool _settingsOpen = false;
 
   var _outputController = StreamController<SynthCommand>();
