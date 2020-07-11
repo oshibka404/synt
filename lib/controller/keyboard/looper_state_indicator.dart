@@ -9,16 +9,10 @@ class LooperStateIndicator extends StatelessWidget {
   });
 
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _getRecordingStatusText(),
-            style: Theme.of(context).textTheme.headline4,
-          )
-        ],
+    return Container(
+      padding: EdgeInsets.all(6.0),
+      child: Text(
+        _getRecordingStatusText(),
       ),
     );
   }
