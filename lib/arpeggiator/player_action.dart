@@ -35,7 +35,7 @@ class PlayerAction {
   PlayerAction withModulation(double newModulation) => _isStop
       ? this
       : PlayerAction(
-          modulation: newModulation,
+          modulation: newModulation ?? this.modulation,
           velocity: velocity,
           stepOffset: stepOffset,
         );
@@ -45,13 +45,13 @@ class PlayerAction {
       : PlayerAction(
           modulation: modulation,
           velocity: velocity,
-          stepOffset: stepOffset != null ? newOffset + stepOffset : null,
+          stepOffset: newOffset != null ? newOffset + stepOffset : stepOffset,
         );
 
   PlayerAction withVelocity(double newVelocity) => _isStop
       ? this
       : PlayerAction(
-          velocity: newVelocity,
+          velocity: newVelocity ?? this.velocity,
           modulation: modulation,
           stepOffset: stepOffset,
         );

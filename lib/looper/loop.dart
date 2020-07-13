@@ -62,17 +62,12 @@ class Loop {
       _isPlaying = true;
       var iterator = _actions.iterator;
       var playbackStartTime = DateTime.now();
-      print("Play $startTime! 0");
       while (iterator.moveNext() && _isPlaying) {
         var action = iterator.current;
         if (action.pressure > 0) {
-          if (_pressedPointers.add(action.pointerId)) {
-            print("+1 $startTime = ${_pressedPointers.length}");
-          }
+          _pressedPointers.add(action.pointerId);
         } else {
-          if (_pressedPointers.remove(action.pointerId)) {
-            print("-1 $startTime = ${_pressedPointers.length}");
-          }
+          _pressedPointers.remove(action.pointerId);
         }
         var timeFromPlaybackStart =
             DateTime.now().difference(playbackStartTime);
@@ -85,7 +80,6 @@ class Loop {
       for (var i = 0; i < _pressedPointers.length; i++) {
         yield Sample.from(KeyboardAction.release(pointersToRelease[i]));
       }
-      print("delete remaining ${pointersToRelease.length} from $startTime");
       _pressedPointers.clear();
     }
   }

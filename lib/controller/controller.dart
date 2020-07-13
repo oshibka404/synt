@@ -196,13 +196,11 @@ class _ControllerState extends State<Controller> {
       setState(() {
         _loopViews[id] = _loopViews[id].assign(isPlaying: false);
       });
-      print("Stopped $id");
     } else {
       looper.start(loop);
       setState(() {
         _loopViews[id] = _loopViews[id].assign(isPlaying: true);
       });
-      print("Play $id!");
     }
   }
 
@@ -249,9 +247,7 @@ class _ControllerState extends State<Controller> {
     }
     if (sample.pressure > 0) {
       _arpeggiators[sample.pointerId].play(sample.modulation,
-          baseStep: sample.stepOffset,
-          modulation: sample.modulation,
-          velocity: sample.pressure);
+          baseStep: sample.stepOffset, modulation: sample.pressure);
     } else {
       _arpeggiators[sample.pointerId].stop();
       _arpeggiators.remove(sample.pointerId);
