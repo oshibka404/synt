@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/synt_localizations.dart';
 
 import '../../scales/scale_patterns.dart';
 
@@ -35,9 +36,10 @@ class GlobalControls extends StatelessWidget {
       this._tempo, this._setTempo, this._scale, this._setScale, this.clearAll);
 
   Widget build(BuildContext context) {
+    String tempoString = SyntLocalizations.of(context).getLocalized("Tempo");
     return Column(
       children: [
-        Text("Tempo: ${_tempo.toStringAsFixed(0)} bpm"),
+        Text("$tempoString: ${_tempo.toStringAsFixed(0)} bpm"),
         Slider(
           min: 60,
           max: 120,
@@ -46,18 +48,22 @@ class GlobalControls extends StatelessWidget {
           inactiveColor: Colors.grey,
           onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
         ),
-        Text("Scale:"),
+        Text(SyntLocalizations.of(context).getLocalized("Scale")),
         DropdownButton<ScalePattern>(
             value: _scale,
             items: scaleNames.keys
                 .map<DropdownMenuItem<ScalePattern>>(
                     (scale) => DropdownMenuItem<ScalePattern>(
                           value: scale,
-                          child: Text(scaleNames[scale]),
+                          child: Text(SyntLocalizations.of(context)
+                              .getLocalized(scaleNames[scale])),
                         ))
                 .toList(),
             onChanged: _setScale),
-        RaisedButton(child: Text("Delete all loops"), onPressed: clearAll),
+        RaisedButton(
+            child: Text(
+                SyntLocalizations.of(context).getLocalized("Delete all loops")),
+            onPressed: clearAll),
       ],
     );
   }

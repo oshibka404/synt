@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../synt_localizations.dart';
+
 class LooperStateIndicator extends StatelessWidget {
   final bool isRecording;
   final bool isInRecordingMode;
@@ -12,16 +14,16 @@ class LooperStateIndicator extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(6.0),
       child: Text(
-        _getRecordingStatusText(),
+        _getRecordingStatusText(SyntLocalizations.of(context)),
       ),
     );
   }
 
-  String _getRecordingStatusText() {
+  String _getRecordingStatusText(SyntLocalizations localizations) {
     if (isRecording) {
-      return 'Recording';
+      return localizations.getLocalized('Recording');
     } else if (isInRecordingMode) {
-      return 'Ready to record';
+      return localizations.getLocalized('Ready to record');
     } else {
       return '';
     }
