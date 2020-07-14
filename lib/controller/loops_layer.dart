@@ -4,15 +4,15 @@ import 'package:perfect_first_synth/controller/inverting_button.dart';
 import 'loop_view.dart';
 
 class LoopsLayer extends StatelessWidget {
+  final Map<DateTime, LoopView> loops;
+  final Size size;
+  final Function toggleLoop;
+  final Function deleteLoop;
   LoopsLayer(
       {@required this.size,
       @required this.loops,
       @required this.deleteLoop,
       @required this.toggleLoop});
-  final Map<DateTime, LoopView> loops;
-  final Size size;
-  final Function toggleLoop;
-  final Function deleteLoop;
 
   Widget build(context) {
     return Column(

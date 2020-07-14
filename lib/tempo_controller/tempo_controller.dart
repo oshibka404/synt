@@ -8,13 +8,11 @@ class TempoController {
 
   var _outputController = StreamController<Tick>.broadcast();
 
-  Stream<Tick> get _output => _outputController.stream;
-
   TempoController({
     this.tempo = 80,
   });
-  Duration get bar => sixteenth * 16;
 
+  Duration get bar => sixteenth * 16;
   Stream<Tick> get clock {
     if (_internalTimer == null) {
       _outputController.onListen = startTimer;
@@ -24,6 +22,8 @@ class TempoController {
 
   Duration get sixteenth =>
       Duration(microseconds: Duration.microsecondsPerMinute ~/ (tempo * 4));
+
+  Stream<Tick> get _output => _outputController.stream;
 
   void setTempo(double newTempo) {
     this.tempo = newTempo;

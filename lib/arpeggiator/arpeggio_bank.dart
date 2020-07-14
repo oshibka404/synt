@@ -4,9 +4,9 @@ import 'arpeggio.dart';
 
 /// Service providing arpeggios of a given density from [_arpeggios]
 class ArpeggioBank {
-  ArpeggioBank(this._arpeggios);
-
   List<Arpeggio> _arpeggios;
+
+  ArpeggioBank(this._arpeggios);
   Arpeggio getBy({double intensity}) {
     if (intensity < 0 || intensity > 1) {
       throw ArgumentError.value(intensity, 'intensity');

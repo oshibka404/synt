@@ -1,8 +1,17 @@
+class FaustButton extends FaustControl {
+  FaustButton(String label, String address) : super('button', label, address);
+}
+
+class FaustCheckbox extends FaustControl {
+  FaustCheckbox(String label, String address)
+      : super('checkbox', label, address);
+}
+
 abstract class FaustControl {
-  FaustControl(this.type, this.label, this.address);
   final String type;
   final String label;
   final String address;
+  FaustControl(this.type, this.label, this.address);
 
   factory FaustControl.create(Map<String, dynamic> control) {
     FaustControl createControl(item) => FaustControl.create(item);
@@ -35,27 +44,18 @@ abstract class FaustControl {
 }
 
 class FaustGroup extends FaustControl {
+  final List<FaustControl> items;
+
   FaustGroup(String label, String address, this.items)
       : super('vgroup', label, address);
-
-  final List<FaustControl> items;
 }
 
 class FaustSlider extends FaustControl {
-  FaustSlider(String label, String address,
-      {this.min, this.max, this.initialValue, this.step})
-      : super('hslider', label, address);
   final double min;
   final double max;
   final double initialValue;
   final double step;
-}
-
-class FaustCheckbox extends FaustControl {
-  FaustCheckbox(String label, String address)
-      : super('checkbox', label, address);
-}
-
-class FaustButton extends FaustControl {
-  FaustButton(String label, String address) : super('button', label, address);
+  FaustSlider(String label, String address,
+      {this.min, this.max, this.initialValue, this.step})
+      : super('hslider', label, address);
 }

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class InvertingButton extends StatefulWidget {
+  final Color color;
+  final Function onTap;
+  final Function onLongPress;
+  final IconData iconData;
+  final Size size;
   InvertingButton({
     this.color,
     this.onTap,
@@ -8,11 +13,6 @@ class InvertingButton extends StatefulWidget {
     this.iconData,
     this.size,
   });
-  final Color color;
-  final Function onTap;
-  final Function onLongPress;
-  final IconData iconData;
-  final Size size;
 
   @override
   State<StatefulWidget> createState() => InvertingButtonState();

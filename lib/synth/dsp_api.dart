@@ -29,6 +29,22 @@ class DspApi {
     }
   }
 
+  static Future<String> getJsonMeta() {
+    try {
+      return _platform.invokeMethod('getJSONUI');
+    } on PlatformException catch (e) {
+      throw 'Could not get UI Metadata: ${e.message}';
+    }
+  }
+
+  static Future<String> getJsonUi() {
+    try {
+      return _platform.invokeMethod('getJSONUI');
+    } on PlatformException catch (e) {
+      throw 'Could not get UI JSON: ${e.message}';
+    }
+  }
+
   static Future<double> getParamInit(int id) {
     try {
       return _platform.invokeMethod('getParamInit', <String, int>{
@@ -215,22 +231,6 @@ class DspApi {
       return _platform.invokeMethod('stop');
     } on PlatformException catch (e) {
       throw 'Could not stop audio processing: ${e.message}';
-    }
-  }
-
-  static Future<String> getJsonUi() {
-    try {
-      return _platform.invokeMethod('getJSONUI');
-    } on PlatformException catch (e) {
-      throw 'Could not get UI JSON: ${e.message}';
-    }
-  }
-
-  static Future<String> getJsonMeta() {
-    try {
-      return _platform.invokeMethod('getJSONUI');
-    } on PlatformException catch (e) {
-      throw 'Could not get UI Metadata: ${e.message}';
     }
   }
 }

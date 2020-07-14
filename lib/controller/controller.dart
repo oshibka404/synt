@@ -199,12 +199,6 @@ class _ControllerState extends State<Controller> {
     }
   }
 
-  _clearAll() {
-    _loopViews.keys.toSet().forEach((loopId) {
-      deleteLoop(loopId);
-    });
-  }
-
   void toggleSettings() {
     setState(() {
       _settingsOpen = !_settingsOpen;
@@ -220,6 +214,12 @@ class _ControllerState extends State<Controller> {
     _arpeggiators[sample.pointerId].output.listen((playerAction) {
       _outputController.add(SynthCommandFactory.fromPlayerAction(playerAction,
           sample.pointerId, sample.preset ?? currentPreset, _scale));
+    });
+  }
+
+  _clearAll() {
+    _loopViews.keys.toSet().forEach((loopId) {
+      deleteLoop(loopId);
     });
   }
 

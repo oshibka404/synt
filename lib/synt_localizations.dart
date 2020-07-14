@@ -2,14 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SyntLocalizations {
-  SyntLocalizations(this.locale);
-
-  final Locale locale;
-
-  static SyntLocalizations of(BuildContext context) {
-    return Localizations.of<SyntLocalizations>(context, SyntLocalizations);
-  }
-
   static Map<String, Map<String, String>> _localizedValues = {
     'en': {
       'Synt': 'Synt',
@@ -61,6 +53,10 @@ class SyntLocalizations {
     },
   };
 
+  final Locale locale;
+
+  SyntLocalizations(this.locale);
+
   String getLocalized(String base) {
     if (_localizedValues[locale.languageCode] == null ||
         _localizedValues[locale.languageCode][base] == null) {
@@ -68,6 +64,12 @@ class SyntLocalizations {
       return base;
     }
     return _localizedValues[locale.languageCode][base];
+  }
+
+  // TODO: create getter per string
+
+  static SyntLocalizations of(BuildContext context) {
+    return Localizations.of<SyntLocalizations>(context, SyntLocalizations);
   }
 }
 

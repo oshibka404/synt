@@ -21,6 +21,7 @@ class KeyboardPainter extends CustomPainter {
 
   final double pixelsPerStep;
   // TODO: get rid of 200, 900; use semantically meaningful descriptions
+  double lineThickness = 3;
   KeyboardPainter({
     @required this.pixelsPerStep,
     this.mainColor = Colors.grey,
@@ -28,11 +29,10 @@ class KeyboardPainter extends CustomPainter {
     this.sidePadding,
     this.scaleLength,
   });
+
   Color get darkMainColor => mainColor[900];
 
   Color get lightMainColor => mainColor[200];
-
-  double lineThickness = 3;
 
   void drawKey(
     int keyNumber,
