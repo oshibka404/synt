@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings (Russian)
+  Runner
+
+  Created by User on 14.07.2020.
+  
+*/
+
+/* Localized Bundle Display Name */
+"CFBundleDisplayName" = "Синт";
