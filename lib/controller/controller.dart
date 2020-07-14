@@ -88,8 +88,8 @@ class _ControllerState extends State<Controller> {
                 Container(
                   padding: EdgeInsets.all(16),
                   constraints: BoxConstraints.tight(keyboardSize),
-                  child: Controls(
-                      currentPreset, _tempo, setTempo, _scale, setScale),
+                  child: Controls(currentPreset, _tempo, setTempo, _scale,
+                      setScale, _clearAll),
                   color: Theme.of(context).backgroundColor,
                 ),
             ]),
@@ -197,6 +197,12 @@ class _ControllerState extends State<Controller> {
         _loopViews[id] = _loopViews[id].assign(isPlaying: true);
       });
     }
+  }
+
+  _clearAll() {
+    _loopViews.keys.toSet().forEach((loopId) {
+      deleteLoop(loopId);
+    });
   }
 
   void toggleSettings() {

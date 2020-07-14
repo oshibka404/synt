@@ -29,8 +29,10 @@ class GlobalControls extends StatelessWidget {
 
   final double _tempo;
   final Function _setTempo;
+  final void Function() clearAll;
 
-  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale);
+  GlobalControls(
+      this._tempo, this._setTempo, this._scale, this._setScale, this.clearAll);
 
   Widget build(BuildContext context) {
     return Column(
@@ -55,6 +57,7 @@ class GlobalControls extends StatelessWidget {
                         ))
                 .toList(),
             onChanged: _setScale),
+        RaisedButton(child: Text("Delete all loops"), onPressed: clearAll),
       ],
     );
   }

@@ -12,13 +12,16 @@ class Controls extends StatelessWidget {
   final ScalePattern scale;
   final Function setScale;
 
-  Controls(this.preset, this.tempo, this.setTempo, this.scale, this.setScale);
+  final void Function() clearAll;
+
+  Controls(this.preset, this.tempo, this.setTempo, this.scale, this.setScale,
+      this.clearAll);
 
   @override
   Widget build(context) {
     return ListView(
       children: [
-        GlobalControls(tempo, setTempo, scale, setScale),
+        GlobalControls(tempo, setTempo, scale, setScale, clearAll),
       ],
     );
   }
