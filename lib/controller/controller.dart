@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/inverting_button.dart';
 import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
@@ -105,17 +106,11 @@ class _ControllerState extends State<Controller> {
                       deleteLoop: deleteLoop,
                     ),
                   ),
-                  GestureDetector(
+                  InvertingButton(
                     onTap: toggleSettings,
-                    child: Container(
-                      constraints:
-                          BoxConstraints.tight(Size.square(loopPanelWidth)),
-                      decoration: BoxDecoration(color: Colors.black),
-                      child: Icon(
-                        Icons.settings,
-                        color: Theme.of(context).backgroundColor,
-                      ),
-                    ),
+                    size: Size.square(loopPanelWidth),
+                    color: Colors.black,
+                    iconData: Icons.settings,
                   )
                 ],
               ),

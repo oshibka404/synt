@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/inverting_button.dart';
 
 import 'loop_view.dart';
 
 class LoopsLayer extends StatelessWidget {
-  final Map<DateTime, LoopView> loops;
-  final Size size;
-  final Function toggleLoop;
-  final Function deleteLoop;
-
   LoopsLayer(
       {@required this.size,
       @required this.loops,
       @required this.deleteLoop,
       @required this.toggleLoop});
+  final Map<DateTime, LoopView> loops;
+  final Size size;
+  final Function toggleLoop;
+  final Function deleteLoop;
 
   Widget build(context) {
     return Column(
@@ -32,26 +32,16 @@ class LoopsLayer extends StatelessWidget {
         icon = Icons.pause;
       }
 
-      buttons.add(GestureDetector(
-        child: Container(
-          constraints: BoxConstraints.tight(Size.square(size.width)),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              loop.preset.color[200],
-              loop.preset.color[900],
-            ]),
-          ),
-          child: Icon(
-            icon,
-            color: Theme.of(context).backgroundColor,
-          ),
-        ),
+      buttons.add(InvertingButton(
+        color: loop.preset.color,
+        iconData: icon,
         onTap: () {
           toggleLoop(time);
         },
         onLongPress: () {
           deleteLoop(time);
         },
+        size: Size.square(size.shortestSide),
       ));
     });
     return buttons;

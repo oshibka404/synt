@@ -1,5 +1,4 @@
 // TODO: move it to json
-// TODO: build it into Preset
 import 'arpeggio.dart';
 import 'player_action.dart';
 
