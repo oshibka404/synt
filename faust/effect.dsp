@@ -6,4 +6,6 @@ declare license "BSD";
 
 import("stdfaust.lib");
 
-process = _ <: dm.zita_light;
+po_sync = component("po_sync.dsp");
+
+process = _ <: po_sync;

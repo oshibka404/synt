@@ -8,6 +8,7 @@ class SyntLocalizations {
       'Ready to record': 'Ready to record',
       'Recording': 'Recording',
       'Tempo': 'Tempo',
+      'Sync with Pocket Operator': 'Sync with Pocket Operator',
       'Scale': 'Scale',
       'Delete all loops': 'Delete all loops',
 
@@ -16,7 +17,7 @@ class SyntLocalizations {
       'Pentatonic': 'Pentatonic',
       'Blues': 'Blues',
       'Harmonic minor': 'Harmonic minor',
-      'Melodicminor': 'Melodic minor',
+      'Melodic minor': 'Melodic minor',
       'Major': 'Major',
       'Minor': 'Minor',
       'Ionian': 'Ionian',
@@ -32,6 +33,7 @@ class SyntLocalizations {
       'Ready to record': 'Готов записывать',
       'Recording': 'Запись',
       'Tempo': 'Темп',
+      'Sync with Pocket Operator': 'Сихронизация с Pocket Operator',
       'Scale': 'Гамма',
       'Delete all loops': 'Удалить все лупы',
 

@@ -32,6 +32,8 @@ class Looper {
 
   bool get isLooping => _isLooping;
 
+  StreamSubscription tempoSub;
+
   Stream<Sample> get output {
     return _outputController.stream;
   }
@@ -45,6 +47,7 @@ class Looper {
     loop.play().listen((action) {
       _outputController.add(action);
     });
+    tempoSub = tempo.clock.listen((event) {});
     Future.delayed(loop.duration, () {
       if (loop.isPlaying) {
         start(loop);
@@ -64,6 +67,7 @@ class Looper {
 
   void stop(Loop loop) {
     loop.stop();
+    tempoSub.cancel();
   }
 
   /// Stops looping, decorates the finished loop with [Loop..duration]

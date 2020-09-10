@@ -7,6 +7,9 @@ class GlobalControls extends StatelessWidget {
   final ScalePattern _scale;
   final Function _setScale;
 
+  final bool _syncEnabled;
+  final Function _setSyncEnabled;
+
   final Map<ScalePattern, String> scaleNames = {
     ScalePattern.chromatic: 'Chromatic',
 
@@ -32,21 +35,36 @@ class GlobalControls extends StatelessWidget {
   final Function _setTempo;
   final void Function() clearAll;
 
-  GlobalControls(
-      this._tempo, this._setTempo, this._scale, this._setScale, this.clearAll);
+  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale,
+      this.clearAll, this._syncEnabled, this._setSyncEnabled);
 
   Widget build(BuildContext context) {
     String tempoString = SyntLocalizations.of(context).getLocalized("Tempo");
+    String syncWithPoString =
+        SyntLocalizations.of(context).getLocalized("Sync with Pocket Operator");
+
     return Column(
       children: [
-        Text("$tempoString: ${_tempo.toStringAsFixed(0)} bpm"),
+        Row(
+          children: [
+            Text("$tempoString: "),
+            Text("${_tempo.toStringAsFixed(0)}"), // TODO: use TextField
+            Text(" bpm"),
+          ],
+        ),
         Slider(
           min: 60,
-          max: 120,
+          max: 180,
           value: _tempo,
           activeColor: Colors.black,
           inactiveColor: Colors.grey,
           onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
+        ),
+        Row(
+          children: [
+            Checkbox(value: _syncEnabled, onChanged: _setSyncEnabled),
+            Text(syncWithPoString),
+          ],
         ),
         Text(SyntLocalizations.of(context).getLocalized("Scale")),
         DropdownButton<ScalePattern>(

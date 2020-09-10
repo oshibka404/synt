@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:perfect_first_synth/synth/dsp_api.dart';
+
 class TempoController {
   /// BPM, Number of quarter notes played per minute
   double tempo;
@@ -36,13 +38,17 @@ class TempoController {
   void startTimer() {
     _internalTimer = Timer.periodic(sixteenth, _tick);
     _outputController.add(Tick(division: 0, tempo: tempo));
+    DspApi.setParamValueByPath("po_sync_pulse", 1);
     _outputController.onCancel = () {
       _internalTimer.cancel();
       _internalTimer = null;
+      DspApi.setParamValueByPath("po_sync_pulse", 0);
     };
   }
 
   void _tick(Timer timer) {
+    // TODO: Decouple from DspApi
+    DspApi.setParamValueByPath("po_sync_pulse", (timer.tick + 1) % 2.0);
     _outputController.add(Tick(division: timer.tick % 16, tempo: tempo));
   }
 }

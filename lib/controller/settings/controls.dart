@@ -11,17 +11,35 @@ class Controls extends StatelessWidget {
   final Function setTempo;
   final ScalePattern scale;
   final Function setScale;
+  final bool syncEnabled;
+  final Function setSyncEnabled;
 
   final void Function() clearAll;
 
-  Controls(this.preset, this.tempo, this.setTempo, this.scale, this.setScale,
-      this.clearAll);
+  Controls(
+    this.preset,
+    this.tempo,
+    this.setTempo,
+    this.scale,
+    this.setScale,
+    this.clearAll,
+    this.syncEnabled,
+    this.setSyncEnabled,
+  );
 
   @override
   Widget build(context) {
     return ListView(
       children: [
-        GlobalControls(tempo, setTempo, scale, setScale, clearAll),
+        GlobalControls(
+          tempo,
+          setTempo,
+          scale,
+          setScale,
+          clearAll,
+          syncEnabled,
+          setSyncEnabled,
+        ),
       ],
     );
   }

@@ -51,6 +51,8 @@ class _ControllerState extends State<Controller> {
 
   double _tempo = 120;
 
+  bool syncEnabled = false;
+
   ScalePattern _scale = ScalePattern.minor;
 
   @override
@@ -89,7 +91,7 @@ class _ControllerState extends State<Controller> {
                   padding: EdgeInsets.all(16),
                   constraints: BoxConstraints.tight(keyboardSize),
                   child: Controls(currentPreset, _tempo, setTempo, _scale,
-                      setScale, _clearAll),
+                      setScale, _clearAll, syncEnabled, setSyncEnabled),
                   color: Theme.of(context).backgroundColor,
                 ),
             ]),
@@ -119,6 +121,13 @@ class _ControllerState extends State<Controller> {
         );
       },
     );
+  }
+
+  void setSyncEnabled(bool syncEnabled) {
+    DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
+    setState(() {
+      this.syncEnabled = syncEnabled;
+    });
   }
 
   void deleteLoop(DateTime id) {
