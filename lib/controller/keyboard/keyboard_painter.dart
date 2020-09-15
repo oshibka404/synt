@@ -20,7 +20,6 @@ class KeyboardPainter extends CustomPainter {
   Color backgroundColor = Colors.white;
 
   final double pixelsPerStep;
-  // TODO: get rid of 200, 900; use semantically meaningful descriptions
   double lineThickness = 3;
   KeyboardPainter({
     @required this.pixelsPerStep,
