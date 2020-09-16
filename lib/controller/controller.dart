@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/controller/inverting_button.dart';
+import 'package:perfect_first_synth/controller/settings/settings_controller.dart';
 import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
@@ -20,7 +21,7 @@ import 'keyboard/presets/keyboard_presets.dart' show keyboardPresets;
 import 'loop_view.dart';
 import 'loops_layer.dart';
 import 'preset_selector/preset_selector.dart';
-import 'settings/controls.dart';
+import 'settings/settings_view.dart';
 import 'synth_command_factory.dart';
 
 class Controller extends StatefulWidget {
@@ -31,6 +32,8 @@ class Controller extends StatefulWidget {
 class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
   Map<DateTime, LoopView> _loopViews = {};
+
+  var settingsController = SettingsController();
 
   var _loopController = StreamController<KeyboardAction>();
 
@@ -90,7 +93,7 @@ class _ControllerState extends State<Controller> {
                 Container(
                   padding: EdgeInsets.all(16),
                   constraints: BoxConstraints.tight(keyboardSize),
-                  child: Controls(currentPreset, _tempo, setTempo, _scale,
+                  child: SettingsView(currentPreset, _tempo, setTempo, _scale,
                       setScale, _clearAll, syncEnabled, setSyncEnabled),
                   color: Theme.of(context).backgroundColor,
                 ),
@@ -123,11 +126,12 @@ class _ControllerState extends State<Controller> {
     );
   }
 
-  void setSyncEnabled(bool syncEnabled) {
+  void setSyncEnabled(bool syncEnabled, [bool silent]) {
     DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
     setState(() {
       this.syncEnabled = syncEnabled;
     });
+    if (!silent) settingsController.set('po_sync', syncEnabled);
   }
 
   void deleteLoop(DateTime id) {
@@ -154,7 +158,14 @@ class _ControllerState extends State<Controller> {
     looper = Looper(input: _loopController.stream, tempo: _tempoController);
     looper.output.listen(_looperHandler);
 
+    loadInitialSettings();
+
     SynthInput.connect(_outputController.stream);
+  }
+
+  void loadInitialSettings() async {
+    var initialSettings = await settingsController.loadGlobal();
+    setSyncEnabled(initialSettings['po_sync'], true);
   }
 
   void setPreset(KeyboardPreset preset) {

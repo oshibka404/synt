@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../scales/scale_patterns.dart';
 import '../keyboard/presets/keyboard_preset.dart';
-import 'global_controls.dart';
+import 'global_settings_view.dart';
 
 /// Settings screen
-class Controls extends StatelessWidget {
+class SettingsView extends StatelessWidget {
   final KeyboardPreset preset;
   final double tempo;
   final Function setTempo;
@@ -16,7 +16,7 @@ class Controls extends StatelessWidget {
 
   final void Function() clearAll;
 
-  Controls(
+  SettingsView(
     this.preset,
     this.tempo,
     this.setTempo,
@@ -31,7 +31,7 @@ class Controls extends StatelessWidget {
   Widget build(context) {
     return ListView(
       children: [
-        GlobalControls(
+        GlobalSettingsView(
           tempo,
           setTempo,
           scale,

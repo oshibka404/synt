@@ -3,7 +3,7 @@ import 'package:perfect_first_synth/synt_localizations.dart';
 
 import '../../scales/scale_patterns.dart';
 
-class GlobalControls extends StatelessWidget {
+class GlobalSettingsView extends StatelessWidget {
   final ScalePattern _scale;
   final Function _setScale;
 
@@ -35,7 +35,7 @@ class GlobalControls extends StatelessWidget {
   final Function _setTempo;
   final void Function() clearAll;
 
-  GlobalControls(this._tempo, this._setTempo, this._scale, this._setScale,
+  GlobalSettingsView(this._tempo, this._setTempo, this._scale, this._setScale,
       this.clearAll, this._syncEnabled, this._setSyncEnabled);
 
   Widget build(BuildContext context) {
