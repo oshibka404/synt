@@ -3,7 +3,7 @@ import 'dart:math';
 import '../arpeggiator/player_action.dart';
 import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
-import '../looper/sample.dart';
+import '../looper/trig.dart';
 import '../scales/scale_patterns.dart';
 import '../synth/synth_command.dart';
 
@@ -32,8 +32,7 @@ class SynthCommandFactory {
         : SynthCommand.stop(voiceId);
   }
 
-  static SynthCommand fromSample(
-      Sample sample, int voiceId, ScalePattern scale) {
+  static SynthCommand fromSample(Trig sample, int voiceId, ScalePattern scale) {
     return sample.pressure > 0
         ? SynthCommand(sample.pointerId,
             modulation: sample.modulation,

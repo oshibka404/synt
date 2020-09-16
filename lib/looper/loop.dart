@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
-import 'sample.dart';
+import 'trig.dart';
 
 /// Timeline with sequence of [KeyboardAction]s
 ///
-/// produces stream of [Sample]s.
+/// produces looped stream of [Trig]s.
 class Loop {
   final Offset startPoint;
   final DateTime startTime;
@@ -38,7 +38,7 @@ class Loop {
     } else {
       _pressedPointers.remove(action.pointerId);
     }
-    _actions.add(Sample.from(action, preset: preset));
+    _actions.add(Trig.from(action, preset: preset));
   }
 
   /// Ensures that all pointers have been released
@@ -52,7 +52,7 @@ class Loop {
   ///
   /// Starts playing [after] given duration or [at] given time.
   /// When no params given or [at] is in past, starts immediately.
-  Stream<Sample> play({DateTime at, Duration after}) async* {
+  Stream<Trig> play({DateTime at, Duration after}) async* {
     if (after != null) {
       await Future.delayed(after);
       yield* play();
@@ -78,7 +78,7 @@ class Loop {
 
       var pointersToRelease = _pressedPointers.toList();
       for (var i = 0; i < _pressedPointers.length; i++) {
-        yield Sample.from(KeyboardAction.release(pointersToRelease[i]));
+        yield Trig.from(KeyboardAction.release(pointersToRelease[i]));
       }
       _pressedPointers.clear();
     }

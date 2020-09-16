@@ -7,7 +7,7 @@ import '../controller/keyboard/keyboard_action.dart';
 import '../controller/keyboard_preset.dart';
 import '../tempo_controller/tempo_controller.dart';
 import 'loop.dart';
-import 'sample.dart';
+import 'trig.dart';
 
 /// Receives stream [input] of [KeyboardAction]s, creates loops and plays them
 /// into [output].
@@ -20,7 +20,7 @@ class Looper {
 
   Loop _currentLoop;
 
-  var _outputController = StreamController<Sample>();
+  var _outputController = StreamController<Trig>();
 
   bool _isLooping = false;
 
@@ -34,7 +34,7 @@ class Looper {
 
   StreamSubscription tempoSub;
 
-  Stream<Sample> get output {
+  Stream<Trig> get output {
     return _outputController.stream;
   }
 
@@ -117,6 +117,6 @@ class Looper {
     if (_currentLoop != null) {
       _currentLoop.add(action);
     }
-    _outputController.add(Sample.from(action));
+    _outputController.add(Trig.from(action));
   }
 }

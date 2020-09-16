@@ -8,7 +8,7 @@ import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
 import '../arpeggiator/arpeggio_banks.dart' show arpeggioBank;
 import '../looper/looper.dart';
-import '../looper/sample.dart';
+import '../looper/trig.dart';
 import '../synth/dsp_api.dart';
 import '../synth/synth_command.dart';
 import '../synth/synth_input.dart';
@@ -215,7 +215,7 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void _addArpeggiator(Sample sample) {
+  void _addArpeggiator(Trig sample) {
     _arpeggiators[sample.pointerId] = Arpeggiator(
         _tempoController,
         ArpeggioBank(
@@ -249,7 +249,7 @@ class _ControllerState extends State<Controller> {
     _loopController.add(action);
   }
 
-  void _looperHandler(Sample sample) {
+  void _looperHandler(Trig sample) {
     if (!_arpeggiators.containsKey(sample.pointerId)) {
       _addArpeggiator(sample);
       _outputController.add(SynthCommandFactory.fromKeyboardAction(
