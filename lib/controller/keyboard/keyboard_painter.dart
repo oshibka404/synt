@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/keyboard/presets/keyboard_preset.dart';
 
 import 'pointer_data.dart';
+import 'presets/keyboard_colors.dart';
 
 class KeyboardPainter extends CustomPainter {
   Map<int, PointerData> pointers;
