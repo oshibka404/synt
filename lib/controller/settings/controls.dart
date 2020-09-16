@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../scales/scale_patterns.dart';
-import '../keyboard_preset.dart';
+import '../keyboard/presets/keyboard_preset.dart';
 import 'global_controls.dart';
 
 /// Settings screen

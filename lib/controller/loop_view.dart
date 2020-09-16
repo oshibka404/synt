@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'keyboard_preset.dart';
+import 'keyboard/presets/keyboard_preset.dart';
 
 class LoopView {
   final Offset position;

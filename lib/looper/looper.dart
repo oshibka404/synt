@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
-import '../controller/keyboard_preset.dart';
+import '../controller/keyboard/presets/keyboard_preset.dart';
 import '../tempo_controller/tempo_controller.dart';
 import 'loop.dart';
 import 'trig.dart';

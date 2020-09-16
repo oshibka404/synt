@@ -1,13 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:perfect_first_synth/controller/keyboard/presets/keyboard_preset.dart';
 
 import 'pointer_data.dart';
 
 class KeyboardPainter extends CustomPainter {
   Map<int, PointerData> pointers;
 
-  final ColorSwatch<int> mainColor;
+  final KeyboardColors mainColor;
 
   final double padding = 30;
   final double sidePadding;
@@ -23,15 +24,15 @@ class KeyboardPainter extends CustomPainter {
   double lineThickness = 3;
   KeyboardPainter({
     @required this.pixelsPerStep,
-    this.mainColor = Colors.grey,
+    this.mainColor,
     this.pointers,
     this.sidePadding,
     this.scaleLength,
   });
 
-  Color get darkMainColor => mainColor[900];
+  Color get darkMainColor => mainColor['main'];
 
-  Color get lightMainColor => mainColor[200];
+  Color get lightMainColor => mainColor['dark'];
 
   void drawKey(
     int keyNumber,

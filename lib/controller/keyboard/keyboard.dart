@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../keyboard_preset.dart';
+import 'presets/keyboard_preset.dart';
 import 'keyboard_action.dart';
 import 'keyboard_painter.dart';
 import 'looper_state_indicator.dart';

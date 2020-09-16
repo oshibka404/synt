@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../controller/keyboard/keyboard_action.dart';
-import '../controller/keyboard_preset.dart';
+import '../controller/keyboard/presets/keyboard_preset.dart';
 import 'trig.dart';
 
 /// Timeline with sequence of [KeyboardAction]s

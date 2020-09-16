@@ -2,7 +2,7 @@ import 'dart:math';
 
 import '../arpeggiator/player_action.dart';
 import '../controller/keyboard/keyboard_action.dart';
-import '../controller/keyboard_preset.dart';
+import 'keyboard/presets/keyboard_preset.dart';
 import '../looper/trig.dart';
 import '../scales/scale_patterns.dart';
 import '../synth/synth_command.dart';
