@@ -61,11 +61,12 @@ class _PresetButtonState extends State<PresetButton> {
   LinearGradient getGradient() {
     if (isPressed) {
       return LinearGradient(colors: [
-        widget.color[200].withOpacity(.8),
-        widget.color[900].withOpacity(.8)
+        widget.color['light'].withOpacity(.8),
+        widget.color['main'].withOpacity(.8)
       ]);
     } else {
-      return LinearGradient(colors: [widget.color[200], widget.color[900]]);
+      return LinearGradient(
+          colors: [widget.color['light'], widget.color['main']]);
     }
   }
 

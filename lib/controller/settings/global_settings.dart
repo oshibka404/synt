@@ -1,23 +1,48 @@
-class GlobalSettings {
-  Map<String, dynamic> _settings;
+import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
-  // TODO: parse and save keys one by one
+import 'settings.dart';
+
+class GlobalSettings extends Settings {
+  String fileName = 'global.json';
+
+  double _tempo = 120;
+  double get tempo => _tempo;
+  set tempo(double tempo) {
+    _tempo = tempo;
+    save();
+  }
+
+  bool _poSync = false;
+  bool get poSync => _poSync;
+  set poSync(bool poSync) {
+    _poSync = poSync;
+    save();
+  }
+
+  ScalePattern _scale;
+  ScalePattern get scale => _scale;
+  set scale(ScalePattern scale) {
+    _scale = scale;
+    save();
+  }
+
+  applyValues(Map<String, dynamic> raw) {
+    _poSync = raw['po_sync'];
+    _tempo = raw['tempo'];
+    _scale = ScalePattern.values[raw['scale']];
+  }
+
   Map<String, dynamic> toJson() {
-    return _settings;
-  }
-
-  GlobalSettings.fromJson(Map<String, dynamic> json) : _settings = json;
-
-  dynamic operator [](String key) {
-    return _settings[key];
-  }
-
-  operator []=(String key, dynamic value) {
-    _settings[key] = value;
+    return {
+      'po_sync': poSync,
+      'tempo': tempo,
+      'scale': scale.index,
+    };
   }
 }
 
 /// Settings file example:
 /// {
-///   'po_sync': true
+///   'po_sync': true,
+///   'tempo': 90
 /// }

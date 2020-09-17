@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:perfect_first_synth/controller/inverting_button.dart';
-import 'package:perfect_first_synth/controller/settings/settings_controller.dart';
+import 'package:perfect_first_synth/controller/settings/global_settings.dart';
 import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
@@ -33,7 +33,7 @@ class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
   Map<DateTime, LoopView> _loopViews = {};
 
-  var settingsController = SettingsController();
+  var globalSettings = GlobalSettings();
 
   var _loopController = StreamController<KeyboardAction>();
 
@@ -126,12 +126,13 @@ class _ControllerState extends State<Controller> {
     );
   }
 
-  void setSyncEnabled(bool syncEnabled, [bool silent]) {
+  void setSyncEnabled(bool syncEnabled, [bool silent = false]) {
     DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
+    print(syncEnabled);
     setState(() {
       this.syncEnabled = syncEnabled;
     });
-    if (!silent) settingsController.set('po_sync', syncEnabled);
+    if (!silent) globalSettings.poSync = syncEnabled;
   }
 
   void deleteLoop(DateTime id) {
@@ -164,8 +165,18 @@ class _ControllerState extends State<Controller> {
   }
 
   void loadInitialSettings() async {
-    var initialSettings = await settingsController.loadGlobal();
-    setSyncEnabled(initialSettings['po_sync'], true);
+    await globalSettings.load();
+    if (globalSettings != null) {
+      if (globalSettings.poSync != null) {
+        setSyncEnabled(globalSettings.poSync, true);
+      }
+      if (globalSettings.tempo != null) {
+        setTempo(globalSettings.tempo, true);
+      }
+      if (globalSettings.scale != null) {
+        setScale(globalSettings.scale, true);
+      }
+    }
   }
 
   void setPreset(KeyboardPreset preset) {
@@ -190,17 +201,19 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void setScale(ScalePattern newScale) {
+  void setScale(ScalePattern newScale, [bool silent = false]) {
     setState(() {
       _scale = newScale;
     });
+    if (!silent) globalSettings.scale = newScale;
   }
 
-  void setTempo(double newTempo) {
+  void setTempo(double newTempo, [bool silent = false]) {
     _tempoController.setTempo(newTempo);
     setState(() {
       _tempo = newTempo;
     });
+    if (!silent) globalSettings.tempo = newTempo;
   }
 
   void toggleLoop(DateTime id) {

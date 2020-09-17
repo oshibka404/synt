@@ -32,7 +32,7 @@ class KeyboardPainter extends CustomPainter {
 
   Color get darkMainColor => mainColor['main'];
 
-  Color get lightMainColor => mainColor['dark'];
+  Color get lightMainColor => mainColor['light'];
 
   void drawKey(
     int keyNumber,
