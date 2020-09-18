@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:perfect_first_synth/synt_localizations.dart';
 
 import 'controller/controller.dart';
+import 'synt_localizations.dart';
 import 'theme.dart';
 
 void main() {

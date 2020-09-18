@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:perfect_first_synth/synth/tempo_sync.dart';
+import '../synth/tempo_sync.dart';
 
 class TempoController {
   /// BPM, Number of quarter notes played per minute

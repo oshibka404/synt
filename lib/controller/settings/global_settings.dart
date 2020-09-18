@@ -1,48 +1,95 @@
-import 'package:perfect_first_synth/scales/scale_patterns.dart';
+import 'package:flutter/material.dart';
 
-import 'settings.dart';
+import '../../scales/scale_patterns.dart';
+import '../../synt_localizations.dart';
 
-class GlobalSettings extends Settings {
-  String fileName = 'global.json';
+class GlobalSettings extends StatelessWidget {
+  final ScalePattern _scale;
+  final Function _setScale;
 
-  double _tempo = 120;
-  double get tempo => _tempo;
-  set tempo(double tempo) {
-    _tempo = tempo;
-    save();
-  }
+  final bool _syncEnabled;
+  final Function _setSyncEnabled;
 
-  bool _poSync = false;
-  bool get poSync => _poSync;
-  set poSync(bool poSync) {
-    _poSync = poSync;
-    save();
-  }
+  final Map<ScalePattern, String> scaleNames = {
+    ScalePattern.chromatic: 'Chromatic',
 
-  ScalePattern _scale;
-  ScalePattern get scale => _scale;
-  set scale(ScalePattern scale) {
-    _scale = scale;
-    save();
-  }
+    ScalePattern.pentatonic: 'Pentatonic',
+    ScalePattern.blues: 'Blues',
 
-  applyValues(Map<String, dynamic> raw) {
-    _poSync = raw['po_sync'];
-    _tempo = raw['tempo'];
-    _scale = ScalePattern.values[raw['scale']];
-  }
+    ScalePattern.harmonicMinor: 'Harmonic minor',
+    ScalePattern.melodicMinor: 'Melodic minor',
 
-  Map<String, dynamic> toJson() {
-    return {
-      'po_sync': poSync,
-      'tempo': tempo,
-      'scale': scale.index,
-    };
+    // Diatonic scales
+    ScalePattern.major: 'Major',
+    ScalePattern.minor: 'Minor',
+    ScalePattern.ionian: 'Ionian',
+    ScalePattern.dorian: 'Dorian',
+    ScalePattern.phrygian: 'Phrygian',
+    ScalePattern.lydian: 'Lydian',
+    ScalePattern.myxolydian: 'Myxolydian',
+    ScalePattern.aeolian: 'Aeolian',
+    ScalePattern.locrian: 'Locrian',
+  };
+
+  final double _tempo;
+  final Function _setTempo;
+  final void Function() clearAll;
+
+  GlobalSettings(
+    this._tempo,
+    this._setTempo,
+    this._scale,
+    this._setScale,
+    this.clearAll,
+    this._syncEnabled,
+    this._setSyncEnabled,
+  );
+
+  Widget build(BuildContext context) {
+    String tempoString = SyntLocalizations.of(context).getLocalized("Tempo");
+    String syncWithPoString =
+        SyntLocalizations.of(context).getLocalized("Sync with Pocket Operator");
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text("$tempoString: "),
+            Text("${_tempo.toStringAsFixed(0)}"), // TODO: use TextField
+            Text(" bpm"),
+          ],
+        ),
+        Slider(
+          min: 60,
+          max: 180,
+          value: _tempo,
+          activeColor: Colors.black,
+          inactiveColor: Colors.grey,
+          onChanged: (tempo) => _setTempo(tempo.roundToDouble()),
+        ),
+        Row(
+          children: [
+            Checkbox(value: _syncEnabled, onChanged: _setSyncEnabled),
+            Text(syncWithPoString),
+          ],
+        ),
+        Text(SyntLocalizations.of(context).getLocalized("Scale")),
+        DropdownButton<ScalePattern>(
+            value: _scale,
+            items: scaleNames.keys
+                .map<DropdownMenuItem<ScalePattern>>(
+                    (scale) => DropdownMenuItem<ScalePattern>(
+                          value: scale,
+                          child: Text(SyntLocalizations.of(context)
+                              .getLocalized(scaleNames[scale])),
+                        ))
+                .toList(),
+            onChanged: _setScale),
+        RaisedButton(
+            child: Text(
+                SyntLocalizations.of(context).getLocalized("Delete all loops")),
+            onPressed: clearAll),
+      ],
+    );
   }
 }
-
-/// Settings file example:
-/// {
-///   'po_sync': true,
-///   'tempo': 90
-/// }

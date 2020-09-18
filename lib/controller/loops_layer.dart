@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/inverting_button.dart';
 
+import '../controller/inverting_button.dart';
 import 'loop_view.dart';
 
 class LoopsLayer extends StatelessWidget {

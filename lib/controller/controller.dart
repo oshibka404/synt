@@ -1,19 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:perfect_first_synth/controller/inverting_button.dart';
-import 'package:perfect_first_synth/controller/settings/global_settings.dart';
-import 'package:perfect_first_synth/scales/scale_patterns.dart';
 
 import '../arpeggiator/arpeggiator.dart';
 import '../arpeggiator/arpeggio_bank.dart';
 import '../arpeggiator/arpeggio_banks.dart' show arpeggioBank;
 import '../looper/looper.dart';
 import '../looper/trig.dart';
+import '../scales/scale_patterns.dart';
 import '../synth/dsp_api.dart';
 import '../synth/synth_command.dart';
 import '../synth/synth_input.dart';
 import '../tempo_controller/tempo_controller.dart';
+import 'inverting_button.dart';
 import 'keyboard/keyboard.dart';
 import 'keyboard/keyboard_action.dart';
 import 'keyboard/presets/keyboard_preset.dart';
@@ -21,7 +20,8 @@ import 'keyboard/presets/keyboard_presets.dart' show keyboardPresets;
 import 'loop_view.dart';
 import 'loops_layer.dart';
 import 'preset_selector/preset_selector.dart';
-import 'settings/settings_view.dart';
+import 'settings/global_config.dart';
+import 'settings/settings.dart';
 import 'synth_command_factory.dart';
 
 class Controller extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ControllerState extends State<Controller> {
   Map<int, Arpeggiator> _arpeggiators = {};
   Map<DateTime, LoopView> _loopViews = {};
 
-  var globalSettings = GlobalSettings();
+  var globalSettings = GlobalConfig();
 
   var _loopController = StreamController<KeyboardAction>();
 
@@ -93,7 +93,7 @@ class _ControllerState extends State<Controller> {
                 Container(
                   padding: EdgeInsets.all(16),
                   constraints: BoxConstraints.tight(keyboardSize),
-                  child: SettingsView(currentPreset, _tempo, setTempo, _scale,
+                  child: Settings(currentPreset, _tempo, setTempo, _scale,
                       setScale, _clearAll, syncEnabled, setSyncEnabled),
                   color: Theme.of(context).backgroundColor,
                 ),
@@ -124,15 +124,6 @@ class _ControllerState extends State<Controller> {
         );
       },
     );
-  }
-
-  void setSyncEnabled(bool syncEnabled, [bool silent = false]) {
-    DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
-    print(syncEnabled);
-    setState(() {
-      this.syncEnabled = syncEnabled;
-    });
-    if (!silent) globalSettings.poSync = syncEnabled;
   }
 
   void deleteLoop(DateTime id) {
@@ -206,6 +197,15 @@ class _ControllerState extends State<Controller> {
       _scale = newScale;
     });
     if (!silent) globalSettings.scale = newScale;
+  }
+
+  void setSyncEnabled(bool syncEnabled, [bool silent = false]) {
+    DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
+    print(syncEnabled);
+    setState(() {
+      this.syncEnabled = syncEnabled;
+    });
+    if (!silent) globalSettings.poSync = syncEnabled;
   }
 
   void setTempo(double newTempo, [bool silent = false]) {

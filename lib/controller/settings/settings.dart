@@ -1,38 +1,45 @@
-import 'dart:convert';
-import 'dart:io';
+import 'package:flutter/material.dart';
 
-import 'package:path_provider/path_provider.dart';
+import '../../scales/scale_patterns.dart';
+import '../keyboard/presets/keyboard_preset.dart';
+import 'global_settings.dart';
 
-abstract class Settings {
-  Settings();
+class Settings extends StatelessWidget {
+  final KeyboardPreset preset;
+  final double tempo;
+  final Function setTempo;
+  final ScalePattern scale;
+  final Function setScale;
+  final bool syncEnabled;
+  final Function setSyncEnabled;
 
-  String fileName;
+  final void Function() clearAll;
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
+  Settings(
+    this.preset,
+    this.tempo,
+    this.setTempo,
+    this.scale,
+    this.setScale,
+    this.clearAll,
+    this.syncEnabled,
+    this.setSyncEnabled,
+  );
+
+  @override
+  Widget build(context) {
+    return ListView(
+      children: [
+        GlobalSettings(
+          tempo,
+          setTempo,
+          scale,
+          setScale,
+          clearAll,
+          syncEnabled,
+          setSyncEnabled,
+        ),
+      ],
+    );
   }
-
-  Future<File> get _globalSettingsFile async {
-    final path = await _localPath;
-    return File('$path/$fileName');
-  }
-
-  void save() async {
-    final file = await _globalSettingsFile;
-    var encodedSettings = jsonEncode(this);
-    file.writeAsString(encodedSettings);
-  }
-
-  Future<void> load() async {
-    final file = await _globalSettingsFile;
-    String contents = await file.readAsString();
-
-    Map<String, dynamic> rawSettings = jsonDecode(contents);
-
-    applyValues(rawSettings);
-  }
-
-  void applyValues(Map<String, dynamic> rawSettings);
-  Map<String, dynamic> toJson();
 }
