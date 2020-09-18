@@ -1,11 +1,11 @@
-name: perfect_first_synth
+name: synt
 description: A project with ambitions of becoming the perfect first synthesizer
 
 publish_to: 'none'
-version: 1.2.0
+version: 1.4.0
 
-repository: https://github.com/oshibka404/perfect-first-synth
-issue_tracker: https://github.com/oshibka404/perfect-first-synth/issues
+repository: https://github.com/oshibka404/synt
+issue_tracker: https://github.com/oshibka404/synt/issues
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
