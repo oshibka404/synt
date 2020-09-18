@@ -23,17 +23,19 @@ abstract class Config {
 
   void save() async {
     final file = await _globalSettingsFile;
-    var encodedSettings = jsonEncode(this);
+    var encodedSettings = jsonEncode(this.toJson());
     file.writeAsString(encodedSettings);
   }
 
   Future<void> load() async {
     final file = await _globalSettingsFile;
-    String contents = await file.readAsString();
+    if (await file.exists()) {
+      String contents = await file.readAsString();
 
-    Map<String, dynamic> rawSettings = jsonDecode(contents);
+      Map<String, dynamic> rawSettings = jsonDecode(contents);
 
-    applyValues(rawSettings);
+      applyValues(rawSettings);
+    }
   }
 
   void applyValues(Map<String, dynamic> rawSettings);

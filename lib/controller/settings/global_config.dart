@@ -38,7 +38,7 @@ class GlobalConfig extends Config {
     return {
       'po_sync': poSync,
       'tempo': tempo,
-      'scale': scale.index,
+      'scale': scale?.index,
     };
   }
 }
