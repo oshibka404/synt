@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../../scales/scale_patterns.dart';
@@ -28,16 +30,31 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return ListView(
+    return Stack(
       children: [
-        GlobalSettings(
-          tempo,
-          setTempo,
-          scale,
-          setScale,
-          clearAll,
-          syncEnabled,
-          setSyncEnabled,
+        ListView(
+          children: [
+            GlobalSettings(
+              tempo,
+              setTempo,
+              scale,
+              setScale,
+              clearAll,
+              syncEnabled,
+              setSyncEnabled,
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Text(
+            'Synt by Ozornin',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+              backgroundColor: Colors.white,
+            ),
+          ),
         ),
       ],
     );
