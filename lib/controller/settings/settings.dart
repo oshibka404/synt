@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../scales/scale_patterns.dart';
+import '../../synt_localizations.dart';
 import '../keyboard/presets/keyboard_preset.dart';
 import 'global_settings.dart';
 
@@ -48,7 +49,7 @@ class Settings extends StatelessWidget {
         Align(
           alignment: Alignment.bottomRight,
           child: Text(
-            'Synt by Ozornin',
+            SyntLocalizations.of(context).getLocalized('Synt by Ozornin'),
             style: TextStyle(
               color: Colors.grey,
               fontSize: 12,

@@ -7,10 +7,13 @@ class SyntLocalizations {
       'Synt': 'Synt',
       'Ready to record': 'Ready to record',
       'Recording': 'Recording',
+
+      // Settings
       'Tempo': 'Tempo',
       'Sync with Pocket Operator': 'Sync with Pocket Operator',
       'Scale': 'Scale',
       'Delete all loops': 'Delete all loops',
+      'Synt by Ozornin': 'Synt by Ozornin',
 
       // Scales
       'Chromatic': 'Chromatic',
@@ -32,10 +35,13 @@ class SyntLocalizations {
       'Synt': 'Синт',
       'Ready to record': 'Готов записывать',
       'Recording': 'Запись',
+
+      // Settings
       'Tempo': 'Темп',
       'Sync with Pocket Operator': 'Сихронизация с Pocket Operator',
       'Scale': 'Гамма',
       'Delete all loops': 'Удалить все лупы',
+      'Synt by Ozornin': 'Синт by Ozornin',
 
       // Scales
       'Chromatic': 'Хроматическая',
