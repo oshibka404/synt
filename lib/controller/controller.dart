@@ -88,6 +88,7 @@ class _ControllerState extends State<Controller> {
                 isReadyToRecord: isReadyToRecord,
                 isRecording: isRecording,
                 scaleLength: ScalePatterns.getScale(_scale).length,
+                triggeredNote: _triggeredNote,
               ),
               if (_settingsOpen)
                 Container(
@@ -176,6 +177,7 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  /// sets "Ready to record" state
   void setReady(bool ready) {
     if (!ready) {
       looper.stopRec();
@@ -201,7 +203,6 @@ class _ControllerState extends State<Controller> {
 
   void setSyncEnabled(bool syncEnabled, [bool silent = false]) {
     DspApi.setParamValueByPath("po_sync_enabled", syncEnabled ? 1 : 0);
-    print(syncEnabled);
     setState(() {
       this.syncEnabled = syncEnabled;
     });
@@ -239,6 +240,15 @@ class _ControllerState extends State<Controller> {
     });
   }
 
+  double _triggeredNote;
+
+  void displayTriggeredNote(
+      double stepOffset, double modulation, KeyboardPreset preset) {
+    setState(() {
+      _triggeredNote = stepOffset;
+    });
+  }
+
   void _addArpeggiator(Trig trig) {
     _arpeggiators[trig.pointerId] = Arpeggiator(
         _tempoController,
@@ -247,6 +257,10 @@ class _ControllerState extends State<Controller> {
     _arpeggiators[trig.pointerId].output.listen((playerAction) {
       _outputController.add(SynthCommandFactory.fromPlayerAction(
           playerAction, trig.pointerId, trig.preset ?? currentPreset, _scale));
+      if (trig.preset == null || trig.preset == currentPreset) {
+        displayTriggeredNote(playerAction.stepOffset, playerAction.modulation,
+            trig.preset ?? currentPreset);
+      }
     });
   }
 

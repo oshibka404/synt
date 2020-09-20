@@ -32,6 +32,8 @@ class Keyboard extends StatefulWidget {
 
   final int scaleLength;
 
+  final double triggeredNote;
+
   Keyboard({
     @required this.size,
     @required this.offset,
@@ -40,6 +42,7 @@ class Keyboard extends StatefulWidget {
     this.scaleLength = 7,
     this.isRecording = false,
     this.isReadyToRecord = false,
+    this.triggeredNote,
   });
 
   @override
@@ -82,6 +85,7 @@ class _KeyboardState extends State<Keyboard> {
                     mainColor: widget.preset.color,
                     pointers: pointers,
                     scaleLength: widget.scaleLength,
+                    triggeredNote: widget.triggeredNote,
                   ),
                 ),
               ),

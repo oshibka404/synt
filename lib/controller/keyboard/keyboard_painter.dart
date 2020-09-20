@@ -13,6 +13,7 @@ class KeyboardPainter extends CustomPainter {
   final double padding = 30;
   final double sidePadding;
   final int scaleLength;
+  final double triggeredNote;
 
   Size size;
 
@@ -28,6 +29,7 @@ class KeyboardPainter extends CustomPainter {
     this.pointers,
     this.sidePadding,
     this.scaleLength,
+    this.triggeredNote,
   });
 
   Color get darkMainColor => mainColor['main'];
@@ -37,14 +39,24 @@ class KeyboardPainter extends CustomPainter {
   void drawKey(
     int keyNumber,
     Map<int, PointerData> pointers,
+    double triggeredNote,
   ) {
     double x = getXPositionOfKey(keyNumber);
     PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
       return getClosestStepNumber(pointerData.position) == keyNumber;
     }, orElse: () => null);
 
-    if (pressingPointer != null) {
-      drawPressedKey(x, pressingPointer);
+    bool isTriggered = false;
+
+    if (triggeredNote != null) {
+      int closestStep = triggeredNote.floor();
+      isTriggered = closestStep == keyNumber;
+    }
+
+    if (isTriggered) {
+      drawPressedKey(getXPositionOfKey(triggeredNote.floor()), 0);
+    } else if (pressingPointer != null) {
+      drawPressedKey(x, pressingPointer.position.dy);
     } else {
       canvas.drawRRect(
           RRect.fromRectAndRadius(
@@ -60,17 +72,18 @@ class KeyboardPainter extends CustomPainter {
     }
   }
 
-  // TODO: Isolate drawing primitives
-  void drawPressedKey(double x, PointerData pressingPointer) {
-    var normalizedModulation = pressingPointer.position.dy / size.height;
-    var keyColor = Color.lerp(darkMainColor, lightMainColor,
-        pressingPointer.position.dy / size.height);
+  void drawPressedKey(double x, double pointerY) {
+    var normalizedModulation = pointerY / size.height;
+    var keyColor =
+        Color.lerp(darkMainColor, lightMainColor, normalizedModulation);
     var paint = Paint()
       ..color = keyColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = lineThickness;
 
-    var path = getWavePath(x, 3, 1 - normalizedModulation);
+    // draw only smooth wave so far
+    // var path = getWavePath(x, 3, 1 - normalizedModulation);
+    var path = getWavePath(x, 3, 0);
     canvas.drawPath(path, paint);
   }
 
@@ -143,7 +156,7 @@ class KeyboardPainter extends CustomPainter {
         Paint()..color = backgroundColor);
 
     for (int key = 0; key < keysOnScreen; key++) {
-      drawKey(key, pointers);
+      drawKey(key, pointers, triggeredNote);
     }
 
     pointers.forEach((_, pointer) {
