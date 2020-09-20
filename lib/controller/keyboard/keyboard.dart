@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:synt/controller/keyboard/triggered_key_data.dart';
 
 import 'presets/keyboard_preset.dart';
 import 'keyboard_action.dart';
@@ -32,7 +33,7 @@ class Keyboard extends StatefulWidget {
 
   final int scaleLength;
 
-  final double triggeredNote;
+  final Map<int, TriggeredKeyData> triggeredKeys;
 
   Keyboard({
     @required this.size,
@@ -42,7 +43,7 @@ class Keyboard extends StatefulWidget {
     this.scaleLength = 7,
     this.isRecording = false,
     this.isReadyToRecord = false,
-    this.triggeredNote,
+    this.triggeredKeys,
   });
 
   @override
@@ -85,7 +86,7 @@ class _KeyboardState extends State<Keyboard> {
                     mainColor: widget.preset.color,
                     pointers: pointers,
                     scaleLength: widget.scaleLength,
-                    triggeredNote: widget.triggeredNote,
+                    triggeredKeys: widget.triggeredKeys,
                   ),
                 ),
               ),

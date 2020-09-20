@@ -17,6 +17,7 @@ import 'keyboard/keyboard.dart';
 import 'keyboard/keyboard_action.dart';
 import 'keyboard/presets/keyboard_preset.dart';
 import 'keyboard/presets/keyboard_presets.dart' show keyboardPresets;
+import 'keyboard/triggered_key_data.dart';
 import 'loop_view.dart';
 import 'loops_layer.dart';
 import 'preset_selector/preset_selector.dart';
@@ -88,7 +89,7 @@ class _ControllerState extends State<Controller> {
                 isReadyToRecord: isReadyToRecord,
                 isRecording: isRecording,
                 scaleLength: ScalePatterns.getScale(_scale).length,
-                triggeredNote: _triggeredNote,
+                triggeredKeys: triggeredKeys,
               ),
               if (_settingsOpen)
                 Container(
@@ -240,12 +241,17 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  double _triggeredNote;
+  var triggeredKeys = Map<int, TriggeredKeyData>();
 
-  void displayTriggeredNote(
-      double stepOffset, double modulation, KeyboardPreset preset) {
+  void displayTriggeredNote(int pointerId, double stepOffset, double modulation,
+      double velocity, KeyboardPreset preset) {
     setState(() {
-      _triggeredNote = stepOffset;
+      if (velocity > 0) {
+        triggeredKeys[pointerId] =
+            TriggeredKeyData(velocity, stepOffset.floor(), modulation, preset);
+      } else {
+        triggeredKeys.remove(pointerId);
+      }
     });
   }
 
@@ -255,12 +261,11 @@ class _ControllerState extends State<Controller> {
         ArpeggioBank(
             arpeggioBank[trig.preset?.arpeggio ?? currentPreset.arpeggio]));
     _arpeggiators[trig.pointerId].output.listen((playerAction) {
+      var preset = trig.preset ?? currentPreset;
       _outputController.add(SynthCommandFactory.fromPlayerAction(
-          playerAction, trig.pointerId, trig.preset ?? currentPreset, _scale));
-      if (trig.preset == null || trig.preset == currentPreset) {
-        displayTriggeredNote(playerAction.stepOffset, playerAction.modulation,
-            trig.preset ?? currentPreset);
-      }
+          playerAction, trig.pointerId, preset, _scale));
+      displayTriggeredNote(trig.pointerId, playerAction.stepOffset,
+          playerAction.modulation, playerAction.velocity, preset);
     });
   }
 
@@ -290,8 +295,11 @@ class _ControllerState extends State<Controller> {
   void _looperHandler(Trig trig) {
     if (!_arpeggiators.containsKey(trig.pointerId)) {
       _addArpeggiator(trig);
+      // todo: use [fromTrig
       _outputController.add(SynthCommandFactory.fromKeyboardAction(
           trig, trig.pointerId, trig.preset ?? currentPreset, _scale));
+      displayTriggeredNote(trig.pointerId, trig.stepOffset, trig.modulation,
+          trig.pressure, trig.preset ?? currentPreset);
     }
     if (trig.pressure > 0) {
       _arpeggiators[trig.pointerId].play(trig.modulation,

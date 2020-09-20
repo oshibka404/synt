@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:synt/controller/keyboard/triggered_key_data.dart';
 
 import 'pointer_data.dart';
 import 'presets/keyboard_colors.dart';
+import 'presets/keyboard_preset.dart';
 
 class KeyboardPainter extends CustomPainter {
   Map<int, PointerData> pointers;
@@ -13,13 +15,15 @@ class KeyboardPainter extends CustomPainter {
   final double padding = 30;
   final double sidePadding;
   final int scaleLength;
-  final double triggeredNote;
+  final Map<int, TriggeredKeyData> triggeredKeys;
 
   Size size;
 
   Canvas canvas;
 
   Color backgroundColor = Colors.white;
+
+  Color triggeredKeyColor = Colors.grey;
 
   final double pixelsPerStep;
   double lineThickness = 3;
@@ -29,61 +33,49 @@ class KeyboardPainter extends CustomPainter {
     this.pointers,
     this.sidePadding,
     this.scaleLength,
-    this.triggeredNote,
+    this.triggeredKeys,
   });
 
   Color get darkMainColor => mainColor['main'];
-
   Color get lightMainColor => mainColor['light'];
 
-  void drawKey(
-    int keyNumber,
-    Map<int, PointerData> pointers,
-    double triggeredNote,
-  ) {
+  void drawKey(int keyNumber) {
     double x = getXPositionOfKey(keyNumber);
+
+    var strokeWidth = getKeyStrokeWidth(keyNumber);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromPoints(Offset(x - strokeWidth / 2, padding),
+                Offset(x + strokeWidth / 2, size.height - padding)),
+            Radius.circular(2)),
+        Paint()..color = getKeyColor(keyNumber));
+  }
+
+  double getKeyStrokeWidth(int keyNumber) {
+    return isTonic(keyNumber) ? lineThickness * 2 : lineThickness;
+  }
+
+  Color getKeyColor(int keyNumber, {KeyboardPreset preset}) {
     PointerData pressingPointer = pointers.values.firstWhere((pointerData) {
       return getClosestStepNumber(pointerData.position) == keyNumber;
     }, orElse: () => null);
 
-    bool isTriggered = false;
-
-    if (triggeredNote != null) {
-      int closestStep = triggeredNote.floor();
-      isTriggered = closestStep == keyNumber;
+    if (pressingPointer != null) {
+      return mainColor;
     }
-
-    if (isTriggered) {
-      drawPressedKey(getXPositionOfKey(triggeredNote.floor()), 0);
-    } else if (pressingPointer != null) {
-      drawPressedKey(x, pressingPointer.position.dy);
-    } else {
-      canvas.drawRRect(
-          RRect.fromRectAndRadius(
-              Rect.fromPoints(Offset(x - lineThickness / 2, padding),
-                  Offset(x + lineThickness / 2, size.height - padding)),
-              Radius.circular(2)),
-          Paint()
-            ..shader = LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: getKeyColors(keyNumber))
-                .createShader(Rect.fromLTRB(0, 0, size.width, size.height)));
-    }
+    return Colors.black;
   }
 
-  void drawPressedKey(double x, double pointerY) {
-    var normalizedModulation = pointerY / size.height;
-    var keyColor =
-        Color.lerp(darkMainColor, lightMainColor, normalizedModulation);
+  void drawTriggeredKey(TriggeredKeyData trigKey) {
     var paint = Paint()
-      ..color = keyColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = lineThickness;
+      ..strokeWidth = lineThickness
+      ..color = triggeredKeyColor;
 
-    // draw only smooth wave so far
-    // var path = getWavePath(x, 3, 1 - normalizedModulation);
-    var path = getWavePath(x, 3, 0);
+    var waves = 1 + trigKey.preset.baseKey ~/ 12;
+
+    var path = getWavePath(
+        getXPositionOfKey(trigKey.keyNumber), waves, trigKey.velocity);
     canvas.drawPath(path, paint);
   }
 
@@ -91,46 +83,24 @@ class KeyboardPainter extends CustomPainter {
     return (position.dx - sidePadding) ~/ pixelsPerStep;
   }
 
-  /// Returns colors of a gradient to paint a key of a given [keyNumber]
-  ///
-  /// (From top to bottom)
-  List<Color> getKeyColors(int keyNumber) {
-    if (isTonic(keyNumber)) {
-      return [
-        darkMainColor,
-        lightMainColor,
-      ];
-    }
-    return [
-      Colors.black,
-      Colors.black,
-    ];
-  }
-
-  /// returns [Path] of the wave for pressed key
-  ///
-  /// From smooth sine-ish (when) [sharpness] = 0
-  /// to saw (when 1)
-  Path getWavePath(double x, int waves, double sharpness) {
+  /// returns [Path] of the wave for pressed key.
+  Path getWavePath(double x, int waves, double velocity) {
     var path = Path();
-    double amplitude = pixelsPerStep / 4;
+    double amplitude = pixelsPerStep / 4 * velocity;
     var availableHeight = size.height - (2 * padding);
     var waveLength = availableHeight / waves;
 
     // full cycle is 1, peaks on .25 and .75
-    path.moveTo(x + (amplitude * sharpness), padding);
+    path.moveTo(x, padding);
 
     for (int i = 0; i < waves; i++) {
       double waveStartY = padding + waveLength * i;
+      path.quadraticBezierTo((x + amplitude), waveStartY + (waveLength / 4), x,
+          waveStartY + (waveLength / 2));
       path.quadraticBezierTo(
-          (x + (amplitude * (1 - sharpness))),
-          waveStartY + (waveLength / 4 * (1 - sharpness)),
-          x - amplitude * sharpness,
-          waveStartY + (waveLength / 2 * (1 - sharpness)));
-      path.quadraticBezierTo(
-          (x - (amplitude * (1 - sharpness))),
-          waveStartY + (waveLength / 2 + (waveLength / 4 * (1 - sharpness))),
-          x + amplitude * sharpness,
+          (x - amplitude),
+          waveStartY + (waveLength / 2 + (waveLength / 4)),
+          x,
           waveStartY + waveLength);
     }
     return path;
@@ -155,8 +125,13 @@ class KeyboardPainter extends CustomPainter {
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
         Paint()..color = backgroundColor);
 
+    triggeredKeys.forEach((key, trigData) {
+      drawTriggeredKey(trigData);
+    });
+
     for (int key = 0; key < keysOnScreen; key++) {
-      drawKey(key, pointers, triggeredNote);
+      // don't draw keys over already drawn active trigs
+      drawKey(key);
     }
 
     pointers.forEach((_, pointer) {
