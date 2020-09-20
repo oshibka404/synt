@@ -239,14 +239,14 @@ class _ControllerState extends State<Controller> {
     });
   }
 
-  void _addArpeggiator(Trig sample) {
-    _arpeggiators[sample.pointerId] = Arpeggiator(
+  void _addArpeggiator(Trig trig) {
+    _arpeggiators[trig.pointerId] = Arpeggiator(
         _tempoController,
         ArpeggioBank(
-            arpeggioBank[sample.preset?.arpeggio ?? currentPreset.arpeggio]));
-    _arpeggiators[sample.pointerId].output.listen((playerAction) {
-      _outputController.add(SynthCommandFactory.fromPlayerAction(playerAction,
-          sample.pointerId, sample.preset ?? currentPreset, _scale));
+            arpeggioBank[trig.preset?.arpeggio ?? currentPreset.arpeggio]));
+    _arpeggiators[trig.pointerId].output.listen((playerAction) {
+      _outputController.add(SynthCommandFactory.fromPlayerAction(
+          playerAction, trig.pointerId, trig.preset ?? currentPreset, _scale));
     });
   }
 
@@ -273,18 +273,18 @@ class _ControllerState extends State<Controller> {
     _loopController.add(action);
   }
 
-  void _looperHandler(Trig sample) {
-    if (!_arpeggiators.containsKey(sample.pointerId)) {
-      _addArpeggiator(sample);
+  void _looperHandler(Trig trig) {
+    if (!_arpeggiators.containsKey(trig.pointerId)) {
+      _addArpeggiator(trig);
       _outputController.add(SynthCommandFactory.fromKeyboardAction(
-          sample, sample.pointerId, sample.preset ?? currentPreset, _scale));
+          trig, trig.pointerId, trig.preset ?? currentPreset, _scale));
     }
-    if (sample.pressure > 0) {
-      _arpeggiators[sample.pointerId].play(sample.modulation,
-          baseStep: sample.stepOffset, modulation: sample.pressure);
+    if (trig.pressure > 0) {
+      _arpeggiators[trig.pointerId].play(trig.modulation,
+          baseStep: trig.stepOffset, modulation: trig.pressure);
     } else {
-      _arpeggiators[sample.pointerId].stop();
-      _arpeggiators.remove(sample.pointerId);
+      _arpeggiators[trig.pointerId].stop();
+      _arpeggiators.remove(trig.pointerId);
     }
   }
 }

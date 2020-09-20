@@ -32,15 +32,15 @@ class SynthCommandFactory {
         : SynthCommand.stop(voiceId);
   }
 
-  static SynthCommand fromSample(Trig sample, int voiceId, ScalePattern scale) {
-    return sample.pressure > 0
-        ? SynthCommand(sample.pointerId,
-            modulation: sample.modulation,
+  static SynthCommand fromTrig(Trig trig, int voiceId, ScalePattern scale) {
+    return trig.pressure > 0
+        ? SynthCommand(trig.pointerId,
+            modulation: trig.modulation,
             freq: _getFreqFromStepOffset(
-                sample.stepOffset, sample.preset?.baseKey, scale),
-            preset: sample.preset.synthPreset.params,
-            gain: sample.pressure)
-        : SynthCommand.stop(sample.pointerId);
+                trig.stepOffset, trig.preset?.baseKey, scale),
+            preset: trig.preset.synthPreset.params,
+            gain: trig.pressure)
+        : SynthCommand.stop(trig.pointerId);
   }
 
   static double _convertStepOffsetToPianoKey(
