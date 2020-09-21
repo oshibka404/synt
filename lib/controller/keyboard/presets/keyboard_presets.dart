@@ -10,6 +10,7 @@ List<KeyboardPreset> keyboardPresets = [
     color: KeyboardColors(0xFF3885ED, {
       'light': Color(0xFF3885ED),
       'main': Color(0xFF2f74d0),
+      'heavy': Color(0xFF1a63c2),
     }),
     arpeggio: 'melody',
     synthPreset: SynthPreset({
@@ -30,6 +31,7 @@ List<KeyboardPreset> keyboardPresets = [
     color: KeyboardColors(0xFFfbf043, {
       'light': Color(0xFFfbf043),
       'main': Color(0xFFe7dc33),
+      'heavy': Color(0xFFe7dc33),
     }),
     arpeggio: 'harmony',
     synthPreset: SynthPreset({
@@ -49,6 +51,7 @@ List<KeyboardPreset> keyboardPresets = [
     color: KeyboardColors(0xFFf7642c, {
       'light': Color(0xFFf7642c),
       'main': Color(0xFFda4d17),
+      'heavy': Color(0xFFa02312),
     }),
     arpeggio: 'bass',
     synthPreset: SynthPreset({

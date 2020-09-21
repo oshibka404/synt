@@ -23,8 +23,6 @@ class KeyboardPainter extends CustomPainter {
 
   Color backgroundColor = Colors.white;
 
-  Color triggeredKeyColor = Colors.grey;
-
   final double pixelsPerStep;
   double lineThickness = 3;
   KeyboardPainter({
@@ -36,23 +34,21 @@ class KeyboardPainter extends CustomPainter {
     this.triggeredKeys,
   });
 
-  Color get darkMainColor => mainColor['main'];
-  Color get lightMainColor => mainColor['light'];
+  Color get darkMainColor => mainColor.main;
+  Color get lightMainColor => mainColor.light;
 
   void drawKey(int keyNumber) {
     double x = getXPositionOfKey(keyNumber);
 
     var strokeWidth = getKeyStrokeWidth(keyNumber);
-    canvas.drawRRect(
-        RRect.fromRectAndRadius(
-            Rect.fromPoints(Offset(x - strokeWidth / 2, padding),
-                Offset(x + strokeWidth / 2, size.height - padding)),
-            Radius.circular(2)),
+    canvas.drawRect(
+        Rect.fromPoints(Offset(x - strokeWidth / 2, padding),
+            Offset(x + strokeWidth / 2, size.height - padding)),
         Paint()..color = getKeyColor(keyNumber));
   }
 
   double getKeyStrokeWidth(int keyNumber) {
-    return isTonic(keyNumber) ? lineThickness * 2 : lineThickness;
+    return isTonic(keyNumber) ? lineThickness * 1.5 : lineThickness;
   }
 
   Color getKeyColor(int keyNumber, {KeyboardPreset preset}) {
@@ -69,8 +65,8 @@ class KeyboardPainter extends CustomPainter {
   void drawTriggeredKey(TriggeredKeyData trigKey) {
     var paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = lineThickness
-      ..color = triggeredKeyColor;
+      ..strokeWidth = lineThickness / 2
+      ..color = trigKey.preset.color.heavy;
 
     var waves = 1 + trigKey.preset.baseKey ~/ 12;
 
@@ -86,7 +82,7 @@ class KeyboardPainter extends CustomPainter {
   /// returns [Path] of the wave for pressed key.
   Path getWavePath(double x, int waves, double velocity) {
     var path = Path();
-    double amplitude = pixelsPerStep / 4 * velocity;
+    double amplitude = pixelsPerStep / 4 * velocity + 3;
     var availableHeight = size.height - (2 * padding);
     var waveLength = availableHeight / waves;
 
